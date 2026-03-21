@@ -1,6 +1,45 @@
 [
   {
     "customer": {
+      "name": "PS",
+      "phone": "6378814759",
+      "address": "JAipur",
+      "stateCode": "08"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-8271",
+        "productName": "Ergonomic Office Chair",
+        "qty": 12,
+        "price": 14999,
+        "mrp": 18000,
+        "gstRate": 18,
+        "unit": "pcs",
+        "total": 179988
+      },
+      {
+        "id": "j5mvgxg6e",
+        "productId": "SKU-1922",
+        "productName": "Wireless Mechanical Keyboard",
+        "qty": 10,
+        "price": 7499,
+        "mrp": 8999,
+        "gstRate": 18,
+        "unit": "pcs",
+        "total": 74990
+      }
+    ],
+    "subtotal": 216083.05084745763,
+    "gstTotal": 38894.949152542365,
+    "grandTotal": 254978,
+    "taxType": "INTER",
+    "businessStateCode": "29",
+    "id": "INV-1774120014991",
+    "createdAt": "2026-03-21T19:06:54.991Z"
+  },
+  {
+    "customer": {
       "name": "shyam",
       "phone": "7875544457555",
       "address": "Goner",

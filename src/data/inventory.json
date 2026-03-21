@@ -18,7 +18,7 @@
     "category": "Standard Rate",
     "mrp": 18000,
     "price": 14999,
-    "stock": 31,
+    "stock": 19,
     "unit": "pcs",
     "status": "In Stock",
     "gst": "18%"
@@ -30,7 +30,7 @@
     "category": "Standard Rate",
     "mrp": 8999,
     "price": 7499,
-    "stock": 12,
+    "stock": 2,
     "unit": "pcs",
     "status": "Low",
     "gst": "18%"

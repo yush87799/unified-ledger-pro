@@ -24,7 +24,9 @@ import {
   LogOut,
   Boxes,
   HelpCircle,
-  Command
+  Command,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,13 +41,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ROLES, MENU_ITEMS, UserRole } from '@/lib/roles';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [role, setRole] = useState<UserRole | null>(null);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const savedRole = localStorage.getItem('user_role') as UserRole;
     if (!savedRole && pathname !== '/') {
       router.push('/');
@@ -63,6 +69,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const handleLogout = () => {
     localStorage.removeItem('user_role');
     router.push('/');
+  };
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
   return (
@@ -137,11 +147,19 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" className="hidden xl:flex gap-2 rounded-xl h-10 px-4 border-primary/20 text-primary hover:bg-primary/5">
-                <Plus className="h-4 w-4" />
-                <span>New Transaction</span>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleTheme}
+                className="h-10 w-10 rounded-xl hover:bg-muted/50 transition-all"
+              >
+                {mounted && resolvedTheme === 'dark' ? (
+                  <Sun className="h-5 w-5 text-amber-400" />
+                ) : (
+                  <Moon className="h-5 w-5 text-slate-700" />
+                )}
               </Button>
-              
+
               <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-muted/50">
                 <Bell className="h-5 w-5 text-muted-foreground" />
                 <span className="absolute top-2.5 right-2.5 flex h-2 w-2 rounded-full bg-primary ring-2 ring-card animate-pulse"></span>
