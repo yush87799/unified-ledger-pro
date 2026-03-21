@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -18,7 +19,8 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 
 const users = [
@@ -129,5 +131,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
-import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';

@@ -1,6 +1,62 @@
 [
   {
     "customer": {
+      "name": "shyam",
+      "phone": "7875544457555",
+      "address": "Goner",
+      "stateCode": "29"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-8271",
+        "productName": "Ergonomic Office Chair",
+        "qty": 2,
+        "price": 14999,
+        "mrp": 18000,
+        "gstRate": 18,
+        "unit": "pcs",
+        "total": 29998
+      }
+    ],
+    "subtotal": 25422.033898305086,
+    "gstTotal": 4575.966101694914,
+    "grandTotal": 29998,
+    "taxType": "INTRA",
+    "businessStateCode": "29",
+    "id": "INV-1774119234087",
+    "createdAt": "2026-03-21T18:53:54.087Z"
+  },
+  {
+    "customer": {
+      "name": "Pravi Jain",
+      "phone": "7878745124",
+      "address": "Jaipur",
+      "stateCode": "12"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-8271",
+        "productName": "Ergonomic Office Chair",
+        "qty": 4,
+        "price": 14999,
+        "mrp": 18000,
+        "gstRate": 18,
+        "unit": "pcs",
+        "total": 59996
+      }
+    ],
+    "subtotal": 50844.06779661017,
+    "gstTotal": 9151.932203389828,
+    "grandTotal": 59996,
+    "taxType": "INTER",
+    "businessStateCode": "29",
+    "id": "INV-1774119089323",
+    "createdAt": "2026-03-21T18:51:29.323Z"
+  },
+  {
+    "customer": {
       "name": "PS",
       "phone": "6378814759",
       "address": ""
