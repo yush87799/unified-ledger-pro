@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,19 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Filter, MoreVertical, Package, ArrowUpRight, TrendingUp, Save } from 'lucide-react';
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  MoreVertical, 
+  Package, 
+  ArrowUpRight, 
+  TrendingUp, 
+  Save, 
+  Copy,
+  Tag,
+  Scaling
+} from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -36,9 +48,22 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+
+// Common SI and Commercial Units
+const UNITS = [
+  { id: 'units', name: 'Units (Qty)' },
+  { id: 'pcs', name: 'Pieces (Pcs)' },
+  { id: 'kg', name: 'Kilograms (kg)' },
+  { id: 'gm', name: 'Grams (gm)' },
+  { id: 'l', name: 'Liters (L)' },
+  { id: 'ml', name: 'Milliliters (ml)' },
+  { id: 'ft', name: 'Feet (ft)' },
+  { id: 'm', name: 'Meters (m)' },
+  { id: 'box', name: 'Boxes' },
+];
 
 // GST Category Mapping
 const GST_CATEGORIES = [
@@ -47,37 +72,64 @@ const GST_CATEGORIES = [
     name: '0% (Exempt)', 
     rate: 0, 
     examples: 'Fresh fruits/vegetables, milk, bread, salt, life-saving medicines',
-    items: ['Fresh Produce', 'Milk & Dairy (Fresh)', 'Bread & Bakery (Basic)', 'Salt', 'Life-saving Medicines', 'Educational Services']
   },
   { 
     id: 'essential', 
     name: '5% (Mass Use/Essential)', 
     rate: 5, 
     examples: 'Packaged food, cooking oil, tea, spices, fertilizers',
-    items: ['Packaged Food', 'Cooking Oil', 'Tea & Coffee', 'Spices', 'Fertilizers', 'Basic Medicines']
   },
   { 
     id: 'standard', 
     name: '18% (Standard Rate)', 
     rate: 18, 
     examples: 'Electronics (TVs, laptops), refrigerators, telecom, banking',
-    items: ['Electronics (Laptops/TVs)', 'Refrigerators', 'Telecom Services', 'Banking Services', 'Processed Food', 'Cement']
   },
   { 
     id: 'luxury', 
     name: '40% (Luxury/Sin Goods)', 
     rate: 40, 
     examples: 'Luxury cars, personal aircraft, aerated drinks, tobacco',
-    items: ['Luxury Cars', 'Personal Aircraft', 'Aerated Drinks', 'Tobacco Products', 'Paan Masala']
   }
 ];
 
 const initialProducts = [
-  { id: 'SKU-8271', name: 'Ergonomic Office Chair', category: 'Standard Rate', price: '₹14,999', stock: 45, status: 'In Stock', gst: '18%' },
-  { id: 'SKU-1922', name: 'Wireless Mechanical Keyboard', category: 'Standard Rate', price: '₹7,499', stock: 12, status: 'Low', gst: '18%' },
-  { id: 'SKU-0032', name: 'Organic Salt Packet', category: 'Exempt', price: '₹45', stock: 120, status: 'In Stock', gst: '0%' },
-  { id: 'SKU-4412', name: 'Premium Sports Sedan', category: 'Luxury/Sin Goods', price: '₹45,00,000', stock: 2, status: 'In Stock', gst: '40%' },
-  { id: 'SKU-5521', name: 'Whole Wheat Bread', category: 'Exempt', price: '₹40', stock: 24, status: 'In Stock', gst: '0%' },
+  { 
+    id: 'SKU-8271', 
+    name: 'Ergonomic Office Chair', 
+    brand: 'Featherlite',
+    category: 'Standard Rate', 
+    mrp: 18000, 
+    price: 14999, 
+    stock: 45, 
+    unit: 'pcs',
+    status: 'In Stock', 
+    gst: '18%' 
+  },
+  { 
+    id: 'SKU-1922', 
+    name: 'Wireless Mechanical Keyboard', 
+    brand: 'Logitech',
+    category: 'Standard Rate', 
+    mrp: 8999, 
+    price: 7499, 
+    stock: 12, 
+    unit: 'pcs',
+    status: 'Low', 
+    gst: '18%' 
+  },
+  { 
+    id: 'SKU-0032', 
+    name: 'Organic Salt Packet', 
+    brand: 'Tata',
+    category: 'Exempt', 
+    mrp: 45, 
+    price: 45, 
+    stock: 120, 
+    unit: 'kg',
+    status: 'In Stock', 
+    gst: '0%' 
+  },
 ];
 
 export default function InventoryPage() {
@@ -88,9 +140,12 @@ export default function InventoryPage() {
   // Form State
   const [newProduct, setNewProduct] = useState({
     name: '',
+    brand: '',
     stock: '',
+    unit: 'units',
     categoryId: '',
-    price: ''
+    mrp: '',
+    actualPrice: ''
   });
 
   const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
@@ -106,43 +161,60 @@ export default function InventoryPage() {
   };
 
   const handleAddProduct = () => {
-    if (!newProduct.name || !newProduct.stock || !newProduct.categoryId || !newProduct.price) {
+    if (!newProduct.name || !newProduct.stock || !newProduct.categoryId || !newProduct.mrp || !newProduct.actualPrice) {
       toast({
         title: "Missing Fields",
-        description: "Please fill in all details to add the product.",
+        description: "Please fill in all mandatory details to add the product.",
         variant: "destructive"
       });
       return;
     }
 
     const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
-    // Ensure stock is not negative
     const stockNum = Math.max(0, parseInt(newProduct.stock) || 0);
+    const mrpNum = parseFloat(newProduct.mrp) || 0;
+    const priceNum = parseFloat(newProduct.actualPrice) || 0;
     
     const productToAdd = {
       id: generateSKU(),
       name: newProduct.name,
+      brand: newProduct.brand || 'Generic',
       category: categoryObj?.name.split(' (')[0] || 'Other',
-      price: `₹${parseFloat(newProduct.price).toLocaleString()}`,
+      mrp: mrpNum,
+      price: priceNum,
       stock: stockNum,
+      unit: newProduct.unit,
       status: stockNum === 0 ? 'Out of Stock' : stockNum < 10 ? 'Low' : 'In Stock',
       gst: `${categoryObj?.rate}%`
     };
 
     setProducts([productToAdd, ...products]);
     setIsDialogOpen(false);
-    setNewProduct({ name: '', stock: '', categoryId: '', price: '' });
+    setNewProduct({ name: '', brand: '', stock: '', unit: 'units', categoryId: '', mrp: '', actualPrice: '' });
     setSelectedGSTRate(null);
     
     toast({
       title: "Product Added",
-      description: `${productToAdd.name} has been added to your inventory with ${productToAdd.gst} GST rate.`,
+      description: `${productToAdd.name} added to inventory. SKU: ${productToAdd.id}`,
     });
   };
 
+  const calculateDiscount = () => {
+    const mrp = parseFloat(newProduct.mrp);
+    const price = parseFloat(newProduct.actualPrice);
+    if (!mrp || !price || mrp <= 0) return null;
+    
+    const amount = mrp - price;
+    const percentage = (amount / mrp) * 100;
+    return { amount, percentage };
+  };
+
+  const discount = calculateDiscount();
+
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.id.toLowerCase().includes(searchTerm.toLowerCase())
+    p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.brand.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -150,7 +222,7 @@ export default function InventoryPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-headline text-3xl font-bold text-foreground">Inventory Management</h1>
-          <p className="text-muted-foreground">Track stock levels, manage products and auto-calculate GST.</p>
+          <p className="text-muted-foreground">Track stock levels, manage brands and auto-calculate GST/Discounts.</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" className="hidden sm:flex border-primary/20 hover:bg-primary/5">
@@ -163,49 +235,112 @@ export default function InventoryPage() {
                 <Plus className="mr-2 h-4 w-4" /> Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="font-headline text-2xl">Add New Product</DialogTitle>
                 <DialogDescription>
-                  Enter product details. GST rate will be automatically assigned based on the chosen category.
+                  Enter product details. Pricing and GST will be automatically computed.
                 </DialogDescription>
               </DialogHeader>
-              <div className="flex flex-col gap-6 py-4">
+              <div className="flex flex-col gap-5 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">Name</Label>
+                  <Label htmlFor="name" className="text-right">Name*</Label>
                   <Input 
                     id="name" 
-                    placeholder="Product name" 
+                    placeholder="e.g. Wireless Mouse" 
                     className="col-span-3" 
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
                   />
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="price" className="text-right">Price (₹)</Label>
+                  <Label htmlFor="brand" className="text-right">Brand</Label>
                   <Input 
-                    id="price" 
-                    type="number" 
-                    placeholder="0.00" 
+                    id="brand" 
+                    placeholder="Brand name (optional)" 
                     className="col-span-3" 
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    value={newProduct.brand}
+                    onChange={(e) => setNewProduct({...newProduct, brand: e.target.value})}
                   />
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="stock" className="text-right">Initial Stock</Label>
+                  <Label htmlFor="mrp" className="text-right">MRP (₹)*</Label>
                   <Input 
-                    id="stock" 
+                    id="mrp" 
                     type="number" 
-                    min="0"
-                    placeholder="Quantity" 
+                    placeholder="Max Retail Price" 
                     className="col-span-3" 
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                    value={newProduct.mrp}
+                    onChange={(e) => setNewProduct({...newProduct, mrp: e.target.value})}
                   />
                 </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="category" className="text-right">Category</Label>
+                  <Label htmlFor="actualPrice" className="text-right">Selling Price*</Label>
+                  <div className="col-span-3 flex gap-2">
+                    <Input 
+                      id="actualPrice" 
+                      type="number" 
+                      placeholder="Actual Selling Price" 
+                      className="flex-1" 
+                      value={newProduct.actualPrice}
+                      onChange={(e) => setNewProduct({...newProduct, actualPrice: e.target.value})}
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      type="button"
+                      onClick={() => setNewProduct({...newProduct, actualPrice: newProduct.mrp})}
+                      className="text-[10px] h-10 px-2"
+                    >
+                      <Copy className="h-3 w-3 mr-1" /> Same as MRP
+                    </Button>
+                  </div>
+                </div>
+
+                {discount && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <div className="col-start-2 col-span-3 flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-1 text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded">
+                        <Tag className="h-3 w-3" />
+                        Save ₹{discount.amount.toLocaleString()} ({discount.percentage.toFixed(1)}% Off)
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="stock" className="text-right">Stock Qty*</Label>
+                  <div className="col-span-3 flex gap-2">
+                    <Input 
+                      id="stock" 
+                      type="number" 
+                      min="0"
+                      placeholder="Qty" 
+                      className="flex-1" 
+                      value={newProduct.stock}
+                      onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                    />
+                    <Select 
+                      onValueChange={(val) => setNewProduct({...newProduct, unit: val})} 
+                      value={newProduct.unit}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="Unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {UNITS.map((u) => (
+                          <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="category" className="text-right">Category*</Label>
                   <Select onValueChange={handleCategoryChange} value={newProduct.categoryId}>
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Select classification" />
@@ -222,10 +357,11 @@ export default function InventoryPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
                 {selectedGSTRate !== null && (
                   <div className="grid grid-cols-4 gap-4">
                     <div className="col-start-2 col-span-3 p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
-                      <span className="text-sm font-medium">Applied GST Rate:</span>
+                      <span className="text-xs font-medium text-muted-foreground">Applied GST Rate:</span>
                       <Badge variant="secondary" className="bg-primary text-primary-foreground">
                         {selectedGSTRate}%
                       </Badge>
@@ -233,7 +369,7 @@ export default function InventoryPage() {
                   </div>
                 )}
               </div>
-              <DialogFooter>
+              <DialogFooter className="mt-4">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
                 <Button onClick={handleAddProduct}>
                   <Save className="mr-2 h-4 w-4" /> Save Product
@@ -244,7 +380,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="border-none shadow-sm bg-card/50">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -265,7 +401,7 @@ export default function InventoryPage() {
                 <ArrowUpRight className="h-6 w-6 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Low Stock Alerts</p>
+                <p className="text-sm text-muted-foreground">Low Stock</p>
                 <p className="text-2xl font-bold font-headline">
                   {products.filter(p => p.status === 'Low').length}
                 </p>
@@ -277,12 +413,27 @@ export default function InventoryPage() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-destructive/10 rounded-xl">
-                <Package className="h-6 w-6 text-destructive" />
+                <Scaling className="h-6 w-6 text-destructive" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Out of Stock</p>
                 <p className="text-2xl font-bold font-headline">
                   {products.filter(p => p.status === 'Out of Stock').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-none shadow-sm bg-card/50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-emerald-500/10 rounded-xl">
+                <TrendingUp className="h-6 w-6 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Top Brands</p>
+                <p className="text-2xl font-bold font-headline">
+                  {new Set(products.map(p => p.brand)).size}
                 </p>
               </div>
             </div>
@@ -296,7 +447,7 @@ export default function InventoryPage() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Search products, SKU..." 
+                placeholder="Search products, brands, SKU..." 
                 className="pl-9 bg-background"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -310,16 +461,16 @@ export default function InventoryPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader className="bg-muted/30">
               <TableRow>
                 <TableHead className="w-[120px]">SKU ID</TableHead>
-                <TableHead>Product Name</TableHead>
+                <TableHead>Product / Brand</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>Price (Selling/MRP)</TableHead>
                 <TableHead>Stock</TableHead>
-                <TableHead>GST %</TableHead>
+                <TableHead>GST</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right"></TableHead>
               </TableRow>
@@ -328,19 +479,38 @@ export default function InventoryPage() {
               {filteredProducts.map((p) => (
                 <TableRow key={p.id} className="hover:bg-muted/10 transition-colors">
                   <TableCell className="font-mono text-xs font-semibold text-primary">{p.id}</TableCell>
-                  <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell>{p.category}</TableCell>
-                  <TableCell className="font-semibold">{p.price}</TableCell>
-                  <TableCell>{p.stock}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{p.name}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{p.brand}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs">{p.category}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-foreground">₹{p.price.toLocaleString()}</span>
+                      {p.mrp > p.price && (
+                        <span className="text-[10px] text-muted-foreground line-through decoration-destructive/50">
+                          MRP: ₹{p.mrp.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold">{p.stock}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase">{p.unit}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 text-[10px]">
                       {p.gst}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge 
                       variant={p.status === 'In Stock' ? 'default' : p.status === 'Low' ? 'secondary' : 'destructive'}
-                      className="rounded-full px-3 py-0.5"
+                      className="rounded-full px-2 py-0 text-[10px] font-bold"
                     >
                       {p.status}
                     </Badge>
@@ -354,8 +524,7 @@ export default function InventoryPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>Edit Details</DropdownMenuItem>
-                        <DropdownMenuItem>Add Stock</DropdownMenuItem>
-                        <DropdownMenuItem>Stock History</DropdownMenuItem>
+                        <DropdownMenuItem>Manage Stock</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">Delete Product</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
