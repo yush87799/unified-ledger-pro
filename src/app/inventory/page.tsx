@@ -51,7 +51,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 
-// Common SI and Commercial Units
 const UNITS = [
   { id: 'units', name: 'Units (Qty)' },
   { id: 'pcs', name: 'Pieces (Pcs)' },
@@ -64,7 +63,6 @@ const UNITS = [
   { id: 'box', name: 'Boxes' },
 ];
 
-// GST Category Mapping
 const GST_CATEGORIES = [
   { 
     id: 'exempt', 
@@ -150,17 +148,36 @@ export default function InventoryPage() {
   const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
 
   const handlePriceInput = (value: string, field: 'mrp' | 'actualPrice') => {
-    // Sanitize input: Allow only digits and a single dot. No signs or characters.
-    const sanitized = value.replace(/[^0-9.]/g, '');
+    // Strictly allow only positive digits and a single dot. No signs, characters or spaces.
+    let sanitized = value.replace(/[^0-9.]/g, '');
+    
+    // Ensure only one decimal point
     const parts = sanitized.split('.');
-    // Ensure only one decimal point is allowed
-    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : sanitized;
-    setNewProduct({ ...newProduct, [field]: finalValue });
+    if (parts.length > 2) {
+      sanitized = `${parts[0]}.${parts.slice(1).join('')}`;
+    }
+    
+    setNewProduct(prev => ({ ...prev, [field]: sanitized }));
+  };
+
+  const validatePricing = () => {
+    const mrpNum = parseFloat(newProduct.mrp) || 0;
+    const priceNum = parseFloat(newProduct.actualPrice) || 0;
+
+    if (newProduct.mrp && newProduct.actualPrice && priceNum > mrpNum) {
+      toast({
+        title: "Pricing Conflict",
+        description: "Actual Selling Price cannot be greater than the Maximum Retail Price (MRP).",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
   };
 
   const handleCategoryChange = (val: string) => {
     const category = GST_CATEGORIES.find(c => c.id === val);
-    setNewProduct({ ...newProduct, categoryId: val });
+    setNewProduct(prev => ({ ...prev, categoryId: val }));
     setSelectedGSTRate(category ? category.rate : null);
   };
 
@@ -178,19 +195,10 @@ export default function InventoryPage() {
       return;
     }
 
+    if (!validatePricing()) return;
+
     const mrpNum = parseFloat(newProduct.mrp) || 0;
     const priceNum = parseFloat(newProduct.actualPrice) || 0;
-
-    // Validation: Actual Price cannot be greater than MRP
-    if (priceNum > mrpNum) {
-      toast({
-        title: "Pricing Conflict",
-        description: "Selling price cannot be greater than the Maximum Retail Price (MRP).",
-        variant: "destructive"
-      });
-      return;
-    }
-
     const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
     const stockNum = Math.max(0, parseInt(newProduct.stock) || 0);
     
@@ -270,7 +278,8 @@ export default function InventoryPage() {
                     placeholder="e.g. Wireless Mouse" 
                     className="col-span-3" 
                     value={newProduct.name}
-                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                    onChange={(e) => setNewProduct(prev => ({...prev, name: e.target.value}))}
+                    onFocus={validatePricing}
                   />
                 </div>
 
@@ -281,7 +290,8 @@ export default function InventoryPage() {
                     placeholder="Brand name (optional)" 
                     className="col-span-3" 
                     value={newProduct.brand}
-                    onChange={(e) => setNewProduct({...newProduct, brand: e.target.value})}
+                    onChange={(e) => setNewProduct(prev => ({...prev, brand: e.target.value}))}
+                    onFocus={validatePricing}
                   />
                 </div>
 
@@ -293,6 +303,7 @@ export default function InventoryPage() {
                     className="col-span-3" 
                     value={newProduct.mrp}
                     onChange={(e) => handlePriceInput(e.target.value, 'mrp')}
+                    onBlur={validatePricing}
                   />
                 </div>
 
@@ -305,12 +316,16 @@ export default function InventoryPage() {
                       className="flex-1" 
                       value={newProduct.actualPrice}
                       onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
+                      onBlur={validatePricing}
                     />
                     <Button 
                       variant="outline" 
                       size="sm" 
                       type="button"
-                      onClick={() => setNewProduct({...newProduct, actualPrice: newProduct.mrp})}
+                      onClick={() => {
+                        const sanitizedMrp = newProduct.mrp.replace(/[^0-9.]/g, '');
+                        setNewProduct(prev => ({...prev, actualPrice: sanitizedMrp}));
+                      }}
                       className="text-[10px] h-10 px-2"
                     >
                       <Copy className="h-3 w-3 mr-1" /> Same as MRP
@@ -342,15 +357,16 @@ export default function InventoryPage() {
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "" || parseInt(val) >= 0) {
-                          setNewProduct({...newProduct, stock: val});
+                          setNewProduct(prev => ({...prev, stock: val}));
                         }
                       }}
+                      onFocus={validatePricing}
                     />
                     <Select 
-                      onValueChange={(val) => setNewProduct({...newProduct, unit: val})} 
+                      onValueChange={(val) => setNewProduct(prev => ({...prev, unit: val}))} 
                       value={newProduct.unit}
                     >
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger className="w-32" onFocus={validatePricing}>
                         <SelectValue placeholder="Unit" />
                       </SelectTrigger>
                       <SelectContent>
@@ -365,7 +381,7 @@ export default function InventoryPage() {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="category" className="text-right">Category*</Label>
                   <Select onValueChange={handleCategoryChange} value={newProduct.categoryId}>
-                    <SelectTrigger className="col-span-3">
+                    <SelectTrigger className="col-span-3" onFocus={validatePricing}>
                       <SelectValue placeholder="Select classification" />
                     </SelectTrigger>
                     <SelectContent>
