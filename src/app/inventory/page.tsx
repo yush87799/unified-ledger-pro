@@ -148,7 +148,8 @@ export default function InventoryPage() {
   const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
 
   const handlePriceInput = (value: string, field: 'mrp' | 'actualPrice') => {
-    // Strictly allow only positive digits and a single dot. No signs, characters or spaces.
+    // Strictly allow only positive digits and a single dot. No signs (+ or -), characters or spaces.
+    // This prevents equations (5-5, 5+5) and non-numeric input.
     let sanitized = value.replace(/[^0-9.]/g, '');
     
     // Ensure only one decimal point
