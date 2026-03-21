@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -20,12 +19,9 @@ import {
   Bell, 
   Search, 
   Plus, 
-  User, 
   ChevronDown,
   LogOut,
-  Moon,
-  Sun,
-  Menu
+  Boxes
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,7 +35,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ROLES, MENU_ITEMS, UserRole } from '@/lib/roles';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function Shell({ children }: { children: React.ReactNode }) {
@@ -57,7 +52,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   }, [pathname, router]);
 
   if (pathname === '/') return <>{children}</>;
-  if (!role) return null;
+  if (!role) return <div className="min-h-screen bg-background" />; // Prevent flash
 
   const roleConfig = ROLES[role];
   const allowedMenuItems = MENU_ITEMS.filter(item => roleConfig.allowedMenus.includes(item.id));
@@ -88,7 +83,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     asChild 
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard')}
                     tooltip={item.label}
                     className="h-11"
                   >
@@ -105,7 +100,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             <div className="flex flex-col gap-4">
               <Button 
                 variant="ghost" 
-                className="justify-start gap-2 w-full group-data-[collapsible=icon]:px-2"
+                className="justify-start gap-2 w-full group-data-[collapsible=icon]:px-2 text-muted-foreground hover:text-destructive"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4" />
@@ -179,5 +174,3 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-
-import { Boxes } from 'lucide-react';
