@@ -1,0 +1,29 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "owner-avatar",
+      "description": "Business Owner Avatar",
+      "imageUrl": "https://picsum.photos/seed/owner/100/100",
+      "imageHint": "businessman avatar"
+    },
+    {
+      "id": "admin-avatar",
+      "description": "Admin Avatar",
+      "imageUrl": "https://picsum.photos/seed/admin/100/100",
+      "imageHint": "tech professional"
+    },
+    {
+      "id": "staff-avatar",
+      "description": "Staff Avatar",
+      "imageUrl": "https://picsum.photos/seed/staff/100/100",
+      "imageHint": "worker avatar"
+    },
+    {
+      "id": "inventory-placeholder",
+      "description": "Warehouse Interior",
+      "imageUrl": "https://picsum.photos/seed/warehouse/800/400",
+      "imageHint": "warehouse inventory"
+    }
+  ]
+}
