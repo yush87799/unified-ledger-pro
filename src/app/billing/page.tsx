@@ -29,6 +29,7 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, Printer, Save, CreditCard, Send, Loader2, FileText, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
