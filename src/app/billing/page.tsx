@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -44,6 +45,7 @@ import {
   Eye
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { INDIAN_STATES } from '@/lib/states';
 
 interface Product {
   id: string;
@@ -60,7 +62,7 @@ interface LineItem {
   productId: string;
   productName: string;
   qty: number;
-  price: number; // This is Actual Price (Inclusive of GST)
+  price: number; // Tax Inclusive Selling Price
   mrp: number;
   gstRate: number;
   unit: string;
@@ -73,11 +75,14 @@ interface Invoice {
     name: string;
     phone: string;
     address: string;
+    stateCode: string;
   };
   items: LineItem[];
-  subtotal: number; // Taxable Value (Sum of Base Prices)
-  gstTotal: number; // Total Tax Amount
-  grandTotal: number; // Total Payable
+  subtotal: number;
+  gstTotal: number;
+  grandTotal: number;
+  taxType: 'INTRA' | 'INTER';
+  businessStateCode: string;
   createdAt: string;
 }
 
@@ -88,7 +93,8 @@ export default function BillingPage() {
   const [items, setItems] = useState<LineItem[]>([
     { id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }
   ]);
-  const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
+  const [customer, setCustomer] = useState({ name: '', phone: '', address: '', stateCode: '' });
+  const [businessSettings, setBusinessSettings] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // --- History State ---
@@ -103,7 +109,20 @@ export default function BillingPage() {
   useEffect(() => {
     fetchProducts();
     fetchHistory();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setBusinessSettings(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -196,13 +215,6 @@ export default function BillingPage() {
     }));
   };
 
-  // Calculation Logic:
-  // Actual Price = Tax Inclusive Price
-  // Base Price = Actual Price / (1 + GST Rate / 100)
-  // Grand Total = Sum of (Actual Price * Qty)
-  // Subtotal (Taxable) = Sum of (Base Price * Qty)
-  // GST Total = Grand Total - Subtotal
-  
   const totals = useMemo(() => {
     let grandTotal = 0;
     let taxableSubtotal = 0;
@@ -217,16 +229,19 @@ export default function BillingPage() {
       taxableSubtotal += itemTaxableValue;
     });
 
+    const isIntraState = businessSettings?.stateCode === customer.stateCode;
+
     return {
       grandTotal,
       subtotal: taxableSubtotal,
-      gstTotal: grandTotal - taxableSubtotal
+      gstTotal: grandTotal - taxableSubtotal,
+      taxType: isIntraState ? 'INTRA' : 'INTER' as 'INTRA' | 'INTER'
     };
-  }, [items]);
+  }, [items, businessSettings, customer.stateCode]);
 
   const handleSaveInvoice = async () => {
-    if (!customer.name || !customer.phone) {
-      toast({ title: "Validation Error", description: "Customer name and phone are required.", variant: "destructive" });
+    if (!customer.name || !customer.phone || !customer.stateCode) {
+      toast({ title: "Validation Error", description: "Customer name, phone, and state are required.", variant: "destructive" });
       return;
     }
 
@@ -235,14 +250,21 @@ export default function BillingPage() {
       return;
     }
 
+    if (!businessSettings?.stateCode) {
+      toast({ title: "System Error", description: "Please configure Business State in Settings first.", variant: "destructive" });
+      return;
+    }
+
     setIsSaving(true);
     try {
-      const payload = { 
+      const payload: Partial<Invoice> = { 
         customer, 
         items, 
         subtotal: totals.subtotal, 
         gstTotal: totals.gstTotal, 
-        grandTotal: totals.grandTotal 
+        grandTotal: totals.grandTotal,
+        taxType: totals.taxType,
+        businessStateCode: businessSettings.stateCode
       };
       const res = await fetch('/api/invoices', {
         method: 'POST',
@@ -254,9 +276,9 @@ export default function BillingPage() {
         const data = await res.json();
         toast({ title: "Success", description: `Invoice ${data.id} saved.` });
         setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }]);
-        setCustomer({ name: '', phone: '', address: '' });
-        fetchProducts(); // Refresh stock
-        fetchHistory();  // Refresh list
+        setCustomer({ name: '', phone: '', address: '', stateCode: '' });
+        fetchProducts();
+        fetchHistory();
       } else {
         throw new Error('Failed to save');
       }
@@ -268,6 +290,10 @@ export default function BillingPage() {
   };
 
   const handlePreviewCurrent = () => {
+    if (!businessSettings?.stateCode) {
+      toast({ title: "Configuration Required", description: "Please set your Business State in Settings.", variant: "destructive" });
+      return;
+    }
     setPreviewInvoice({
       id: 'TEMP-DRAFT',
       customer,
@@ -275,6 +301,8 @@ export default function BillingPage() {
       subtotal: totals.subtotal,
       gstTotal: totals.gstTotal,
       grandTotal: totals.grandTotal,
+      taxType: totals.taxType,
+      businessStateCode: businessSettings.stateCode,
       createdAt: new Date().toISOString()
     });
     setIsPreviewOpen(true);
@@ -296,7 +324,7 @@ export default function BillingPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-headline text-3xl font-bold">Billing & Invoices</h1>
-          <p className="text-muted-foreground">Manage transactions and track invoice history.</p>
+          <p className="text-muted-foreground">Persistently saved to local JSON backend.</p>
         </div>
       </div>
 
@@ -329,7 +357,7 @@ export default function BillingPage() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Customer Name</Label>
+                    <Label>Customer Name*</Label>
                     <Input 
                       placeholder="Enter full name" 
                       value={customer.name}
@@ -337,14 +365,32 @@ export default function BillingPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Contact Number</Label>
+                    <Label>Contact Number*</Label>
                     <Input 
                       placeholder="+91 00000 00000" 
                       value={customer.phone}
                       onChange={e => setCustomer({...customer, phone: e.target.value.replace(/[^0-9+]/g, '')})}
                     />
                   </div>
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2">
+                    <Label>Billing State*</Label>
+                    <Select 
+                      value={customer.stateCode} 
+                      onValueChange={val => setCustomer({...customer, stateCode: val})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select State" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INDIAN_STATES.map(state => (
+                          <SelectItem key={state.code} value={state.code}>
+                            {state.code} - {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
                     <Label>Billing Address</Label>
                     <Input 
                       placeholder="Full address details" 
@@ -448,7 +494,7 @@ export default function BillingPage() {
                     <span>₹{totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="opacity-80">GST Amount</span>
+                    <span className="opacity-80">Total GST Amount ({totals.taxType === 'INTRA' ? 'CGST+SGST' : 'IGST'})</span>
                     <span>₹{totals.gstTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="border-t border-primary-foreground/20 pt-4 flex justify-between items-center">
@@ -562,8 +608,13 @@ export default function BillingPage() {
               <>
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
-                    <h2 className="text-2xl font-bold font-headline text-primary">Unified Ledger Pro</h2>
-                    <p className="text-[10px] text-muted-foreground">GSTIN: 29AAAAA0000A1Z5</p>
+                    <h2 className="text-2xl font-bold font-headline text-primary">
+                      {businessSettings?.brandName || 'Unified Ledger Pro'}
+                    </h2>
+                    <p className="text-[10px] text-muted-foreground">GSTIN: {businessSettings?.gstin || 'N/A'}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Place of Supply: {INDIAN_STATES.find(s => s.code === previewInvoice.businessStateCode)?.name} ({previewInvoice.businessStateCode})
+                    </p>
                   </div>
                   <div className="text-right space-y-1">
                     <h3 className="font-bold uppercase text-xs">Tax Invoice</h3>
@@ -578,6 +629,7 @@ export default function BillingPage() {
                     <p className="font-bold text-sm">{previewInvoice.customer?.name || 'N/A'}</p>
                     <p>{previewInvoice.customer?.phone || 'N/A'}</p>
                     <p>{previewInvoice.customer?.address || 'N/A'}</p>
+                    <p>State: {INDIAN_STATES.find(s => s.code === previewInvoice.customer?.stateCode)?.name} ({previewInvoice.customer?.stateCode})</p>
                   </div>
                 </div>
 
@@ -610,15 +662,28 @@ export default function BillingPage() {
                 </Table>
 
                 <div className="flex justify-end pt-4">
-                  <div className="w-[250px] space-y-2 text-[10px]">
+                  <div className="w-[300px] space-y-2 text-[10px]">
                     <div className="flex justify-between border-b pb-1 text-muted-foreground">
-                      <span>Taxable Value (Subtotal):</span>
+                      <span>Taxable Value:</span>
                       <span>₹{previewInvoice.subtotal?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1 text-muted-foreground">
-                      <span>Total GST Amount:</span>
-                      <span>₹{previewInvoice.gstTotal?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    </div>
+                    {previewInvoice.taxType === 'INTRA' ? (
+                      <>
+                        <div className="flex justify-between border-b pb-1 text-muted-foreground">
+                          <span>CGST (50% of Tax):</span>
+                          <span>₹{(previewInvoice.gstTotal! / 2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                        <div className="flex justify-between border-b pb-1 text-muted-foreground">
+                          <span>SGST (50% of Tax):</span>
+                          <span>₹{(previewInvoice.gstTotal! / 2).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex justify-between border-b pb-1 text-muted-foreground">
+                        <span>IGST (100% of Tax):</span>
+                        <span>₹{previewInvoice.gstTotal?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-base pt-2 text-primary font-bold">
                       <span>Grand Total:</span>
                       <span>₹{previewInvoice.grandTotal?.toLocaleString()}</span>
