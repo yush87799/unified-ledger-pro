@@ -1,0 +1,26 @@
+[
+  {
+    "customer": {
+      "name": "Pratyush Shrivastava",
+      "phone": "+916378814759",
+      "address": "Jaipur"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-9430",
+        "productName": "Apple",
+        "qty": 1,
+        "price": 40,
+        "gstRate": 0,
+        "unit": "kg",
+        "total": 40
+      }
+    ],
+    "subtotal": 40,
+    "gstTotal": 0,
+    "grandTotal": 40,
+    "id": "INV-1774117471078",
+    "createdAt": "2026-03-21T18:24:31.078Z"
+  }
+]

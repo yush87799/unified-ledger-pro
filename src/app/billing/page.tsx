@@ -163,6 +163,15 @@ export default function BillingPage() {
       return;
     }
 
+    // Double check stock locally before sending
+    for (const item of items) {
+      const product = products.find(p => p.id === item.productId);
+      if (product && item.qty > product.stock) {
+        toast({ title: "Stock Error", description: `Insufficient stock for ${item.productName}.`, variant: "destructive" });
+        return;
+      }
+    }
+
     setIsSaving(true);
     try {
       const res = await fetch('/api/invoices', {
@@ -179,15 +188,17 @@ export default function BillingPage() {
 
       if (res.ok) {
         const data = await res.json();
-        toast({ title: "Success", description: `Invoice ${data.id} saved successfully.` });
+        toast({ title: "Success", description: `Invoice ${data.id} saved. Stock has been updated.` });
         // Reset form
         setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, gstRate: 0, unit: 'units', total: 0 }]);
         setCustomer({ name: '', phone: '', address: '' });
+        // Refresh products to show updated stock
+        fetchProducts();
       } else {
         throw new Error('Failed to save');
       }
     } catch (err) {
-      toast({ title: "Error", description: "Failed to save the invoice locally.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to save the invoice and update stock.", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -198,15 +209,15 @@ export default function BillingPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-headline text-3xl font-bold">New Invoice</h1>
-          <p className="text-muted-foreground">Local backend connected. All invoices are saved to invoices.json.</p>
+          <p className="text-muted-foreground">Manage billings. Stock is automatically updated on save.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={handleSaveInvoice} disabled={isSaving}>
+          <Button variant="outline" onClick={() => setIsPreviewOpen(true)}>
+            <Printer className="mr-2 h-4 w-4" /> Preview & Print
+          </Button>
+          <Button onClick={handleSaveInvoice} disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Save Invoice
-          </Button>
-          <Button onClick={() => setIsPreviewOpen(true)}>
-            <Printer className="mr-2 h-4 w-4" /> Preview & Print
           </Button>
         </div>
       </div>
@@ -279,8 +290,8 @@ export default function BillingPage() {
                             </SelectTrigger>
                             <SelectContent>
                               {products.map(p => (
-                                <SelectItem key={p.id} value={p.id}>
-                                  {p.name} ({p.brand})
+                                <SelectItem key={p.id} value={p.id} disabled={p.stock <= 0}>
+                                  {p.name} ({p.brand}) {p.stock <= 0 ? "[Out of Stock]" : ""}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -376,8 +387,8 @@ export default function BillingPage() {
                 onClick={handleSaveInvoice}
                 disabled={isSaving}
                >
-                 {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                 Confirm & Finalize
+                 {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                 Save Invoice
                </Button>
             </CardContent>
           </Card>
@@ -393,7 +404,7 @@ export default function BillingPage() {
               Invoice Preview
             </DialogTitle>
             <DialogDescription>
-              Review the invoice details before printing or sending to the customer.
+              Review the invoice details before saving or printing.
             </DialogDescription>
           </DialogHeader>
           
