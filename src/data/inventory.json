@@ -1,0 +1,38 @@
+[
+  {
+    "id": "SKU-9430",
+    "name": "Apple",
+    "brand": "Generic",
+    "category": "0%",
+    "mrp": 50,
+    "price": 40,
+    "stock": 2,
+    "unit": "kg",
+    "status": "Low",
+    "gst": "0%"
+  },
+  {
+    "id": "SKU-8271",
+    "name": "Ergonomic Office Chair",
+    "brand": "Featherlite",
+    "category": "Standard Rate",
+    "mrp": 18000,
+    "price": 14999,
+    "stock": 45,
+    "unit": "pcs",
+    "status": "In Stock",
+    "gst": "18%"
+  },
+  {
+    "id": "SKU-1922",
+    "name": "Wireless Mechanical Keyboard",
+    "brand": "Logitech",
+    "category": "Standard Rate",
+    "mrp": 8999,
+    "price": 7499,
+    "stock": 12,
+    "unit": "pcs",
+    "status": "Low",
+    "gst": "18%"
+  }
+]

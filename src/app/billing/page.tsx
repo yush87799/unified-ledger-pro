@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,38 +21,191 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Plus, Trash2, Printer, Save, CreditCard, Send } from 'lucide-react';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Plus, Trash2, Printer, Save, CreditCard, Send, Loader2, FileText, CheckCircle2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  mrp: number;
+  gst: string;
+  unit: string;
+  stock: number;
+}
+
+interface LineItem {
+  id: string;
+  productId: string;
+  productName: string;
+  qty: number;
+  price: number;
+  gstRate: number;
+  unit: string;
+  total: number;
+}
 
 export default function BillingPage() {
-  const [items, setItems] = useState([
-    { id: 1, product: '', qty: 1, price: 0, gst: 18, total: 0 }
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [items, setItems] = useState<LineItem[]>([
+    { id: '1', productId: '', productName: '', qty: 1, price: 0, gstRate: 0, unit: 'units', total: 0 }
   ]);
+  const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch('/api/inventory');
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data);
+      }
+    } catch (err) {
+      toast({ title: "Fetch Error", description: "Could not load products for billing.", variant: "destructive" });
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
   const addItem = () => {
-    setItems([...items, { id: Date.now(), product: '', qty: 1, price: 0, gst: 18, total: 0 }]);
+    setItems([...items, { 
+      id: Math.random().toString(36).substr(2, 9), 
+      productId: '', 
+      productName: '', 
+      qty: 1, 
+      price: 0, 
+      gstRate: 0, 
+      unit: 'units', 
+      total: 0 
+    }]);
   };
 
-  const removeItem = (id: number) => {
-    setItems(items.filter(item => item.id !== id));
+  const removeItem = (id: string) => {
+    if (items.length > 1) {
+      setItems(items.filter(item => item.id !== id));
+    }
   };
 
-  const calculateSubtotal = () => items.reduce((acc, item) => acc + (item.qty * item.price), 0);
-  const calculateGST = () => calculateSubtotal() * 0.18;
-  const calculateTotal = () => calculateSubtotal() + calculateGST();
+  const handleProductSelect = (id: string, productId: string) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const gstNum = parseFloat(product.gst.replace('%', '')) || 0;
+        const price = product.price;
+        return {
+          ...item,
+          productId,
+          productName: product.name,
+          price: price,
+          gstRate: gstNum,
+          unit: product.unit,
+          total: price * item.qty
+        };
+      }
+      return item;
+    }));
+  };
+
+  const handleQtyChange = (id: string, val: string) => {
+    // Only allow positive integers
+    const sanitized = val.replace(/[^0-9]/g, '');
+    const qty = parseInt(sanitized) || 0;
+
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const product = products.find(p => p.id === item.productId);
+        if (product && qty > product.stock) {
+          toast({
+            title: "Stock Warning",
+            description: `Only ${product.stock} ${product.unit} available for ${product.name}.`,
+            variant: "destructive"
+          });
+        }
+        return {
+          ...item,
+          qty: qty,
+          total: item.price * qty
+        };
+      }
+      return item;
+    }));
+  };
+
+  const subtotal = useMemo(() => items.reduce((acc, item) => acc + item.total, 0), [items]);
+  const gstTotal = useMemo(() => items.reduce((acc, item) => acc + (item.total * (item.gstRate / 100)), 0), [items]);
+  const grandTotal = subtotal + gstTotal;
+
+  const handleSaveInvoice = async () => {
+    if (!customer.name || !customer.phone) {
+      toast({ title: "Validation Error", description: "Customer name and phone are required.", variant: "destructive" });
+      return;
+    }
+
+    if (items.some(i => !i.productId || i.qty <= 0)) {
+      toast({ title: "Validation Error", description: "Please ensure all line items have a product and quantity.", variant: "destructive" });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer,
+          items,
+          subtotal,
+          gstTotal,
+          grandTotal
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        toast({ title: "Success", description: `Invoice ${data.id} saved successfully.` });
+        // Reset form
+        setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, gstRate: 0, unit: 'units', total: 0 }]);
+        setCustomer({ name: '', phone: '', address: '' });
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to save the invoice locally.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-headline text-3xl font-bold">New Invoice</h1>
-          <p className="text-muted-foreground">Generate billing for your customers with auto GST calculation.</p>
+          <p className="text-muted-foreground">Local backend connected. All invoices are saved to invoices.json.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline">
-            <Save className="mr-2 h-4 w-4" /> Save Draft
+          <Button variant="outline" onClick={handleSaveInvoice} disabled={isSaving}>
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            Save Invoice
           </Button>
-          <Button>
-            <Printer className="mr-2 h-4 w-4" /> Print Invoice
+          <Button onClick={() => setIsPreviewOpen(true)}>
+            <Printer className="mr-2 h-4 w-4" /> Preview & Print
           </Button>
         </div>
       </div>
@@ -66,15 +219,27 @@ export default function BillingPage() {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Customer Name</Label>
-                <Input placeholder="Search or add customer..." />
+                <Input 
+                  placeholder="Enter full name" 
+                  value={customer.name}
+                  onChange={e => setCustomer({...customer, name: e.target.value})}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Contact Number</Label>
-                <Input placeholder="+91 00000 00000" />
+                <Input 
+                  placeholder="+91 00000 00000" 
+                  value={customer.phone}
+                  onChange={e => setCustomer({...customer, phone: e.target.value.replace(/[^0-9+]/g, '')})}
+                />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>Billing Address</Label>
-                <Input placeholder="Full address details" />
+                <Input 
+                  placeholder="Full address details" 
+                  value={customer.address}
+                  onChange={e => setCustomer({...customer, address: e.target.value})}
+                />
               </div>
             </CardContent>
           </Card>
@@ -88,7 +253,7 @@ export default function BillingPage() {
             </CardHeader>
             <CardContent className="p-0">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/30">
                   <TableRow>
                     <TableHead className="w-[40%]">Product</TableHead>
                     <TableHead>Qty</TableHead>
@@ -99,48 +264,66 @@ export default function BillingPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <Select>
-                          <SelectTrigger className="border-none bg-muted/30 focus:ring-0">
-                            <SelectValue placeholder="Select Product" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="chair">Ergonomic Chair</SelectItem>
-                            <SelectItem value="keyboard">Keyboard</SelectItem>
-                            <SelectItem value="mouse">Mouse</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <Input type="number" defaultValue={item.qty} className="w-20" />
-                      </TableCell>
-                      <TableCell>
-                        <Input type="number" placeholder="0.00" className="w-28" />
-                      </TableCell>
-                      <TableCell>
-                        <Select defaultValue="18">
-                          <SelectTrigger className="border-none bg-muted/30 focus:ring-0 w-24">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="0">0%</SelectItem>
-                            <SelectItem value="5">5%</SelectItem>
-                            <SelectItem value="12">12%</SelectItem>
-                            <SelectItem value="18">18%</SelectItem>
-                            <SelectItem value="28">28%</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell className="text-right font-medium">₹0.00</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {items.map((item) => {
+                    const selectedProduct = products.find(p => p.id === item.productId);
+                    return (
+                      <TableRow key={item.id} className="hover:bg-muted/5">
+                        <TableCell>
+                          <Select 
+                            value={item.productId} 
+                            onValueChange={(val) => handleProductSelect(item.id, val)}
+                          >
+                            <SelectTrigger className="border-none bg-muted/30 focus:ring-0">
+                              <SelectValue placeholder={loadingProducts ? "Loading..." : "Select Product"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {products.map(p => (
+                                <SelectItem key={p.id} value={p.id}>
+                                  {p.name} ({p.brand})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {selectedProduct && (
+                            <p className="text-[10px] text-muted-foreground mt-1 ml-1">
+                              Stock: {selectedProduct.stock} {selectedProduct.unit} available
+                            </p>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Input 
+                              type="text" 
+                              value={item.qty} 
+                              className="w-20"
+                              onChange={e => handleQtyChange(item.id, e.target.value)}
+                            />
+                            <span className="text-[10px] text-muted-foreground uppercase">{item.unit}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Input readOnly value={item.price.toLocaleString()} className="w-28 bg-muted/20 border-none pointer-events-none" />
+                        </TableCell>
+                        <TableCell>
+                           <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 text-[10px]">
+                            {item.gstRate}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">₹{item.total.toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => removeItem(item.id)} 
+                            className="text-muted-foreground hover:text-destructive"
+                            disabled={items.length === 1}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -155,11 +338,11 @@ export default function BillingPage() {
             <CardContent className="space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="opacity-80">Subtotal</span>
-                <span>₹{calculateSubtotal().toLocaleString()}</span>
+                <span>₹{subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="opacity-80">Estimated GST (18%)</span>
-                <span>₹{calculateGST().toLocaleString()}</span>
+                <span className="opacity-80">GST Total</span>
+                <span>₹{gstTotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="opacity-80">Discount</span>
@@ -167,33 +350,129 @@ export default function BillingPage() {
               </div>
               <div className="border-t border-primary-foreground/20 pt-4 flex justify-between items-center">
                 <span className="font-bold text-lg">Grand Total</span>
-                <span className="font-bold text-2xl font-headline">₹{calculateTotal().toLocaleString()}</span>
+                <span className="font-bold text-2xl font-headline">₹{grandTotal.toLocaleString()}</span>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-none shadow-md">
             <CardHeader>
-              <CardTitle className="font-headline">Payment Method</CardTitle>
+              <CardTitle className="font-headline">Payment Mode</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                <div className="grid grid-cols-2 gap-2">
                  <Button variant="outline" className="h-16 flex flex-col items-center justify-center gap-1 border-2 border-primary/20 bg-primary/5">
                    <CreditCard className="h-5 w-5" />
-                   <span className="text-xs">Online</span>
+                   <span className="text-xs">Digital</span>
                  </Button>
                  <Button variant="outline" className="h-16 flex flex-col items-center justify-center gap-1">
-                   <Plus className="h-5 w-5 rotate-45" />
+                   <CheckCircle2 className="h-5 w-5" />
                    <span className="text-xs">Cash</span>
                  </Button>
                </div>
-               <Button className="w-full h-12 rounded-xl text-lg font-headline shadow-lg shadow-primary/20">
-                 <Send className="mr-2 h-5 w-5" /> Confirm & Send
+               <Button 
+                className="w-full h-12 rounded-xl text-lg font-headline shadow-lg shadow-primary/20"
+                onClick={handleSaveInvoice}
+                disabled={isSaving}
+               >
+                 {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
+                 Confirm & Finalize
                </Button>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Invoice Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-[800px] p-0 overflow-hidden">
+          <DialogHeader className="p-6 bg-muted/30">
+            <DialogTitle className="font-headline text-2xl flex items-center gap-2">
+              <FileText className="h-6 w-6 text-primary" />
+              Invoice Preview
+            </DialogTitle>
+            <DialogDescription>
+              Review the invoice details before printing or sending to the customer.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto bg-white text-black">
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold font-headline text-primary">Unified Ledger Pro</h2>
+                <p className="text-xs text-muted-foreground">GSTIN: 29AAAAA0000A1Z5</p>
+                <p className="text-xs text-muted-foreground">Tech Park, Bangalore, 560001</p>
+              </div>
+              <div className="text-right space-y-1">
+                <h3 className="font-bold uppercase tracking-widest text-sm">Invoice</h3>
+                <p className="text-xs">Date: {new Date().toLocaleDateString()}</p>
+                <p className="text-xs">No: INV-TEMP-001</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 text-xs border-y py-4 border-muted">
+              <div className="space-y-2">
+                <p className="font-bold text-muted-foreground uppercase">Billed To:</p>
+                <p className="font-bold">{customer.name || 'N/A'}</p>
+                <p>{customer.phone || 'N/A'}</p>
+                <p>{customer.address || 'N/A'}</p>
+              </div>
+            </div>
+
+            <Table>
+              <TableHeader className="bg-muted/10 border-b">
+                <TableRow>
+                  <TableHead className="text-black font-bold h-8">Description</TableHead>
+                  <TableHead className="text-black font-bold h-8">Qty</TableHead>
+                  <TableHead className="text-black font-bold h-8">Price</TableHead>
+                  <TableHead className="text-black font-bold h-8">GST %</TableHead>
+                  <TableHead className="text-right text-black font-bold h-8">Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {items.filter(i => i.productId).map((item) => (
+                  <TableRow key={item.id} className="border-b h-10">
+                    <TableCell className="text-xs font-medium">{item.productName}</TableCell>
+                    <TableCell className="text-xs">{item.qty} {item.unit}</TableCell>
+                    <TableCell className="text-xs">₹{item.price.toLocaleString()}</TableCell>
+                    <TableCell className="text-xs">{item.gstRate}%</TableCell>
+                    <TableCell className="text-right text-xs">₹{item.total.toLocaleString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            <div className="flex justify-end pt-4">
+              <div className="w-[300px] space-y-2 text-xs">
+                <div className="flex justify-between border-b pb-1">
+                  <span>Subtotal:</span>
+                  <span className="font-bold">₹{subtotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between border-b pb-1">
+                  <span>Tax Amount:</span>
+                  <span className="font-bold">₹{gstTotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-lg pt-2 text-primary font-bold">
+                  <span>Grand Total:</span>
+                  <span>₹{grandTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-8 text-center text-[10px] text-muted-foreground border-t">
+              <p>This is a computer generated invoice and does not require a signature.</p>
+              <p className="mt-1 font-bold">Thank you for your business!</p>
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 bg-muted/30 border-t">
+            <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>Close</Button>
+            <Button onClick={() => window.print()} className="gap-2">
+              <Printer className="h-4 w-4" /> Print PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
