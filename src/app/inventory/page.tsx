@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,8 @@ import {
   Save, 
   Copy,
   Tag,
-  Scaling
+  Scaling,
+  RefreshCcw
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -90,49 +92,12 @@ const GST_CATEGORIES = [
   }
 ];
 
-const initialProducts = [
-  { 
-    id: 'SKU-8271', 
-    name: 'Ergonomic Office Chair', 
-    brand: 'Featherlite',
-    category: 'Standard Rate', 
-    mrp: 18000, 
-    price: 14999, 
-    stock: 45, 
-    unit: 'pcs',
-    status: 'In Stock', 
-    gst: '18%' 
-  },
-  { 
-    id: 'SKU-1922', 
-    name: 'Wireless Mechanical Keyboard', 
-    brand: 'Logitech',
-    category: 'Standard Rate', 
-    mrp: 8999, 
-    price: 7499, 
-    stock: 12, 
-    unit: 'pcs',
-    status: 'Low', 
-    gst: '18%' 
-  },
-  { 
-    id: 'SKU-0032', 
-    name: 'Organic Salt Packet', 
-    brand: 'Tata',
-    category: 'Exempt', 
-    mrp: 45, 
-    price: 45, 
-    stock: 120, 
-    unit: 'kg',
-    status: 'In Stock', 
-    gst: '0%' 
-  },
-];
-
 export default function InventoryPage() {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State
   const [newProduct, setNewProduct] = useState({
@@ -147,17 +112,37 @@ export default function InventoryPage() {
 
   const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
 
+  // Fetch products on mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/inventory');
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+      }
+    } catch (error) {
+      toast({
+        title: "Connection Error",
+        description: "Failed to fetch inventory from the local backend.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePriceInput = (value: string, field: 'mrp' | 'actualPrice') => {
-    // Strictly allow only positive digits and a single dot. No signs (+ or -), characters or spaces.
-    // This prevents equations (5-5, 5+5) and non-numeric input.
+    // Strictly allow only positive digits and a single dot.
     let sanitized = value.replace(/[^0-9.]/g, '');
-    
-    // Ensure only one decimal point
     const parts = sanitized.split('.');
     if (parts.length > 2) {
       sanitized = `${parts[0]}.${parts.slice(1).join('')}`;
     }
-    
     setNewProduct(prev => ({ ...prev, [field]: sanitized }));
   };
 
@@ -186,7 +171,7 @@ export default function InventoryPage() {
     return `SKU-${Math.floor(1000 + Math.random() * 9000)}`;
   };
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.stock || !newProduct.categoryId || !newProduct.mrp || !newProduct.actualPrice) {
       toast({
         title: "Missing Fields",
@@ -198,6 +183,7 @@ export default function InventoryPage() {
 
     if (!validatePricing()) return;
 
+    setIsSubmitting(true);
     const mrpNum = parseFloat(newProduct.mrp) || 0;
     const priceNum = parseFloat(newProduct.actualPrice) || 0;
     const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
@@ -216,15 +202,36 @@ export default function InventoryPage() {
       gst: `${categoryObj?.rate}%`
     };
 
-    setProducts([productToAdd, ...products]);
-    setIsDialogOpen(false);
-    setNewProduct({ name: '', brand: '', stock: '', unit: 'units', categoryId: '', mrp: '', actualPrice: '' });
-    setSelectedGSTRate(null);
-    
-    toast({
-      title: "Product Added",
-      description: `${productToAdd.name} added to inventory. SKU: ${productToAdd.id}`,
-    });
+    try {
+      const response = await fetch('/api/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productToAdd)
+      });
+
+      if (response.ok) {
+        const savedProduct = await response.json();
+        setProducts([savedProduct, ...products]);
+        setIsDialogOpen(false);
+        setNewProduct({ name: '', brand: '', stock: '', unit: 'units', categoryId: '', mrp: '', actualPrice: '' });
+        setSelectedGSTRate(null);
+        
+        toast({
+          title: "Product Added",
+          description: `${productToAdd.name} added to inventory. SKU: ${productToAdd.id}`,
+        });
+      } else {
+        throw new Error('Failed to save product');
+      }
+    } catch (error) {
+      toast({
+        title: "Submission Failed",
+        description: "Could not save the product to the local backend.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const calculateDiscount = () => {
@@ -251,11 +258,11 @@ export default function InventoryPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="font-headline text-3xl font-bold text-foreground">Inventory Management</h1>
-          <p className="text-muted-foreground">Track stock levels, manage brands and auto-calculate GST/Discounts.</p>
+          <p className="text-muted-foreground">Local backend connected. All data is saved to inventory.json.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="hidden sm:flex border-primary/20 hover:bg-primary/5">
-            <TrendingUp className="mr-2 h-4 w-4 text-primary" /> AI Stock Predictor
+          <Button variant="outline" className="hidden sm:flex border-primary/20 hover:bg-primary/5" onClick={fetchProducts}>
+            <RefreshCcw className={`mr-2 h-4 w-4 text-primary ${loading ? 'animate-spin' : ''}`} /> Refresh Data
           </Button>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -280,7 +287,6 @@ export default function InventoryPage() {
                     className="col-span-3" 
                     value={newProduct.name}
                     onChange={(e) => setNewProduct(prev => ({...prev, name: e.target.value}))}
-                    onFocus={validatePricing}
                   />
                 </div>
 
@@ -292,7 +298,6 @@ export default function InventoryPage() {
                     className="col-span-3" 
                     value={newProduct.brand}
                     onChange={(e) => setNewProduct(prev => ({...prev, brand: e.target.value}))}
-                    onFocus={validatePricing}
                   />
                 </div>
 
@@ -361,13 +366,12 @@ export default function InventoryPage() {
                           setNewProduct(prev => ({...prev, stock: val}));
                         }
                       }}
-                      onFocus={validatePricing}
                     />
                     <Select 
                       onValueChange={(val) => setNewProduct(prev => ({...prev, unit: val}))} 
                       value={newProduct.unit}
                     >
-                      <SelectTrigger className="w-32" onFocus={validatePricing}>
+                      <SelectTrigger className="w-32">
                         <SelectValue placeholder="Unit" />
                       </SelectTrigger>
                       <SelectContent>
@@ -382,7 +386,7 @@ export default function InventoryPage() {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="category" className="text-right">Category*</Label>
                   <Select onValueChange={handleCategoryChange} value={newProduct.categoryId}>
-                    <SelectTrigger className="col-span-3" onFocus={validatePricing}>
+                    <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Select classification" />
                     </SelectTrigger>
                     <SelectContent>
@@ -412,8 +416,9 @@ export default function InventoryPage() {
               </div>
               <DialogFooter className="mt-4">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleAddProduct}>
-                  <Save className="mr-2 h-4 w-4" /> Save Product
+                <Button onClick={handleAddProduct} disabled={isSubmitting}>
+                  {isSubmitting ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Save Product
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -503,82 +508,89 @@ export default function InventoryPage() {
           </div>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-muted/30">
-              <TableRow>
-                <TableHead className="w-[120px]">SKU ID</TableHead>
-                <TableHead>Product / Brand</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price (Selling/MRP)</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>GST</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProducts.map((p) => (
-                <TableRow key={p.id} className="hover:bg-muted/10 transition-colors">
-                  <TableCell className="font-mono text-xs font-semibold text-primary">{p.id}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{p.name}</span>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{p.brand}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-xs">{p.category}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-foreground">₹{p.price.toLocaleString()}</span>
-                      {p.mrp > p.price && (
-                        <span className="text-[10px] text-muted-foreground line-through decoration-destructive/50">
-                          MRP: ₹{p.mrp.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold">{p.stock}</span>
-                      <span className="text-[10px] text-muted-foreground uppercase">{p.unit}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 text-[10px]">
-                      {p.gst}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant={p.status === 'In Stock' ? 'default' : p.status === 'Low' ? 'secondary' : 'destructive'}
-                      className="rounded-full px-2 py-0 text-[10px] font-bold"
-                    >
-                      {p.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit Details</DropdownMenuItem>
-                        <DropdownMenuItem>Manage Stock</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Delete Product</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {loading ? (
+            <div className="p-12 text-center">
+              <RefreshCcw className="mx-auto h-8 w-8 text-primary animate-spin mb-4" />
+              <p className="text-muted-foreground">Syncing with local backend...</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-muted/30">
+                <TableRow>
+                  <TableHead className="w-[120px]">SKU ID</TableHead>
+                  <TableHead>Product / Brand</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Price (Selling/MRP)</TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead>GST</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {filteredProducts.length === 0 && (
+              </TableHeader>
+              <TableBody>
+                {filteredProducts.map((p) => (
+                  <TableRow key={p.id} className="hover:bg-muted/10 transition-colors">
+                    <TableCell className="font-mono text-xs font-semibold text-primary">{p.id}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{p.name}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{p.brand}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs">{p.category}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-foreground">₹{Number(p.price).toLocaleString()}</span>
+                        {Number(p.mrp) > Number(p.price) && (
+                          <span className="text-[10px] text-muted-foreground line-through decoration-destructive/50">
+                            MRP: ₹{Number(p.mrp).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <span className="font-semibold">{p.stock}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase">{p.unit}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 text-[10px]">
+                        {p.gst}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={p.status === 'In Stock' ? 'default' : p.status === 'Low' ? 'secondary' : 'destructive'}
+                        className="rounded-full px-2 py-0 text-[10px] font-bold"
+                      >
+                        {p.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>Edit Details</DropdownMenuItem>
+                          <DropdownMenuItem>Manage Stock</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive">Delete Product</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          {!loading && filteredProducts.length === 0 && (
             <div className="p-12 text-center">
               <Package className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
               <h3 className="text-lg font-semibold">No products found</h3>
-              <p className="text-muted-foreground">Try adjusting your search or filters.</p>
+              <p className="text-muted-foreground">Try adding a product or adjusting your search.</p>
             </div>
           )}
         </CardContent>
