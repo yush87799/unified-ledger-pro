@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -48,7 +47,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/select";
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 
@@ -89,7 +88,7 @@ const GST_CATEGORIES = [
     id: 'luxury', 
     name: '40% (Luxury/Sin Goods)', 
     rate: 40, 
-    examples: 'Luxury cars, personal aircraft, aerated drinks, tobacco',
+    examples: 'Luxury cars, motorcycles, personal aircraft, aerated drinks, tobacco',
   }
 ];
 
@@ -206,6 +205,7 @@ export default function InventoryPage() {
     
     const amount = mrp - price;
     const percentage = (amount / mrp) * 100;
+    if (amount < 0) return null; // Price higher than MRP is invalid for discount calculation
     return { amount, percentage };
   };
 
@@ -300,7 +300,7 @@ export default function InventoryPage() {
                   </div>
                 </div>
 
-                {discount && (
+                {discount && discount.amount > 0 && (
                   <div className="grid grid-cols-4 items-center gap-4">
                     <div className="col-start-2 col-span-3 flex items-center gap-3 text-xs">
                       <div className="flex items-center gap-1 text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded">
@@ -359,10 +359,11 @@ export default function InventoryPage() {
                 </div>
 
                 {selectedGSTRate !== null && (
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="col-start-2 col-span-3 p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
-                      <span className="text-xs font-medium text-muted-foreground">Applied GST Rate:</span>
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-xs text-muted-foreground">Applied Tax</Label>
+                    <div className="col-span-3 p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
+                      <span className="text-xs font-medium">Applied GST Rate:</span>
+                      <Badge variant="secondary" className="bg-primary text-primary-foreground text-[10px]">
                         {selectedGSTRate}%
                       </Badge>
                     </div>
