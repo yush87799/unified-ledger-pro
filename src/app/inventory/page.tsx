@@ -40,7 +40,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 
-// GST Category Mapping based on user requirements
+// GST Category Mapping
 const GST_CATEGORIES = [
   { 
     id: 'exempt', 
@@ -116,7 +116,8 @@ export default function InventoryPage() {
     }
 
     const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
-    const stockNum = parseInt(newProduct.stock);
+    // Ensure stock is not negative
+    const stockNum = Math.max(0, parseInt(newProduct.stock) || 0);
     
     const productToAdd = {
       id: generateSKU(),
@@ -169,7 +170,7 @@ export default function InventoryPage() {
                   Enter product details. GST rate will be automatically assigned based on the chosen category.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-6 py-4">
+              <div className="flex flex-col gap-6 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="name" className="text-right">Name</Label>
                   <Input 
@@ -196,6 +197,7 @@ export default function InventoryPage() {
                   <Input 
                     id="stock" 
                     type="number" 
+                    min="0"
                     placeholder="Quantity" 
                     className="col-span-3" 
                     value={newProduct.stock}
@@ -221,11 +223,13 @@ export default function InventoryPage() {
                   </Select>
                 </div>
                 {selectedGSTRate !== null && (
-                  <div className="col-span-4 p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
-                    <span className="text-sm font-medium">Applied GST Rate:</span>
-                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                      {selectedGSTRate}%
-                    </Badge>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="col-start-2 col-span-3 p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
+                      <span className="text-sm font-medium">Applied GST Rate:</span>
+                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                        {selectedGSTRate}%
+                      </Badge>
+                    </div>
                   </div>
                 )}
               </div>
