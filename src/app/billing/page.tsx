@@ -60,10 +60,11 @@ interface LineItem {
   productId: string;
   productName: string;
   qty: number;
-  price: number;
+  price: number; // This is Actual Price (Inclusive of GST)
+  mrp: number;
   gstRate: number;
   unit: string;
-  total: number;
+  total: number; // qty * price
 }
 
 interface Invoice {
@@ -74,9 +75,9 @@ interface Invoice {
     address: string;
   };
   items: LineItem[];
-  subtotal: number;
-  gstTotal: number;
-  grandTotal: number;
+  subtotal: number; // Taxable Value (Sum of Base Prices)
+  gstTotal: number; // Total Tax Amount
+  grandTotal: number; // Total Payable
   createdAt: string;
 }
 
@@ -85,7 +86,7 @@ export default function BillingPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [items, setItems] = useState<LineItem[]>([
-    { id: '1', productId: '', productName: '', qty: 1, price: 0, gstRate: 0, unit: 'units', total: 0 }
+    { id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }
   ]);
   const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
   const [isSaving, setIsSaving] = useState(false);
@@ -140,6 +141,7 @@ export default function BillingPage() {
       productName: '', 
       qty: 1, 
       price: 0, 
+      mrp: 0,
       gstRate: 0, 
       unit: 'units', 
       total: 0 
@@ -164,6 +166,7 @@ export default function BillingPage() {
           productId,
           productName: product.name,
           price: product.price,
+          mrp: product.mrp,
           gstRate: gstNum,
           unit: product.unit,
           total: product.price * item.qty
@@ -193,9 +196,33 @@ export default function BillingPage() {
     }));
   };
 
-  const subtotal = useMemo(() => items.reduce((acc, item) => acc + item.total, 0), [items]);
-  const gstTotal = useMemo(() => items.reduce((acc, item) => acc + (item.total * (item.gstRate / 100)), 0), [items]);
-  const grandTotal = subtotal + gstTotal;
+  // Calculation Logic:
+  // Actual Price = Tax Inclusive Price
+  // Base Price = Actual Price / (1 + GST Rate / 100)
+  // Grand Total = Sum of (Actual Price * Qty)
+  // Subtotal (Taxable) = Sum of (Base Price * Qty)
+  // GST Total = Grand Total - Subtotal
+  
+  const totals = useMemo(() => {
+    let grandTotal = 0;
+    let taxableSubtotal = 0;
+
+    items.forEach(item => {
+      if (!item.productId) return;
+      const itemTotal = item.price * item.qty;
+      const basePrice = item.price / (1 + (item.gstRate / 100));
+      const itemTaxableValue = basePrice * item.qty;
+
+      grandTotal += itemTotal;
+      taxableSubtotal += itemTaxableValue;
+    });
+
+    return {
+      grandTotal,
+      subtotal: taxableSubtotal,
+      gstTotal: grandTotal - taxableSubtotal
+    };
+  }, [items]);
 
   const handleSaveInvoice = async () => {
     if (!customer.name || !customer.phone) {
@@ -210,7 +237,13 @@ export default function BillingPage() {
 
     setIsSaving(true);
     try {
-      const payload = { customer, items, subtotal, gstTotal, grandTotal };
+      const payload = { 
+        customer, 
+        items, 
+        subtotal: totals.subtotal, 
+        gstTotal: totals.gstTotal, 
+        grandTotal: totals.grandTotal 
+      };
       const res = await fetch('/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -220,7 +253,7 @@ export default function BillingPage() {
       if (res.ok) {
         const data = await res.json();
         toast({ title: "Success", description: `Invoice ${data.id} saved.` });
-        setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, gstRate: 0, unit: 'units', total: 0 }]);
+        setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }]);
         setCustomer({ name: '', phone: '', address: '' });
         fetchProducts(); // Refresh stock
         fetchHistory();  // Refresh list
@@ -239,9 +272,9 @@ export default function BillingPage() {
       id: 'TEMP-DRAFT',
       customer,
       items,
-      subtotal,
-      gstTotal,
-      grandTotal,
+      subtotal: totals.subtotal,
+      gstTotal: totals.gstTotal,
+      grandTotal: totals.grandTotal,
       createdAt: new Date().toISOString()
     });
     setIsPreviewOpen(true);
@@ -411,16 +444,16 @@ export default function BillingPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between text-sm">
-                    <span className="opacity-80">Subtotal</span>
-                    <span>₹{subtotal.toLocaleString()}</span>
+                    <span className="opacity-80">Taxable Subtotal</span>
+                    <span>₹{totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="opacity-80">GST Total</span>
-                    <span>₹{gstTotal.toLocaleString()}</span>
+                    <span className="opacity-80">GST Amount</span>
+                    <span>₹{totals.gstTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="border-t border-primary-foreground/20 pt-4 flex justify-between items-center">
                     <span className="font-bold text-lg">Grand Total</span>
-                    <span className="font-bold text-2xl font-headline">₹{grandTotal.toLocaleString()}</span>
+                    <span className="font-bold text-2xl font-headline">₹{totals.grandTotal.toLocaleString()}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -520,7 +553,7 @@ export default function BillingPage() {
           <DialogHeader className="p-6 bg-muted/30">
             <DialogTitle className="font-headline text-2xl flex items-center gap-2">
               <FileText className="h-6 w-6 text-primary" />
-              Invoice Preview
+              Tax Invoice
             </DialogTitle>
           </DialogHeader>
           
@@ -533,7 +566,7 @@ export default function BillingPage() {
                     <p className="text-[10px] text-muted-foreground">GSTIN: 29AAAAA0000A1Z5</p>
                   </div>
                   <div className="text-right space-y-1">
-                    <h3 className="font-bold uppercase text-xs">Invoice</h3>
+                    <h3 className="font-bold uppercase text-xs">Tax Invoice</h3>
                     <p className="text-[10px]">Date: {new Date(previewInvoice.createdAt!).toLocaleDateString()}</p>
                     <p className="text-[10px] font-mono">ID: {previewInvoice.id}</p>
                   </div>
@@ -542,7 +575,7 @@ export default function BillingPage() {
                 <div className="grid grid-cols-2 gap-8 text-[10px] border-y py-4 border-muted">
                   <div className="space-y-1">
                     <p className="font-bold text-muted-foreground uppercase">Billed To:</p>
-                    <p className="font-bold">{previewInvoice.customer?.name || 'N/A'}</p>
+                    <p className="font-bold text-sm">{previewInvoice.customer?.name || 'N/A'}</p>
                     <p>{previewInvoice.customer?.phone || 'N/A'}</p>
                     <p>{previewInvoice.customer?.address || 'N/A'}</p>
                   </div>
@@ -553,37 +586,57 @@ export default function BillingPage() {
                     <TableRow>
                       <TableHead className="text-black font-bold h-8 text-[10px]">Description</TableHead>
                       <TableHead className="text-black font-bold h-8 text-[10px]">Qty</TableHead>
-                      <TableHead className="text-black font-bold h-8 text-[10px]">Price</TableHead>
-                      <TableHead className="text-black font-bold h-8 text-[10px]">GST</TableHead>
-                      <TableHead className="text-right text-black font-bold h-8 text-[10px]">Total</TableHead>
+                      <TableHead className="text-black font-bold h-8 text-[10px]">MRP (₹)</TableHead>
+                      <TableHead className="text-black font-bold h-8 text-[10px]">Base Price (₹)</TableHead>
+                      <TableHead className="text-black font-bold h-8 text-[10px]">GST %</TableHead>
+                      <TableHead className="text-right text-black font-bold h-8 text-[10px]">Total (₹)</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {previewInvoice.items?.filter(i => i.productId).map((item) => (
-                      <TableRow key={item.id} className="h-10 border-b">
-                        <TableCell className="text-[10px]">{item.productName}</TableCell>
-                        <TableCell className="text-[10px]">{item.qty} {item.unit}</TableCell>
-                        <TableCell className="text-[10px]">₹{item.price.toLocaleString()}</TableCell>
-                        <TableCell className="text-[10px]">{item.gstRate}%</TableCell>
-                        <TableCell className="text-right text-[10px]">₹{item.total.toLocaleString()}</TableCell>
-                      </TableRow>
-                    ))}
+                    {previewInvoice.items?.filter(i => i.productId).map((item) => {
+                      const basePrice = item.price / (1 + (item.gstRate / 100));
+                      return (
+                        <TableRow key={item.id} className="h-10 border-b">
+                          <TableCell className="text-[10px] font-medium">{item.productName}</TableCell>
+                          <TableCell className="text-[10px]">{item.qty} {item.unit}</TableCell>
+                          <TableCell className="text-[10px]">₹{item.mrp.toLocaleString()}</TableCell>
+                          <TableCell className="text-[10px]">₹{basePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                          <TableCell className="text-[10px]">{item.gstRate}%</TableCell>
+                          <TableCell className="text-right text-[10px] font-bold">₹{item.total.toLocaleString()}</TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
 
                 <div className="flex justify-end pt-4">
-                  <div className="w-[200px] space-y-1 text-[10px]">
-                    <div className="flex justify-between border-b pb-1">
-                      <span>Subtotal:</span>
-                      <span className="font-bold">₹{previewInvoice.subtotal?.toLocaleString()}</span>
+                  <div className="w-[250px] space-y-2 text-[10px]">
+                    <div className="flex justify-between border-b pb-1 text-muted-foreground">
+                      <span>Taxable Value (Subtotal):</span>
+                      <span>₹{previewInvoice.subtotal?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="flex justify-between border-b pb-1">
-                      <span>Tax (GST):</span>
-                      <span className="font-bold">₹{previewInvoice.gstTotal?.toLocaleString()}</span>
+                    <div className="flex justify-between border-b pb-1 text-muted-foreground">
+                      <span>Total GST Amount:</span>
+                      <span>₹{previewInvoice.gstTotal?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between text-base pt-2 text-primary font-bold">
-                      <span>Total:</span>
+                      <span>Grand Total:</span>
                       <span>₹{previewInvoice.grandTotal?.toLocaleString()}</span>
+                    </div>
+                    <p className="text-[8px] text-muted-foreground text-right italic">*Total is inclusive of all taxes.</p>
+                  </div>
+                </div>
+
+                <div className="pt-12 border-t border-dashed mt-8">
+                  <div className="flex justify-between items-end">
+                    <div className="text-[8px] text-muted-foreground space-y-1">
+                      <p>Terms & Conditions:</p>
+                      <p>1. Goods once sold cannot be taken back or exchanged.</p>
+                      <p>2. Subject to Bangalore Jurisdiction only.</p>
+                    </div>
+                    <div className="text-center space-y-4">
+                      <div className="w-32 h-px bg-black mx-auto" />
+                      <p className="text-[10px] font-bold">Authorised Signatory</p>
                     </div>
                   </div>
                 </div>
