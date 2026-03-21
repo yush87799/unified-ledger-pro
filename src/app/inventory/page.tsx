@@ -149,6 +149,15 @@ export default function InventoryPage() {
 
   const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
 
+  const handlePriceInput = (value: string, field: 'mrp' | 'actualPrice') => {
+    // Sanitize input: Allow only digits and a single dot. No signs or characters.
+    const sanitized = value.replace(/[^0-9.]/g, '');
+    const parts = sanitized.split('.');
+    // Ensure only one decimal point is allowed
+    const finalValue = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : sanitized;
+    setNewProduct({ ...newProduct, [field]: finalValue });
+  };
+
   const handleCategoryChange = (val: string) => {
     const category = GST_CATEGORIES.find(c => c.id === val);
     setNewProduct({ ...newProduct, categoryId: val });
@@ -169,10 +178,21 @@ export default function InventoryPage() {
       return;
     }
 
-    const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
-    const stockNum = Math.max(0, parseInt(newProduct.stock) || 0);
     const mrpNum = parseFloat(newProduct.mrp) || 0;
     const priceNum = parseFloat(newProduct.actualPrice) || 0;
+
+    // Validation: Actual Price cannot be greater than MRP
+    if (priceNum > mrpNum) {
+      toast({
+        title: "Pricing Conflict",
+        description: "Selling price cannot be greater than the Maximum Retail Price (MRP).",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
+    const stockNum = Math.max(0, parseInt(newProduct.stock) || 0);
     
     const productToAdd = {
       id: generateSKU(),
@@ -205,7 +225,7 @@ export default function InventoryPage() {
     
     const amount = mrp - price;
     const percentage = (amount / mrp) * 100;
-    if (amount < 0) return null; // Price higher than MRP is invalid for discount calculation
+    if (amount < 0) return null;
     return { amount, percentage };
   };
 
@@ -269,11 +289,10 @@ export default function InventoryPage() {
                   <Label htmlFor="mrp" className="text-right">MRP (₹)*</Label>
                   <Input 
                     id="mrp" 
-                    type="number" 
                     placeholder="Max Retail Price" 
                     className="col-span-3" 
                     value={newProduct.mrp}
-                    onChange={(e) => setNewProduct({...newProduct, mrp: e.target.value})}
+                    onChange={(e) => handlePriceInput(e.target.value, 'mrp')}
                   />
                 </div>
 
@@ -282,11 +301,10 @@ export default function InventoryPage() {
                   <div className="col-span-3 flex gap-2">
                     <Input 
                       id="actualPrice" 
-                      type="number" 
                       placeholder="Actual Selling Price" 
                       className="flex-1" 
                       value={newProduct.actualPrice}
-                      onChange={(e) => setNewProduct({...newProduct, actualPrice: e.target.value})}
+                      onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
                     />
                     <Button 
                       variant="outline" 
@@ -321,7 +339,12 @@ export default function InventoryPage() {
                       placeholder="Qty" 
                       className="flex-1" 
                       value={newProduct.stock}
-                      onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "" || parseInt(val) >= 0) {
+                          setNewProduct({...newProduct, stock: val});
+                        }
+                      }}
                     />
                     <Select 
                       onValueChange={(val) => setNewProduct({...newProduct, unit: val})} 
