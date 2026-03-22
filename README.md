@@ -38,3 +38,22 @@ Open [http://localhost:9002](http://localhost:9002) with your browser to see the
 - `/src/components` - Reusable UI components (buttons, dialogs, charts).
 - `/src/data` - Local mock data (e.g., inventory).
 - `/src/lib` - Utility functions, roles, and configuration.
+
+## 🤝 Contributing
+
+We follow a feature-branch workflow. `main` is our stable/production branch, and `develop` is our active integration branch.
+
+1. Checkout the `develop` branch and make sure it's up to date:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   ```
+2. Create a new branch for your work (using your name and the feature you are building):
+   ```bash
+   git checkout -b your-name/feature-name
+   ```
+3. Make your changes, commit, and push your branch:
+   ```bash
+   git push -u origin your-name/feature-name
+   ```
+4. Open a **Pull Request (PR)** against the **`develop`** branch on GitHub.
