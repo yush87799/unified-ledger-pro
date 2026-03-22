@@ -33,7 +33,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'Full oversight of finances, sales, and growth insights.',
     icon: TrendingUp,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'gst', 'analytics', 'users', 'settings'],
-    color: 'bg-indigo-500'
+    color: 'bg-indigo-600'
   },
   admin: {
     id: 'admin',
@@ -41,7 +41,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'System configuration, user roles, and operational control.',
     icon: ShieldCheck,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'users', 'settings'],
-    color: 'bg-slate-600'
+    color: 'bg-slate-500'
   },
   billing: {
     id: 'billing',
@@ -49,7 +49,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'Invoicing, customer payments, and daily transaction tracking.',
     icon: CreditCard,
     allowedMenus: ['dashboard', 'billing'],
-    color: 'bg-emerald-500'
+    color: 'bg-emerald-600'
   },
   accountant: {
     id: 'accountant',
@@ -65,7 +65,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'Warehouse operations, stock levels, and supply chain updates.',
     icon: Boxes,
     allowedMenus: ['dashboard', 'inventory'],
-    color: 'bg-blue-500'
+    color: 'bg-blue-600'
   }
 };
 
