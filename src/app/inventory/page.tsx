@@ -145,8 +145,8 @@ export default function InventoryPage() {
       buyingPrice: (p.buyingPrice || 0).toString(),
       warehouse: p.warehouse || settings?.warehouses?.[0] || 'Main Warehouse'
     });
-    // Use a timeout to ensure DropdownMenu fully closes before Dialog opens
-    // to prevent background pointer-locking issues.
+    // DECOUPLING FIX: Micro-delay ensures the Dropdown unmounts before the Dialog mounts.
+    // This prevents body-lock collision.
     setTimeout(() => setIsDialogOpen(true), 150);
   }, [settings]);
 
