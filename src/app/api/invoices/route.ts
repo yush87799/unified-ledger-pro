@@ -23,9 +23,11 @@ async function ensureDataFile(filePath: string, defaultData: any = []) {
 export async function GET() {
   await ensureDataFile(INVOICES_FILE);
   try {
-    const data = await fs.readFile(INVOICES_FILE, 'utf-8');
-    return NextResponse.json(JSON.parse(data));
+    const fileContent = await fs.readFile(INVOICES_FILE, 'utf-8');
+    const data = fileContent ? JSON.parse(fileContent) : [];
+    return NextResponse.json(data);
   } catch (error) {
+    console.error('Invoice GET error:', error);
     return NextResponse.json({ error: 'Failed to read invoice data' }, { status: 500 });
   }
 }
@@ -38,8 +40,8 @@ export async function POST(request: Request) {
     const newInvoice = await request.json();
     
     // 1. Save the Invoice
-    const invoicesData = await fs.readFile(INVOICES_FILE, 'utf-8');
-    const invoices = JSON.parse(invoicesData);
+    const invoicesContent = await fs.readFile(INVOICES_FILE, 'utf-8');
+    const invoices = invoicesContent ? JSON.parse(invoicesContent) : [];
     
     const invoiceWithId = {
       ...newInvoice,
@@ -51,8 +53,8 @@ export async function POST(request: Request) {
     await fs.writeFile(INVOICES_FILE, JSON.stringify(updatedInvoices, null, 2));
 
     // 2. Update Inventory Stock
-    const inventoryData = await fs.readFile(INVENTORY_FILE, 'utf-8');
-    const inventory = JSON.parse(inventoryData);
+    const inventoryContent = await fs.readFile(INVENTORY_FILE, 'utf-8');
+    const inventory = inventoryContent ? JSON.parse(inventoryContent) : [];
 
     const updatedInventory = inventory.map((product: any) => {
       const soldItem = newInvoice.items.find((item: any) => item.productId === product.id);

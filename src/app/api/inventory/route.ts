@@ -6,10 +6,6 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'src/data');
 const DATA_FILE = path.join(DATA_DIR, 'inventory.json');
 
-/**
- * Ensures the data directory and inventory file exist.
- * If not, initializes with default data.
- */
 async function ensureDataFile() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
@@ -52,9 +48,11 @@ async function ensureDataFile() {
 export async function GET() {
   await ensureDataFile();
   try {
-    const data = await fs.readFile(DATA_FILE, 'utf-8');
-    return NextResponse.json(JSON.parse(data));
+    const fileContent = await fs.readFile(DATA_FILE, 'utf-8');
+    const data = fileContent ? JSON.parse(fileContent) : [];
+    return NextResponse.json(data);
   } catch (error) {
+    console.error('Inventory GET error:', error);
     return NextResponse.json({ error: 'Failed to read inventory data' }, { status: 500 });
   }
 }
@@ -63,15 +61,14 @@ export async function POST(request: Request) {
   await ensureDataFile();
   try {
     const newProduct = await request.json();
-    const data = await fs.readFile(DATA_FILE, 'utf-8');
-    const inventory = JSON.parse(data);
+    const fileContent = await fs.readFile(DATA_FILE, 'utf-8');
+    const inventory = fileContent ? JSON.parse(fileContent) : [];
     
-    // Add new product to the beginning of the list
     const updatedInventory = [newProduct, ...inventory];
-    
     await fs.writeFile(DATA_FILE, JSON.stringify(updatedInventory, null, 2));
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
+    console.error('Inventory POST error:', error);
     return NextResponse.json({ error: 'Failed to save product' }, { status: 500 });
   }
 }
