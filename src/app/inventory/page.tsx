@@ -126,7 +126,7 @@ export default function InventoryPage() {
       categoryId: 'standard', mrp: '', actualPrice: '', 
       buyingPrice: '', warehouse: settings?.warehouses?.[0] || 'Main Warehouse' 
     });
-    // DECOUPLING FIX: 150ms delay ensures the UI cleans up before the modal portal opens.
+    // DECOUPLING FIX: Micro-delay ensures UI cleans up before the modal portal opens.
     setTimeout(() => setIsDialogOpen(true), 150);
   };
 
@@ -145,7 +145,7 @@ export default function InventoryPage() {
       buyingPrice: (p.buyingPrice || 0).toString(),
       warehouse: p.warehouse || settings?.warehouses?.[0] || 'Main Warehouse'
     });
-    // DECOUPLING FIX: Ensures DropdownMenu unmounts first.
+    // DECOUPLING FIX: Ensures DropdownMenu unmounts and releases focus management.
     setTimeout(() => setIsDialogOpen(true), 150);
   }, [settings]);
 

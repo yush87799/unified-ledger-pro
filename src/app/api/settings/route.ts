@@ -36,9 +36,10 @@ export async function GET() {
     const data = await fs.readFile(SETTINGS_FILE, 'utf-8');
     const parsed = JSON.parse(data);
     
-    // Ensure warehouses is an array and merged correctly
-    const finalWarehouses = Array.isArray(parsed.warehouses) && parsed.warehouses.length > 0 
-      ? parsed.warehouses 
+    // Ensure warehouses is an array and handle empty state correctly
+    // If parsed.warehouses is undefined or not an array, use defaults
+    const finalWarehouses = Array.isArray(parsed.warehouses) 
+      ? (parsed.warehouses.length > 0 ? parsed.warehouses : DEFAULT_SETTINGS.warehouses)
       : DEFAULT_SETTINGS.warehouses;
 
     return NextResponse.json({ 
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
   await ensureDataFile();
   try {
     const newSettings = await request.json();
-    // Ensure we don't save empty warehouses if it's meant to be a list
+    // Ensure we don't save invalid warehouse data
     if (!newSettings.warehouses || !Array.isArray(newSettings.warehouses)) {
       newSettings.warehouses = DEFAULT_SETTINGS.warehouses;
     }
