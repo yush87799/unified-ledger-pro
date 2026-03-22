@@ -39,86 +39,85 @@ export default function GSTCompliancePage() {
 
   const handleAIAnalysis = () => {
     setAnalyzing(true);
-    // Simulate deep audit of current ledger
     setTimeout(() => {
       setAnalyzing(false);
       toast({
         title: "Compliance Audit Complete",
         description: "Unified Ledger AI has finished the real-time reconciliation audit.",
       });
-    }, 2000);
+    }, 1500);
   };
 
   return (
-    <div className="space-y-6 sm:space-y-10 animate-in fade-in duration-500 pb-16">
-      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-md bg-primary/10 border border-primary/20">
-            <ShieldCheck className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Compliance Status: Healthy</span>
+    <div className="space-y-5 animate-in fade-in duration-500 pb-12">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-5">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-primary/10 border border-primary/20">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Compliance: Healthy</span>
           </div>
-          <h1 className="font-headline text-3xl sm:text-4xl font-black tracking-tighter leading-none">
+          <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tight leading-none">
             GST & <span className="text-muted-foreground/30 font-thin italic">Compliance</span>
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl opacity-80">
-            Real-time tax reconciliation, GSTR filing preparation, and automated ITC (Input Tax Credit) auditing.
+          <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-xl opacity-80">
+            Real-time tax reconciliation, GSTR filing prep, and automated ITC auditing.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="outline" className="h-10 rounded-xl glass font-bold text-xs px-4">
-            <Download className="mr-2 h-4 w-4" /> Export GSTR-1
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" className="h-9 rounded-lg glass font-bold text-xs px-3">
+            <Download className="mr-1.5 h-3.5 w-3.5" /> GSTR-1
           </Button>
-          <Button variant="outline" className="h-10 rounded-xl glass font-bold text-xs px-4">
-            <Download className="mr-2 h-4 w-4" /> Export GSTR-3B
+          <Button variant="outline" className="h-9 rounded-lg glass font-bold text-xs px-3">
+            <Download className="mr-1.5 h-3.5 w-3.5" /> GSTR-3B
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <Card className="lg:col-span-8 border-none shadow-xl glass-card rounded-2xl overflow-hidden bg-gradient-to-br from-primary/[0.03] to-transparent">
-          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-8 border-b border-primary/5 gap-6">
-            <div className="space-y-1.5">
-              <CardTitle className="font-headline text-xl font-black flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-primary" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <Card className="lg:col-span-8 border-none shadow-xl glass-card rounded-xl overflow-hidden bg-gradient-to-br from-primary/[0.02] to-transparent">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-primary/5 gap-4">
+            <div className="space-y-1">
+              <CardTitle className="font-headline text-lg font-black flex items-center gap-2.5">
+                <Sparkles className="h-4 w-4 text-primary" />
                 AI Intelligence Advisor
               </CardTitle>
-              <CardDescription className="text-sm font-medium opacity-70">Automated Audit Analysis v4.2</CardDescription>
+              <CardDescription className="text-xs font-medium opacity-70">Automated Audit Analysis v4.2</CardDescription>
             </div>
             <Button 
               onClick={handleAIAnalysis} 
               disabled={analyzing}
-              className="rounded-xl h-11 px-6 font-black w-full sm:w-auto shadow-lg"
+              className="rounded-lg h-10 px-5 font-black w-full sm:w-auto shadow-lg text-xs"
             >
-              {analyzing ? <RefreshCcw className="h-4 w-4 animate-spin mr-3" /> : <RefreshCcw className="h-4 w-4 mr-3" />}
-              {analyzing ? 'Auditing Ledger...' : 'Run Compliance Audit'}
+              {analyzing ? <RefreshCcw className="h-3.5 w-3.5 animate-spin mr-2" /> : <RefreshCcw className="h-3.5 w-3.5 mr-2" />}
+              {analyzing ? 'Auditing...' : 'Run Audit'}
             </Button>
           </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="flex flex-col sm:flex-row items-start gap-6 p-6 rounded-2xl bg-card/40 border border-emerald-500/20 shadow-md group hover:bg-card/60 transition-all">
-              <div className="p-3 bg-emerald-500/10 rounded-xl">
-                <FileCheck className="h-6 w-6 text-emerald-500" />
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-start gap-4 p-5 rounded-xl bg-card/40 border border-emerald-500/20 shadow-sm">
+              <div className="p-2.5 bg-emerald-500/10 rounded-lg">
+                <FileCheck className="h-5 w-5 text-emerald-500" />
               </div>
-              <div className="flex-1 space-y-2">
-                <h4 className="font-black text-lg tracking-tight">ITC Optimization Found</h4>
-                <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                  Identified ₹12,400 in unclaimed Input Tax Credit from recent utility interactions. These have been matched to your purchase ledger.
+              <div className="flex-1 space-y-1">
+                <h4 className="font-black text-base tracking-tight">ITC Optimization Found</h4>
+                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                  Identified ₹12,400 in unclaimed Input Tax Credit from matched interactions.
                 </p>
-                <Button variant="link" className="p-0 h-auto text-primary font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                <Button variant="link" className="p-0 h-auto text-primary font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                   Apply Reconcile <ChevronRight className="h-3 w-3" />
                 </Button>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start gap-6 p-6 rounded-2xl bg-card/40 border border-amber-500/20 shadow-md group hover:bg-card/60 transition-all">
-              <div className="p-3 bg-amber-500/10 rounded-xl">
-                <AlertCircle className="h-6 w-6 text-amber-500" />
+            <div className="flex items-start gap-4 p-5 rounded-xl bg-card/40 border border-amber-500/20 shadow-sm">
+              <div className="p-2.5 bg-amber-500/10 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-amber-500" />
               </div>
-              <div className="flex-1 space-y-2">
-                <h4 className="font-black text-lg tracking-tight">GSTR-2A Matching Alert</h4>
-                <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                  3 suppliers have not yet filed their GSTR-1 for the current period. This may prevent you from claiming full ITC during the next settlement cycle.
+              <div className="flex-1 space-y-1">
+                <h4 className="font-black text-base tracking-tight">GSTR-2A Matching Alert</h4>
+                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                  3 suppliers have pending filings. This may delay your ITC settlement cycle.
                 </p>
-                <Button variant="link" className="p-0 h-auto text-primary font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                <Button variant="link" className="p-0 h-auto text-primary font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                   Audit Counterparties <ChevronRight className="h-3 w-3" />
                 </Button>
               </div>
@@ -126,59 +125,59 @@ export default function GSTCompliancePage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-4 border-none shadow-xl glass-card rounded-2xl overflow-hidden">
-          <CardHeader className="p-8 border-b border-primary/5 bg-primary/[0.02]">
-            <CardTitle className="font-headline text-xl font-black tracking-tight">Filing Readiness</CardTitle>
-            <CardDescription className="text-sm font-medium opacity-70">Current period progress monitoring</CardDescription>
+        <Card className="lg:col-span-4 border-none shadow-xl glass-card rounded-xl overflow-hidden">
+          <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
+            <CardTitle className="font-headline text-lg font-black tracking-tight">Filing Readiness</CardTitle>
+            <CardDescription className="text-xs font-medium opacity-70">Current period monitoring</CardDescription>
           </CardHeader>
-          <CardContent className="p-8 space-y-10">
-            <div className="space-y-4">
-              <div className="flex justify-between text-xs font-black uppercase tracking-widest">
+          <CardContent className="p-6 space-y-8">
+            <div className="space-y-3">
+              <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
                 <span className="text-muted-foreground">Compliance Index</span>
                 <span className="text-primary">84% Ready</span>
               </div>
-              <Progress value={84} className="h-3 rounded-full" />
+              <Progress value={84} className="h-2 rounded-full" />
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[
                 { label: 'Sales Reconciliation', status: 'DONE', color: 'bg-emerald-500' },
                 { label: 'Purchase Matching', status: 'DONE', color: 'bg-emerald-500' },
                 { label: 'Tax Computation', status: 'PENDING', color: 'bg-amber-500' },
               ].map((step, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-transparent hover:border-primary/10 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${step.color} animate-pulse`} />
-                    <span className="text-sm font-bold tracking-tight">{step.label}</span>
+                <div key={idx} className="flex items-center justify-between p-3.5 rounded-lg bg-secondary/30 border border-transparent">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-1.5 h-1.5 rounded-full ${step.color}`} />
+                    <span className="text-xs font-bold tracking-tight">{step.label}</span>
                   </div>
-                  <Badge variant="outline" className={`text-[10px] font-black tracking-widest border-none px-3 py-1 ${step.status === 'DONE' ? 'text-emerald-500 bg-emerald-500/10' : 'text-amber-500 bg-amber-500/10'}`}>
+                  <Badge variant="outline" className={`text-[9px] font-black tracking-widest border-none px-2 py-0.5 ${step.status === 'DONE' ? 'text-emerald-500 bg-emerald-500/10' : 'text-amber-500 bg-amber-500/10'}`}>
                     {step.status}
                   </Badge>
                 </div>
               ))}
             </div>
 
-            <Button variant="outline" className="w-full h-11 rounded-xl font-black text-xs gap-2 border-primary/10 hover:bg-primary/5">
-              Review Full Audit Log <ArrowUpRight className="h-4 w-4" />
+            <Button variant="outline" className="w-full h-10 rounded-lg font-black text-[10px] gap-1.5 border-primary/10 hover:bg-primary/5">
+              Review Full Audit Log <ArrowUpRight className="h-3.5 w-3.5" />
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {[
           { label: 'CGST Accumulation', value: '₹1,52,400', color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
           { label: 'SGST Accumulation', value: '₹1,52,400', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
           { label: 'IGST (Interstate)', value: '₹45,200', color: 'text-blue-500', bg: 'bg-blue-500/10' },
           { label: 'Net Liability', value: '₹3,50,000', color: 'text-amber-500', bg: 'bg-amber-500/10' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none glass-card shadow-lg p-6 group hover:translate-y-[-2px] transition-all">
+          <Card key={i} className="border-none glass-card shadow-lg p-5 group transition-all">
             <CardContent className="p-0">
-              <div className={`p-3 rounded-xl ${stat.bg} ${stat.color} w-fit mb-5 group-hover:scale-105 transition-transform`}>
-                <Calculator className="h-5 w-5" />
+              <div className={`p-2 rounded-lg ${stat.bg} ${stat.color} w-fit mb-4`}>
+                <Calculator className="h-4 w-4" />
               </div>
-              <p className="text-[10px] text-muted-foreground uppercase font-black tracking-[0.2em]">{stat.label}</p>
-              <p className="text-2xl font-black font-headline tracking-tighter mt-1">{stat.value}</p>
+              <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{stat.label}</p>
+              <p className="text-xl font-black font-headline tracking-tighter mt-0.5">{stat.value}</p>
             </CardContent>
           </Card>
         ))}
