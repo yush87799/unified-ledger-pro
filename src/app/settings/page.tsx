@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
 import { 
   Select, 
   SelectContent, 
@@ -15,12 +14,14 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Building2, ShieldCheck, BellRing, Database, Save, Loader2 } from 'lucide-react';
+import { Building2, ShieldCheck, Save, Loader2 } from 'lucide-react';
 import { INDIAN_STATES } from '@/lib/states';
 import { toast } from '@/hooks/use-toast';
+import { apiClient } from '@/lib/api-client';
+import { BusinessSettings } from '@/lib/types';
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<BusinessSettings>({
     businessName: "",
     brandName: "",
     email: "",
@@ -33,16 +34,13 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    fetchSettings();
+    loadSettings();
   }, []);
 
-  const fetchSettings = async () => {
+  const loadSettings = async () => {
     try {
-      const res = await fetch('/api/settings');
-      if (res.ok) {
-        const data = await res.json();
-        setSettings(data);
-      }
+      const data = await apiClient.settings.get();
+      setSettings(data);
     } catch (err) {
       toast({ title: "Fetch Error", description: "Could not load settings.", variant: "destructive" });
     } finally {
@@ -53,16 +51,8 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const res = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings)
-      });
-      if (res.ok) {
-        toast({ title: "Settings Saved", description: "Business profile updated successfully." });
-      } else {
-        throw new Error('Save failed');
-      }
+      await apiClient.settings.update(settings);
+      toast({ title: "Settings Saved", description: "Business profile updated successfully." });
     } catch (err) {
       toast({ title: "Save Error", description: "Failed to update settings.", variant: "destructive" });
     } finally {
@@ -79,7 +69,7 @@ export default function SettingsPage() {
           <h1 className="font-headline text-3xl font-bold">System Settings</h1>
           <p className="text-muted-foreground">Configure your business profile and tax preferences.</p>
         </div>
-        <Button className="rounded-full" onClick={handleSave} disabled={isSaving}>
+        <Button className="rounded-full shadow-lg" onClick={handleSave} disabled={isSaving}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Changes
         </Button>
@@ -87,54 +77,59 @@ export default function SettingsPage() {
 
       <Tabs defaultValue="business" className="space-y-6">
         <TabsList className="bg-muted/50 p-1">
-          <TabsTrigger value="business" className="gap-2">
+          <TabsTrigger value="business" className="gap-2 rounded-xl">
             <Building2 className="h-4 w-4" /> Business Profile
           </TabsTrigger>
-          <TabsTrigger value="compliance" className="gap-2">
+          <TabsTrigger value="compliance" className="gap-2 rounded-xl">
             <ShieldCheck className="h-4 w-4" /> GST & Tax
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="business">
-          <Card className="border-none shadow-md">
-            <CardHeader>
+          <Card className="border-none glass-card shadow-2xl rounded-[2rem]">
+            <CardHeader className="p-8 border-b border-primary/5 bg-primary/[0.02]">
               <CardTitle className="font-headline">Organization Details</CardTitle>
-              <CardDescription>Primary information used in your invoices and reports.</CardDescription>
+              <CardDescription>Primary information used in invoices and reports.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-10 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>Business Legal Name</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">Business Legal Name</Label>
                   <Input 
+                    className="h-12 rounded-xl bg-secondary/50 border-none font-bold"
                     value={settings.businessName} 
                     onChange={e => setSettings({...settings, businessName: e.target.value})} 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Brand Display Name</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">Brand Display Name</Label>
                   <Input 
+                    className="h-12 rounded-xl bg-secondary/50 border-none font-bold"
                     value={settings.brandName} 
                     onChange={e => setSettings({...settings, brandName: e.target.value})} 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Support Email</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">Support Email</Label>
                   <Input 
+                    className="h-12 rounded-xl bg-secondary/50 border-none font-bold"
                     type="email" 
                     value={settings.email} 
                     onChange={e => setSettings({...settings, email: e.target.value})} 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Phone Number</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">Phone Number</Label>
                   <Input 
+                    className="h-12 rounded-xl bg-secondary/50 border-none font-bold"
                     value={settings.phone} 
                     onChange={e => setSettings({...settings, phone: e.target.value})} 
                   />
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <Label>Registered Office Address</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">Registered Office Address</Label>
                   <Input 
+                    className="h-12 rounded-xl bg-secondary/50 border-none font-bold"
                     value={settings.address} 
                     onChange={e => setSettings({...settings, address: e.target.value})} 
                   />
@@ -145,39 +140,38 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="compliance">
-          <Card className="border-none shadow-md">
-            <CardHeader>
+          <Card className="border-none glass-card shadow-2xl rounded-[2rem]">
+            <CardHeader className="p-8 border-b border-primary/5 bg-primary/[0.02]">
               <CardTitle className="font-headline">GST Configuration</CardTitle>
               <CardDescription>Configure your GSTIN and business state for tax calculation.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="p-10 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>GSTIN Number</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">GSTIN Number</Label>
                   <Input 
+                    className="h-12 rounded-xl bg-secondary/50 border-none font-bold uppercase"
                     value={settings.gstin} 
-                    className="uppercase" 
                     onChange={e => setSettings({...settings, gstin: e.target.value.toUpperCase()})} 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Business State (Registration)*</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest">Business State (Registration)*</Label>
                   <Select 
                     value={settings.stateCode} 
                     onValueChange={val => setSettings({...settings, stateCode: val})}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-12 rounded-xl bg-secondary/50 border-none font-bold">
                       <SelectValue placeholder="Select Business State" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="glass">
                       {INDIAN_STATES.map(state => (
-                        <SelectItem key={state.code} value={state.code}>
+                        <SelectItem key={state.code} value={state.code} className="rounded-xl font-bold">
                           {state.code} - {state.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[10px] text-muted-foreground mt-1">Used to determine CGST/SGST vs IGST.</p>
                 </div>
               </div>
             </CardContent>

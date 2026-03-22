@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -18,18 +19,14 @@ import {
   Search, 
   Filter, 
   MoreVertical, 
-  Package, 
-  ArrowUpRight, 
-  TrendingUp, 
   Save, 
   Copy,
-  Tag,
-  Scaling,
   RefreshCcw,
-  Zap,
   BoxSelect,
   Archive,
-  AlertCircle
+  AlertCircle,
+  TrendingUp,
+  Scaling
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -55,6 +52,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { apiClient } from '@/lib/api-client';
+import { Product } from '@/lib/types';
 
 const UNITS = [
   { id: 'units', name: 'Units (Qty)' },
@@ -76,7 +75,7 @@ const GST_CATEGORIES = [
 ];
 
 export default function InventoryPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -92,18 +91,13 @@ export default function InventoryPage() {
     actualPrice: ''
   });
 
-  const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
+  useEffect(() => { loadProducts(); }, []);
 
-  useEffect(() => { fetchProducts(); }, []);
-
-  const fetchProducts = async () => {
+  const loadProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/inventory');
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
-      }
+      const data = await apiClient.inventory.getAll();
+      setProducts(data);
     } catch (error) {
       toast({ title: "Sync Failed", description: "Database communication error.", variant: "destructive" });
     } finally {
@@ -111,10 +105,10 @@ export default function InventoryPage() {
     }
   };
 
+  const sanitizeNumeric = (value: string) => value.replace(/[^0-9.]/g, '');
+
   const handlePriceInput = (value: string, field: 'mrp' | 'actualPrice') => {
-    let sanitized = value.replace(/[^0-9.]/g, '');
-    const parts = sanitized.split('.');
-    if (parts.length > 2) sanitized = `${parts[0]}.${parts.slice(1).join('')}`;
+    const sanitized = sanitizeNumeric(value);
     setNewProduct(prev => ({ ...prev, [field]: sanitized }));
   };
 
@@ -128,12 +122,6 @@ export default function InventoryPage() {
     return true;
   };
 
-  const handleCategoryChange = (val: string) => {
-    const category = GST_CATEGORIES.find(c => c.id === val);
-    setNewProduct(prev => ({ ...prev, categoryId: val }));
-    setSelectedGSTRate(category ? category.rate : null);
-  };
-
   const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.stock || !newProduct.categoryId || !newProduct.mrp || !newProduct.actualPrice) {
       toast({ title: "Required Data Missing", description: "All asterisked fields must be completed.", variant: "destructive" });
@@ -143,7 +131,7 @@ export default function InventoryPage() {
 
     setIsSubmitting(true);
     const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
-    const productToAdd = {
+    const productToAdd: Product = {
       id: `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
       name: newProduct.name,
       brand: newProduct.brand || 'Generic',
@@ -157,17 +145,11 @@ export default function InventoryPage() {
     };
 
     try {
-      const response = await fetch('/api/inventory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productToAdd)
-      });
-      if (response.ok) {
-        setProducts([productToAdd, ...products]);
-        setIsDialogOpen(false);
-        setNewProduct({ name: '', brand: '', stock: '', unit: 'units', categoryId: '', mrp: '', actualPrice: '' });
-        toast({ title: "Vault Updated", description: `${productToAdd.name} registered successfully.` });
-      }
+      await apiClient.inventory.create(productToAdd);
+      setProducts([productToAdd, ...products]);
+      setIsDialogOpen(false);
+      setNewProduct({ name: '', brand: '', stock: '', unit: 'units', categoryId: '', mrp: '', actualPrice: '' });
+      toast({ title: "Vault Updated", description: `${productToAdd.name} registered successfully.` });
     } catch (error) {
       toast({ title: "Submission Error", description: "Failed to update central repository.", variant: "destructive" });
     } finally {
@@ -185,23 +167,23 @@ export default function InventoryPage() {
     <div className="space-y-12 pb-32">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-            <BoxSelect className="h-3 w-3 text-indigo-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Inventory Core Ready</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
+            <BoxSelect className="h-3 w-3 text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Inventory Core Ready</span>
           </div>
           <h1 className="font-headline text-5xl font-black tracking-tighter">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
           <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
-            Central repository for your enterprise assets. Manage stock levels, tax classifications, and SKU data.
+            Central repository for enterprise assets. Manage stock levels, tax classifications, and SKU data.
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline" className="h-14 px-6 rounded-2xl glass hover:bg-primary/5 font-bold" onClick={fetchProducts}>
+          <Button variant="outline" className="h-14 px-6 rounded-2xl glass hover:bg-primary/5 font-bold" onClick={loadProducts}>
             <RefreshCcw className={loading ? 'animate-spin mr-3 h-5 w-5' : 'mr-3 h-5 w-5 text-primary'} /> Resync Data
           </Button>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="h-14 px-8 rounded-2xl shadow-[0_20px_40px_rgba(102,51,204,0.3)] font-black group">
+              <Button className="h-14 px-8 rounded-2xl shadow-xl font-black group">
                 <Plus className="mr-3 h-5 w-5 group-hover:rotate-90 transition-transform duration-500" /> New Registry
               </Button>
             </DialogTrigger>
@@ -263,10 +245,9 @@ export default function InventoryPage() {
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Stock Volume*</Label>
                     <div className="flex gap-3">
                       <Input 
-                        type="number" 
                         className="h-14 rounded-2xl bg-secondary/50 border-none font-black flex-1 text-center"
                         value={newProduct.stock}
-                        onChange={(e) => setNewProduct(prev => ({...prev, stock: e.target.value}))}
+                        onChange={(e) => setNewProduct(prev => ({...prev, stock: sanitizeNumeric(e.target.value)}))}
                       />
                       <Select value={newProduct.unit} onValueChange={(val) => setNewProduct(prev => ({...prev, unit: val}))}>
                         <SelectTrigger className="h-14 w-32 rounded-2xl bg-secondary/50 border-none font-bold">
@@ -280,7 +261,7 @@ export default function InventoryPage() {
                   </div>
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tax Classification*</Label>
-                    <Select value={newProduct.categoryId} onValueChange={handleCategoryChange}>
+                    <Select value={newProduct.categoryId} onValueChange={(val) => setNewProduct(prev => ({...prev, categoryId: val}))}>
                       <SelectTrigger className="h-14 rounded-2xl bg-secondary/50 border-none font-bold">
                         <SelectValue placeholder="Select Rate" />
                       </SelectTrigger>
@@ -309,10 +290,10 @@ export default function InventoryPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {[
-          { label: 'Asset Classes', value: products.length, icon: Archive, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+          { label: 'Asset Classes', value: products.length, icon: Archive, color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'Low Liquidity', value: products.filter(p => p.status === 'Low').length, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
           { label: 'Stock Exhaustion', value: products.filter(p => p.status === 'Out of Stock').length, icon: Scaling, color: 'text-destructive', bg: 'bg-destructive/10' },
-          { label: 'Manufacturer Entities', value: new Set(products.map(p => p.brand)).size, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Manufacturers', value: new Set(products.map(p => p.brand)).size, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
         ].map((stat, i) => (
           <Card key={i} className="border-none glass-card shadow-xl p-8 flex items-center gap-6 group hover:translate-y-[-4px] transition-all duration-500">
             <div className={`h-16 w-16 rounded-3xl flex items-center justify-center ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
@@ -338,9 +319,7 @@ export default function InventoryPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-4">
-              <Button variant="outline" className="h-14 px-8 rounded-2xl glass font-black"><Filter className="mr-3 h-5 w-5" /> Filter Matrix</Button>
-            </div>
+            <Button variant="outline" className="h-14 px-8 rounded-2xl glass font-black"><Filter className="mr-3 h-5 w-5" /> Filter Matrix</Button>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -374,9 +353,9 @@ export default function InventoryPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="text-base font-black">₹{Number(p.price).toLocaleString()}</span>
-                        {Number(p.mrp) > Number(p.price) && (
-                          <span className="text-[10px] text-muted-foreground font-black line-through">MRP: ₹{Number(p.mrp).toLocaleString()}</span>
+                        <span className="text-base font-black">₹{p.price.toLocaleString()}</span>
+                        {p.mrp > p.price && (
+                          <span className="text-[10px] text-muted-foreground font-black line-through">MRP: ₹{p.mrp.toLocaleString()}</span>
                         )}
                       </div>
                     </TableCell>
@@ -402,7 +381,7 @@ export default function InventoryPage() {
                     <TableCell className="pr-12 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-primary/10 transition-all">
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-primary/10">
                             <MoreVertical className="h-5 w-5" />
                           </Button>
                         </DropdownMenuTrigger>
