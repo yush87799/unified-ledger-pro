@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,7 +50,7 @@
     --secondary: 222 47% 12%;
     --secondary-foreground: 210 40% 98%;
     --muted: 222 47% 15%;
-    --muted-foreground: 215 20% 75%; 
+    --muted-foreground: 215 20% 85%; 
     --accent: 255 85% 70%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 70% 50%;

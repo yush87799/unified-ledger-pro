@@ -215,7 +215,7 @@ export default function InventoryPage() {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-primary/10 border border-primary/20">
             <BoxSelect className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Global Asset Matrix</span>
+            <span className="text-xs font-black uppercase tracking-widest text-primary">Global Asset Matrix</span>
           </div>
           <h1 className="font-headline text-2xl font-black tracking-tight leading-none">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
         </div>
@@ -241,7 +241,7 @@ export default function InventoryPage() {
               <stat.icon className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-none">{stat.label}</p>
+              <p className="text-xs font-black uppercase tracking-widest text-muted-foreground leading-none">{stat.label}</p>
               <p className="text-lg font-black font-headline tracking-tighter mt-1">{stat.value}</p>
             </div>
           </Card>
@@ -262,11 +262,11 @@ export default function InventoryPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 glass rounded-xl p-1.5 border-none shadow-2xl">
-                <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest opacity-40 px-2 py-1">Availability Status</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-xs uppercase font-black tracking-widest opacity-40 px-2 py-1">Availability Status</DropdownMenuLabel>
                 <DropdownMenuCheckboxItem checked={statusFilters.includes('In Stock')} onCheckedChange={() => toggleStatusFilter('In Stock')} className="rounded-lg font-bold text-xs py-1.5"><CheckCircle2 className="mr-2 h-3.5 w-3.5 text-emerald-500" /> Fully Stocked</DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem checked={statusFilters.includes('Low')} onCheckedChange={() => toggleStatusFilter('Low')} className="rounded-lg font-bold text-xs py-1.5"><Clock className="mr-2 h-3.5 w-3.5 text-amber-500" /> Low Inventory</DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem checked={statusFilters.includes('Out of Stock')} onCheckedChange={() => toggleStatusFilter('Out of Stock')} className="rounded-lg font-bold text-xs py-1.5"><XCircle className="mr-2 h-3.5 w-3.5 text-destructive" /> Exhausted</DropdownMenuCheckboxItem>
-                {statusFilters.length > 0 && <><DropdownMenuSeparator className="my-1"/><DropdownMenuItem onClick={() => setStatusFilters([])} className="rounded-lg font-black text-[9px] uppercase tracking-widest justify-center text-primary py-1.5">Clear All Filters</DropdownMenuItem></>}
+                {statusFilters.length > 0 && <><DropdownMenuSeparator className="my-1"/><DropdownMenuItem onClick={() => setStatusFilters([])} className="rounded-lg font-black text-xs uppercase tracking-widest justify-center text-primary py-1.5">Clear All Filters</DropdownMenuItem></>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -276,12 +276,12 @@ export default function InventoryPage() {
             <Table>
               <TableHeader className="bg-primary/[0.01]">
                 <TableRow className="border-none">
-                  <TableHead className="py-4 pl-6 font-black uppercase text-[11px] tracking-widest">SKU ID</TableHead>
-                  <TableHead className="font-black uppercase text-[11px] tracking-widest">Asset Details</TableHead>
-                  <TableHead className="font-black uppercase text-[11px] tracking-widest">Selling Rate (₹)</TableHead>
-                  <TableHead className="font-black uppercase text-[11px] tracking-widest">Inventory</TableHead>
-                  <TableHead className="font-black uppercase text-[11px] tracking-widest">Tax Matrix</TableHead>
-                  <TableHead className="font-black uppercase text-[11px] tracking-widest">State</TableHead>
+                  <TableHead className="py-4 pl-6 font-black uppercase text-xs tracking-widest">SKU ID</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">Asset Details</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">Selling Rate (₹)</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">Inventory</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">Tax Matrix</TableHead>
+                  <TableHead className="font-black uppercase text-xs tracking-widest">State</TableHead>
                   <TableHead className="pr-6"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -296,25 +296,25 @@ export default function InventoryPage() {
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="text-sm font-black tracking-tight">{p.name}</span>
-                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60">{p.brand}</span>
+                        <span className="text-xs font-black uppercase text-muted-foreground tracking-widest opacity-60">{p.brand}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col leading-tight">
                         <span className="font-black text-sm">₹{p.price.toLocaleString()}</span>
-                        {p.mrp > p.price && <span className="text-[10px] text-muted-foreground font-black line-through opacity-40">₹{p.mrp.toLocaleString()}</span>}
+                        {p.mrp > p.price && <span className="text-xs text-muted-foreground font-black line-through opacity-40">₹{p.mrp.toLocaleString()}</span>}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm font-black tracking-tighter">{p.stock}</span>
-                        <span className="text-[10px] font-black uppercase text-muted-foreground opacity-60">{p.unit}</span>
+                        <span className="text-xs font-black uppercase text-muted-foreground opacity-60">{p.unit}</span>
                       </div>
                     </TableCell>
-                    <TableCell><Badge className="bg-primary/10 text-primary border-none font-black text-[10px] px-2 py-0.5 rounded">{p.gst}</Badge></TableCell>
+                    <TableCell><Badge className="bg-primary/10 text-primary border-none font-black text-xs px-2 py-0.5 rounded">{p.gst}</Badge></TableCell>
                     <TableCell>
                       <Badge className={cn(
-                        "rounded px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest border-none text-white",
+                        "rounded px-2.5 py-0.5 text-xs font-black uppercase tracking-widest border-none text-white",
                         p.status === 'In Stock' ? 'bg-emerald-500' : p.status === 'Low' ? 'bg-amber-500' : 'bg-destructive'
                       )}>
                         {p.status}
@@ -369,7 +369,7 @@ export default function InventoryPage() {
                 <div className="flex gap-2">
                   <Input className="h-10 rounded-lg bg-secondary/30 border-none font-bold text-sm flex-1" value={currentProduct.stock} onChange={e => setCurrentProduct({...currentProduct, stock: sanitizeNumeric(e.target.value)})} />
                   <Select value={currentProduct.unit} onValueChange={val => setCurrentProduct({...currentProduct, unit: val})}>
-                    <SelectTrigger className="h-10 w-24 rounded-lg bg-secondary/30 border-none font-bold text-[11px]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-10 w-24 rounded-lg bg-secondary/30 border-none font-bold text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent className="glass border-none rounded-xl">
                       {UNITS.map(u => <SelectItem key={u.id} value={u.id} className="text-sm py-1.5">{u.name}</SelectItem>)}
                     </SelectContent>
@@ -379,7 +379,7 @@ export default function InventoryPage() {
               <div className="space-y-1.5">
                 <Label className="text-xs uppercase font-black tracking-widest opacity-60">Tax Matrix*</Label>
                 <Select value={currentProduct.categoryId} onValueChange={val => setCurrentProduct({...currentProduct, categoryId: val})}>
-                  <SelectTrigger className="h-10 rounded-lg bg-secondary/30 border-none font-bold text-[11px]"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-10 rounded-lg bg-secondary/30 border-none font-bold text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent className="glass border-none rounded-xl">
                     {GST_CATEGORIES.map(c => <SelectItem key={c.id} value={c.id} className="text-sm py-1.5">{c.name}</SelectItem>)}
                   </SelectContent>

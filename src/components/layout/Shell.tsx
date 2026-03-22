@@ -87,7 +87,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   Unified Ledger
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] uppercase font-black tracking-widest text-primary">Pro Edition</span>
+                  <span className="text-xs uppercase font-black tracking-widest text-primary">Pro Edition</span>
                 </div>
               </div>
             </div>
@@ -173,8 +173,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:flex flex-col items-start text-left leading-none">
-                      <span className="text-xs font-black tracking-tight">{roleConfig.title}</span>
-                      <span className="text-[10px] uppercase font-black text-primary tracking-widest flex items-center gap-1.5 mt-0.5">
+                      <span className="text-sm font-black tracking-tight">{roleConfig.title}</span>
+                      <span className="text-xs uppercase font-black text-primary tracking-widest flex items-center gap-1.5 mt-0.5">
                         <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
                         Live
                       </span>
@@ -183,10 +183,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52 rounded-xl p-1.5 glass shadow-xl border-none">
-                  <DropdownMenuItem className="rounded-lg px-3 py-1.5 cursor-pointer text-xs font-semibold">User Profile</DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-lg px-3 py-1.5 cursor-pointer text-xs font-semibold">System Diagnostics</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-lg px-3 py-1.5 cursor-pointer text-sm font-semibold">User Profile</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-lg px-3 py-1.5 cursor-pointer text-sm font-semibold">System Diagnostics</DropdownMenuItem>
                   <DropdownMenuSeparator className="my-1" />
-                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-1.5 cursor-pointer text-xs text-destructive font-bold">
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-1.5 cursor-pointer text-sm text-destructive font-bold">
                     <LogOut className="mr-2 h-3.5 w-3.5" /> Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
