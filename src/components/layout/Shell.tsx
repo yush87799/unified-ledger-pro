@@ -181,7 +181,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl shadow-xl overflow-hidden">
                       <AvatarImage src={`https://picsum.photos/seed/${role}/200/200`} />
                       <AvatarFallback className={cn("rounded-xl text-white font-black text-xs uppercase", roleConfig.color)}>
-                        {role[0]}
+                        {role ? role[0] : 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:flex flex-col items-start text-left">

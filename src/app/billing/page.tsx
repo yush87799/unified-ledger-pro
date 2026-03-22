@@ -43,12 +43,14 @@ import {
   User,
   ShoppingBag,
   Zap,
-  IndianRupee
+  IndianRupee,
+  Info
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { INDIAN_STATES } from '@/lib/states';
 import { apiClient } from '@/lib/api-client';
 import { Product, LineItem, Invoice, BusinessSettings } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export default function BillingPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -148,7 +150,11 @@ export default function BillingPage() {
       if (item.id === id) {
         const product = products.find(p => p.id === item.productId);
         if (product && qty > product.stock) {
-          toast({ title: "Inventory Alert", description: `Exceeds stock (${product.stock} ${product.unit}).`, variant: "destructive" });
+          toast({ 
+            title: "Inventory Alert", 
+            description: `Exceeds stock (${product.stock} ${product.unit}).`, 
+            variant: "destructive" 
+          });
         }
         return { ...item, qty, total: item.price * qty };
       }
@@ -330,12 +336,12 @@ export default function BillingPage() {
                   </Button>
                 </CardHeader>
                 <CardContent className="p-0 overflow-x-auto">
-                  <div className="min-w-[700px]">
+                  <div className="min-w-[900px]">
                     <Table>
                       <TableHeader className="bg-primary/[0.01]">
                         <TableRow className="border-none">
-                          <TableHead className="py-6 pl-10 font-black uppercase text-[9px] tracking-widest">Description</TableHead>
-                          <TableHead className="font-black uppercase text-[9px] tracking-widest">Qty</TableHead>
+                          <TableHead className="py-6 pl-10 font-black uppercase text-[9px] tracking-widest w-[30%]">Description</TableHead>
+                          <TableHead className="font-black uppercase text-[9px] tracking-widest">Qty & Stock</TableHead>
                           <TableHead className="font-black uppercase text-[9px] tracking-widest">Rate (₹)</TableHead>
                           <TableHead className="font-black uppercase text-[9px] tracking-widest">Tax</TableHead>
                           <TableHead className="text-right pr-10 font-black uppercase text-[9px] tracking-widest">Total</TableHead>
@@ -344,7 +350,9 @@ export default function BillingPage() {
                       </TableHeader>
                       <TableBody>
                         {items.map((item) => {
-                          const selectedProduct = products.find(p => p.id === item.productId);
+                          const product = products.find(p => p.id === item.productId);
+                          const discount = item.mrp > item.price ? item.mrp - item.price : 0;
+                          
                           return (
                             <TableRow key={item.id} className="border-none hover:bg-primary/[0.02] transition-colors group">
                               <TableCell className="py-6 pl-10">
@@ -365,13 +373,37 @@ export default function BillingPage() {
                                 </Select>
                               </TableCell>
                               <TableCell>
-                                <Input 
-                                  value={item.qty} 
-                                  className="h-10 w-16 rounded-xl bg-secondary/30 border-none font-black text-center text-xs"
-                                  onChange={e => handleQtyChange(item.id, e.target.value)}
-                                />
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Input 
+                                      value={item.qty} 
+                                      className="h-10 w-16 rounded-xl bg-secondary/30 border-none font-black text-center text-xs"
+                                      onChange={e => handleQtyChange(item.id, e.target.value)}
+                                    />
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground">{item.unit}</span>
+                                  </div>
+                                  {product && (
+                                    <div className={cn(
+                                      "flex items-center gap-1.5 px-2 py-0.5 rounded-md w-fit",
+                                      product.stock < 10 ? "bg-amber-500/10 text-amber-600" : "bg-emerald-500/10 text-emerald-600"
+                                    )}>
+                                      <Info className="h-2.5 w-2.5" />
+                                      <span className="text-[8px] font-black uppercase tracking-widest">Stock: {product.stock}</span>
+                                    </div>
+                                  )}
+                                </div>
                               </TableCell>
-                              <TableCell className="font-black text-xs">₹{item.price.toLocaleString()}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-col">
+                                  <span className="font-black text-xs">₹{item.price.toLocaleString()}</span>
+                                  {discount > 0 && (
+                                    <span className="text-[9px] text-emerald-500 font-black uppercase tracking-tight">Save ₹{discount.toLocaleString()}</span>
+                                  )}
+                                  {item.mrp > item.price && (
+                                    <span className="text-[8px] text-muted-foreground line-through">MRP: ₹{item.mrp.toLocaleString()}</span>
+                                  )}
+                                </div>
+                              </TableCell>
                               <TableCell>
                                 <Badge variant="outline" className="rounded-lg border-primary/20 text-primary font-black text-[9px] px-2 py-1 bg-primary/5">{item.gstRate}%</Badge>
                               </TableCell>
