@@ -1,22 +1,53 @@
+
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROLES, UserRole } from '@/lib/roles';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Boxes, ArrowRight, Zap, ShieldCheck, Globe } from 'lucide-react';
+import { Boxes, ArrowRight, Zap, ShieldCheck, Globe, Sun, Moon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useTheme } from 'next-themes';
 
 export default function LandingPage() {
   const router = useRouter();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleRoleSelect = (roleId: UserRole) => {
     localStorage.setItem('user_role', roleId);
     router.push('/dashboard');
   };
 
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      {/* Floating Theme Toggle */}
+      {mounted && (
+        <div className="absolute top-8 right-8 z-50">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleTheme}
+            className="h-12 w-12 rounded-2xl glass hover:bg-primary/10 transition-all group"
+          >
+            {resolvedTheme === 'dark' ? (
+              <Sun className="h-6 w-6 text-amber-400 group-hover:rotate-45 transition-transform" />
+            ) : (
+              <Moon className="h-6 w-6 text-slate-700 group-hover:-rotate-12 transition-transform" />
+            )}
+          </Button>
+        </div>
+      )}
+
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" />
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-pulse" />

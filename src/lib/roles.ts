@@ -41,7 +41,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'System configuration, user roles, and operational control.',
     icon: ShieldCheck,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'users', 'settings'],
-    color: 'bg-slate-600'
+    color: 'bg-slate-400'
   },
   billing: {
     id: 'billing',
