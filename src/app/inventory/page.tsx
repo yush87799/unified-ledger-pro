@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -138,10 +139,23 @@ export default function InventoryPage() {
   };
 
   const handleSaveProduct = async () => {
-    if (!currentProduct.name || !currentProduct.stock || !currentProduct.mrp || !currentProduct.actualPrice) {
+    const mrpNum = parseFloat(currentProduct.mrp);
+    const priceNum = parseFloat(currentProduct.actualPrice);
+
+    if (!currentProduct.name || !currentProduct.stock || isNaN(mrpNum) || isNaN(priceNum)) {
       toast({ title: "Required Data Missing", variant: "destructive" });
       return;
     }
+
+    if (priceNum > mrpNum) {
+      toast({ 
+        title: "Pricing Anomaly", 
+        description: "Selling rate cannot exceed MRP value.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     const categoryObj = GST_CATEGORIES.find(c => c.id === currentProduct.categoryId);
     const productPayload: Product = {
@@ -149,8 +163,8 @@ export default function InventoryPage() {
       name: currentProduct.name,
       brand: currentProduct.brand || 'Generic',
       category: categoryObj?.name.split(' (')[0] || 'Other',
-      mrp: parseFloat(currentProduct.mrp),
-      price: parseFloat(currentProduct.actualPrice),
+      mrp: mrpNum,
+      price: priceNum,
       stock: parseInt(currentProduct.stock),
       unit: currentProduct.unit,
       status: parseInt(currentProduct.stock) === 0 ? 'Out of Stock' : parseInt(currentProduct.stock) < 10 ? 'Low' : 'In Stock',
@@ -355,7 +369,7 @@ export default function InventoryPage() {
                 <div className="flex gap-2">
                   <Input className="h-10 rounded-lg bg-secondary/30 border-none font-bold text-sm flex-1" value={currentProduct.stock} onChange={e => setCurrentProduct({...currentProduct, stock: sanitizeNumeric(e.target.value)})} />
                   <Select value={currentProduct.unit} onValueChange={val => setCurrentProduct({...currentProduct, unit: val})}>
-                    <SelectTrigger className="h-10 w-20 rounded-lg bg-secondary/30 border-none font-bold text-[11px]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-10 w-24 rounded-lg bg-secondary/30 border-none font-bold text-[11px]"><SelectValue /></SelectTrigger>
                     <SelectContent className="glass border-none rounded-xl">
                       {UNITS.map(u => <SelectItem key={u.id} value={u.id} className="text-sm py-1.5">{u.name}</SelectItem>)}
                     </SelectContent>

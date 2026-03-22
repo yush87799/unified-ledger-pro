@@ -1,6 +1,35 @@
 [
   {
     "customer": {
+      "name": "PS",
+      "phone": "6378814759",
+      "address": "",
+      "stateCode": "03"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-9403",
+        "productName": "Pencil",
+        "qty": 1,
+        "price": 2506546546,
+        "mrp": 22342,
+        "gstRate": 18,
+        "unit": "pcs",
+        "total": 2506546546
+      }
+    ],
+    "subtotal": 2124191988.1355934,
+    "gstTotal": 382354557.8644066,
+    "grandTotal": 2506546546,
+    "taxType": "INTER",
+    "paymentMode": "pending",
+    "businessStateCode": "29",
+    "id": "INV-1774205236287",
+    "createdAt": "2026-03-22T18:47:16.287Z"
+  },
+  {
+    "customer": {
       "name": "Pratyush Shrivastava",
       "phone": "6378814759",
       "address": "",

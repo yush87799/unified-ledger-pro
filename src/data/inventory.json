@@ -1,14 +1,38 @@
 [
   {
-    "id": "SKU-9430",
+    "id": "SKU-9403",
+    "name": "Pencil",
+    "brand": "Generic",
+    "category": "18%",
+    "mrp": 22342,
+    "price": 2506546546,
+    "stock": 4,
+    "unit": "pcs",
+    "status": "Low",
+    "gst": "18%"
+  },
+  {
+    "id": "SKU-5919",
     "name": "Apple",
+    "brand": "Fruit",
+    "category": "18%",
+    "mrp": 120,
+    "price": 1086,
+    "stock": 189,
+    "unit": "kg",
+    "status": "In Stock",
+    "gst": "18%"
+  },
+  {
+    "id": "SKU-4621",
+    "name": "Strawberry",
     "brand": "Generic",
     "category": "0%",
-    "mrp": 50,
-    "price": 40,
-    "stock": 0,
-    "unit": "kg",
-    "status": "Out of Stock",
+    "mrp": 500,
+    "price": 400,
+    "stock": 250,
+    "unit": "gm",
+    "status": "In Stock",
     "gst": "0%"
   },
   {

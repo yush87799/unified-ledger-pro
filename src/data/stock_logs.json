@@ -1,5 +1,41 @@
 [
   {
+    "productId": "SKU-9403",
+    "productName": "Pencil",
+    "type": "out",
+    "qty": 1,
+    "note": "Sale via Invoice: INV-1774205236287",
+    "id": "LOG-1774205236304",
+    "timestamp": "2026-03-22T18:47:16.304Z"
+  },
+  {
+    "productId": "SKU-9403",
+    "productName": "Pencil",
+    "type": "in",
+    "qty": 5,
+    "note": "Initial stock registration",
+    "id": "LOG-1774203816274",
+    "timestamp": "2026-03-22T18:23:36.274Z"
+  },
+  {
+    "productId": "SKU-5919",
+    "productName": "Apple",
+    "type": "in",
+    "qty": 189,
+    "note": "Initial stock registration",
+    "id": "LOG-1774203766928",
+    "timestamp": "2026-03-22T18:22:46.928Z"
+  },
+  {
+    "productId": "SKU-4621",
+    "productName": "Strawberry",
+    "type": "in",
+    "qty": 250,
+    "note": "Initial stock registration",
+    "id": "LOG-1774203755317",
+    "timestamp": "2026-03-22T18:22:35.317Z"
+  },
+  {
     "productId": "SKU-9430",
     "productName": "Apple",
     "type": "out",
