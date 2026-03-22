@@ -41,10 +41,9 @@ export default function SettingsPage() {
   const loadSettings = async () => {
     try {
       const data = await apiClient.settings.get();
-      // Ensure warehouses is always an array
       setSettings({
         ...data,
-        warehouses: data.warehouses || []
+        warehouses: Array.isArray(data.warehouses) ? data.warehouses : []
       });
     } catch (err) {
       toast({ title: "Fetch Error", description: "Could not load settings.", variant: "destructive" });
@@ -69,7 +68,7 @@ export default function SettingsPage() {
     const trimmed = newWarehouse.trim();
     if (!trimmed) return;
     
-    const currentWarehouses = settings.warehouses || [];
+    const currentWarehouses = Array.isArray(settings.warehouses) ? settings.warehouses : [];
     if (currentWarehouses.includes(trimmed)) {
       toast({ title: "Registry Error", description: "Warehouse already exists.", variant: "destructive" });
       return;
@@ -89,23 +88,23 @@ export default function SettingsPage() {
     });
   };
 
-  if (loading) return <div className="flex h-96 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (loading) return <div className="flex h-96 items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-30" /></div>;
 
   return (
-    <div className="space-y-8 pb-24 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-6 pb-24 animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-5">
         <div className="space-y-1.5">
-          <h1 className="font-headline text-3xl sm:text-4xl font-black tracking-tighter">System <span className="text-muted-foreground/30 font-thin italic">Settings</span></h1>
+          <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tight leading-none">System <span className="text-muted-foreground/30 font-thin italic">Settings</span></h1>
           <p className="text-sm font-medium opacity-80">Configure organization profile and operational matrix.</p>
         </div>
-        <Button className="h-11 px-8 rounded-xl shadow-xl font-black text-sm w-full md:w-auto" onClick={handleSave} disabled={isSaving}>
+        <Button className="h-10 px-8 rounded-xl shadow-lg font-black text-sm w-full md:w-auto" onClick={handleSave} disabled={isSaving}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Commit Changes
         </Button>
       </div>
 
       <Tabs defaultValue="business" className="space-y-6">
-        <TabsList className="bg-secondary/50 p-1 rounded-xl h-12 w-full max-w-lg glass">
+        <TabsList className="bg-secondary/50 p-1.5 rounded-xl h-12 w-full max-w-lg glass">
           <TabsTrigger value="business" className="flex-1 rounded-lg font-bold h-full gap-2 text-sm">
             <Building2 className="h-4 w-4" /> Profile
           </TabsTrigger>
@@ -120,12 +119,12 @@ export default function SettingsPage() {
         <TabsContent value="business" className="space-y-6">
           <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
             <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
-              <CardTitle className="font-headline text-xl font-black">Organization Specs</CardTitle>
+              <CardTitle className="font-headline text-lg font-black tracking-tight">Organization Specs</CardTitle>
             </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Legal Entity Name</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Legal Entity Name</Label>
                   <Input 
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"
                     value={settings.businessName} 
@@ -133,7 +132,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Brand Display</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Brand Display</Label>
                   <Input 
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"
                     value={settings.brandName} 
@@ -141,7 +140,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Master Email</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Master Email</Label>
                   <Input 
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"
                     type="email" 
@@ -150,7 +149,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Contact Matrix</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Contact Matrix</Label>
                   <Input 
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"
                     value={settings.phone} 
@@ -158,7 +157,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Primary HQ Address</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Primary HQ Address</Label>
                   <Input 
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"
                     value={settings.address} 
@@ -173,13 +172,13 @@ export default function SettingsPage() {
         <TabsContent value="warehouses" className="space-y-6">
           <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
             <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
-              <CardTitle className="font-headline text-xl font-black">Warehouse Matrix</CardTitle>
-              <CardDescription className="text-sm font-medium">Manage centralized storage and store locations.</CardDescription>
+              <CardTitle className="font-headline text-lg font-black tracking-tight">Warehouse Matrix</CardTitle>
+              <CardDescription className="text-xs font-medium opacity-70">Manage centralized storage and store locations.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-8">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1 space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Add New Warehouse</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Add New Warehouse</Label>
                   <Input 
                     placeholder="Location Name (e.g. North Sector Hub)"
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"
@@ -195,7 +194,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Active Locations</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Active Locations</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {(settings.warehouses || []).map((w, idx) => (
                     <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-transparent hover:border-primary/20 transition-all group">
@@ -229,12 +228,12 @@ export default function SettingsPage() {
         <TabsContent value="compliance" className="space-y-6">
           <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
             <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
-              <CardTitle className="font-headline text-xl font-black">GST Configuration</CardTitle>
+              <CardTitle className="font-headline text-lg font-black tracking-tight">GST Configuration</CardTitle>
             </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">GSTIN Matrix ID</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">GSTIN Matrix ID</Label>
                   <Input 
                     className="h-11 rounded-xl bg-secondary/30 border-none font-bold uppercase text-sm"
                     value={settings.gstin} 
@@ -242,7 +241,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase font-black tracking-widest text-muted-foreground">Jurisdiction State*</Label>
+                  <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Jurisdiction State*</Label>
                   <Select 
                     value={settings.stateCode} 
                     onValueChange={val => setSettings({...settings, stateCode: val})}

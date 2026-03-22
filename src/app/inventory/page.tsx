@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ import {
   AlertCircle,
   TrendingUp,
   Scaling,
-  Warehouse,
+  Warehouse as WarehouseIcon,
   Loader2,
   Trash2,
   Edit2
@@ -129,26 +129,25 @@ export default function InventoryPage() {
     setIsDialogOpen(true);
   };
 
-  const openEditDialog = (p: Product) => {
-    // Correctly close dropdown by triggering in a timeout to avoid pointer-lock clash
-    setTimeout(() => {
-      setIsEditMode(true);
-      const cat = GST_CATEGORIES.find(c => c.rate === parseFloat(p.gst))?.id || 'standard';
-      setCurrentProduct({
-        id: p.id,
-        name: p.name,
-        brand: p.brand,
-        stock: p.stock.toString(),
-        unit: p.unit,
-        categoryId: cat,
-        mrp: p.mrp.toString(),
-        actualPrice: p.price.toString(),
-        buyingPrice: (p.buyingPrice || 0).toString(),
-        warehouse: p.warehouse || settings?.warehouses?.[0] || 'Main Warehouse'
-      });
-      setIsDialogOpen(true);
-    }, 10);
-  };
+  const openEditDialog = useCallback((p: Product) => {
+    setIsEditMode(true);
+    const cat = GST_CATEGORIES.find(c => c.rate === parseFloat(p.gst))?.id || 'standard';
+    setCurrentProduct({
+      id: p.id,
+      name: p.name,
+      brand: p.brand,
+      stock: p.stock.toString(),
+      unit: p.unit,
+      categoryId: cat,
+      mrp: p.mrp.toString(),
+      actualPrice: p.price.toString(),
+      buyingPrice: (p.buyingPrice || 0).toString(),
+      warehouse: p.warehouse || settings?.warehouses?.[0] || 'Main Warehouse'
+    });
+    // Use a timeout to ensure DropdownMenu fully closes before Dialog opens
+    // to prevent background pointer-locking issues.
+    setTimeout(() => setIsDialogOpen(true), 150);
+  }, [settings]);
 
   const handleSaveProduct = async () => {
     const mrpNum = parseFloat(currentProduct.mrp);
@@ -252,7 +251,7 @@ export default function InventoryPage() {
           { label: 'Asset Classes', value: products.length, icon: Archive, color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'Low Liquidity', value: products.filter(p => p.status === 'Low').length, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
           { label: 'Exhaustion', value: products.filter(p => p.status === 'Out of Stock').length, icon: Scaling, color: 'text-destructive', bg: 'bg-destructive/10' },
-          { label: 'Warehouses', value: new Set(products.map(p => p.warehouse)).size, icon: Warehouse, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Warehouses', value: new Set(products.map(p => p.warehouse)).size, icon: WarehouseIcon, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
         ].map((stat, i) => (
           <Card key={i} className="border-none glass-card shadow-sm p-5 flex items-center gap-4 rounded-2xl">
             <div className={cn("h-11 w-11 rounded-xl flex items-center justify-center", stat.bg, stat.color)}>
@@ -354,18 +353,18 @@ export default function InventoryPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[95vw] sm:max-w-[550px] rounded-3xl border-none glass p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="p-6 bg-primary/5 border-b border-primary/5">
-            <DialogTitle className="font-headline text-2xl font-black tracking-tight">
+            <DialogTitle className="font-headline text-2xl font-black tracking-tight leading-none">
               {isEditMode ? 'Modify Asset Specs' : 'Register New Enterprise Asset'}
             </DialogTitle>
           </DialogHeader>
           <div className="p-8 space-y-6">
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">Asset Name*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">Asset Name*</Label>
                 <Input className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={currentProduct.name} onChange={e => setCurrentProduct({...currentProduct, name: e.target.value})} />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">Operational Warehouse*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">Operational Warehouse*</Label>
                 <Select value={currentProduct.warehouse} onValueChange={val => setCurrentProduct({...currentProduct, warehouse: val})}>
                   <SelectTrigger className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"><SelectValue placeholder="Select Warehouse" /></SelectTrigger>
                   <SelectContent className="glass border-none rounded-2xl p-2">
@@ -378,7 +377,7 @@ export default function InventoryPage() {
             </div>
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">Stock Volume*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">Stock Volume*</Label>
                 <div className="flex gap-3">
                   <Input className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm flex-1" value={currentProduct.stock} onChange={e => setCurrentProduct({...currentProduct, stock: sanitizeNumeric(e.target.value)})} />
                   <Select value={currentProduct.unit} onValueChange={val => setCurrentProduct({...currentProduct, unit: val})}>
@@ -390,7 +389,7 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">Tax Bracket*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">Tax Bracket*</Label>
                 <Select value={currentProduct.categoryId} onValueChange={val => setCurrentProduct({...currentProduct, categoryId: val})}>
                   <SelectTrigger className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent className="glass border-none rounded-2xl p-2">
@@ -401,15 +400,15 @@ export default function InventoryPage() {
             </div>
             <div className="grid grid-cols-3 gap-5">
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">MRP Value*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">MRP Value*</Label>
                 <Input className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={currentProduct.mrp} onChange={e => setCurrentProduct({...currentProduct, mrp: sanitizeNumeric(e.target.value)})} />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">Buying Rate*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">Buying Rate*</Label>
                 <Input className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={currentProduct.buyingPrice} onChange={e => setCurrentProduct({...currentProduct, buyingPrice: sanitizeNumeric(e.target.value)})} />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs uppercase font-black tracking-widest opacity-60">Selling Rate*</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest opacity-60">Selling Rate*</Label>
                 <Input className="h-11 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={currentProduct.actualPrice} onChange={e => setCurrentProduct({...currentProduct, actualPrice: sanitizeNumeric(e.target.value)})} />
               </div>
             </div>

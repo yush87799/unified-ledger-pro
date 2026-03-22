@@ -1,16 +1,15 @@
-
 [
   {
     "id": "SKU-8271",
     "name": "Ergonomic Office Chair",
     "brand": "Featherlite",
-    "category": "Standard Rate",
+    "category": "18%",
     "mrp": 18000,
     "price": 14999,
     "buyingPrice": 11000,
     "stock": 19,
     "unit": "pcs",
-    "warehouse": "Bangalore Central",
+    "warehouse": "Main Warehouse",
     "status": "In Stock",
     "gst": "18%"
   },

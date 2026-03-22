@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS = {
   address: "Plot 45, Tech Park Phase 2, Bangalore, Karnataka - 560001",
   gstin: "29AAAAA0000A1Z5",
   stateCode: "29",
-  warehouses: ["Main Warehouse", "North Sector Hub"]
+  warehouses: ["Main Warehouse"]
 };
 
 async function ensureDataFile() {
@@ -34,8 +34,12 @@ export async function GET() {
   try {
     const data = await fs.readFile(SETTINGS_FILE, 'utf-8');
     const parsed = JSON.parse(data);
-    // Merge with defaults to ensure all keys exist
-    return NextResponse.json({ ...DEFAULT_SETTINGS, ...parsed });
+    // Ensure warehouses is always an array in the response
+    return NextResponse.json({ 
+      ...DEFAULT_SETTINGS, 
+      ...parsed,
+      warehouses: Array.isArray(parsed.warehouses) ? parsed.warehouses : DEFAULT_SETTINGS.warehouses 
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to read settings' }, { status: 500 });
   }
