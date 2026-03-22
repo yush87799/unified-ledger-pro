@@ -35,11 +35,15 @@ export async function GET() {
   try {
     const data = await fs.readFile(SETTINGS_FILE, 'utf-8');
     const parsed = JSON.parse(data);
-    // Ensure warehouses is always an array in the response
+    // Ensure warehouses is always an array in the response and merged with defaults if empty
+    const warehouses = Array.isArray(parsed.warehouses) && parsed.warehouses.length > 0 
+      ? parsed.warehouses 
+      : DEFAULT_SETTINGS.warehouses;
+
     return NextResponse.json({ 
       ...DEFAULT_SETTINGS, 
       ...parsed,
-      warehouses: Array.isArray(parsed.warehouses) ? parsed.warehouses : DEFAULT_SETTINGS.warehouses 
+      warehouses
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to read settings' }, { status: 500 });

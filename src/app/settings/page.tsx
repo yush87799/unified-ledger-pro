@@ -195,7 +195,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Active Locations</Label>
+                <Label className="text-[12px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Active Locations</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {(settings.warehouses || []).map((w, idx) => (
                     <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-transparent hover:border-primary/20 transition-all group">

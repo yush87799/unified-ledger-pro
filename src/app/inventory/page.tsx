@@ -24,7 +24,6 @@ import {
   BoxSelect,
   Archive,
   AlertCircle,
-  TrendingUp,
   Scaling,
   Warehouse as WarehouseIcon,
   Loader2,
@@ -127,7 +126,8 @@ export default function InventoryPage() {
       categoryId: 'standard', mrp: '', actualPrice: '', 
       buyingPrice: '', warehouse: settings?.warehouses?.[0] || 'Main Warehouse' 
     });
-    setIsDialogOpen(true);
+    // Decoupled activation
+    setTimeout(() => setIsDialogOpen(true), 150);
   };
 
   const openEditDialog = useCallback((p: Product) => {
@@ -145,8 +145,8 @@ export default function InventoryPage() {
       buyingPrice: (p.buyingPrice || 0).toString(),
       warehouse: p.warehouse || settings?.warehouses?.[0] || 'Main Warehouse'
     });
-    // DECOUPLING FIX: Micro-delay ensures the Dropdown unmounts before the Dialog mounts.
-    // This prevents body-lock collision.
+    // DECOUPLING FIX: 150ms delay ensures the DropdownMenu unmounts and cleans up its own body-lock.
+    // This is critical to prevent the background from becoming uninteractable.
     setTimeout(() => setIsDialogOpen(true), 150);
   }, [settings]);
 
@@ -160,6 +160,7 @@ export default function InventoryPage() {
       return;
     }
 
+    // MRP GUARDRAILS
     if (priceNum > mrpNum) {
       toast({ title: "Pricing Anomaly", description: "Selling rate cannot exceed MRP.", variant: "destructive" });
       return;
@@ -337,7 +338,15 @@ export default function InventoryPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-primary/5"><MoreVertical className="h-5 w-5" /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="glass rounded-2xl p-2 w-52 border-none shadow-2xl">
-                          <DropdownMenuItem className="rounded-xl font-bold py-3 text-sm cursor-pointer" onSelect={(e) => { e.preventDefault(); openEditDialog(p); }}><Edit2 className="h-4 w-4 mr-3" /> Modify Specs</DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="rounded-xl font-bold py-3 text-sm cursor-pointer" 
+                            onSelect={(e) => { 
+                              e.preventDefault(); // CRITICAL: Stop Radix from closing the dropdown and managing body-lock focus simultaneously.
+                              openEditDialog(p); 
+                            }}
+                          >
+                            <Edit2 className="h-4 w-4 mr-3" /> Modify Specs
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator className="my-2" />
                           <DropdownMenuItem className="rounded-xl font-black text-sm text-destructive py-3 cursor-pointer" onClick={() => handleDeleteProduct(p.id)}><Trash2 className="h-4 w-4 mr-3" /> Terminate Asset</DropdownMenuItem>
                         </DropdownMenuContent>
