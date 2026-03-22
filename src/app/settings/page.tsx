@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -104,7 +105,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="business" className="space-y-6">
-        <TabsList className="bg-secondary/50 p-1.5 rounded-xl h-12 w-full max-w-lg glass">
+        <TabsList className="bg-secondary/50 p-1.5 rounded-xl h-12 w-full max-lg glass">
           <TabsTrigger value="business" className="flex-1 rounded-lg font-bold h-full gap-2 text-sm">
             <Building2 className="h-4 w-4" /> Profile
           </TabsTrigger>
