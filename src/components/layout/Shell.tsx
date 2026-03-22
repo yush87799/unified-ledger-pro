@@ -76,26 +76,26 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full bg-background selection:bg-primary/30 font-body">
-        <Sidebar variant="inset" collapsible="icon" className="border-r-0 glass shadow-2xl z-50">
-          <SidebarHeader className="h-24 flex items-center px-6">
-            <div className="flex items-center gap-4 overflow-hidden group">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-primary/40 group-hover:scale-105 transition-transform duration-500">
-                <Boxes className="h-7 w-7" />
+        <Sidebar variant="inset" collapsible="icon" className="border-r-0 glass shadow-xl z-50">
+          <SidebarHeader className="h-16 flex items-center px-4">
+            <div className="flex items-center gap-3 overflow-hidden group">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg group-hover:scale-105 transition-transform">
+                <Boxes className="h-5 w-5" />
               </div>
               <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                <span className="font-headline font-black text-xl tracking-tighter truncate leading-tight text-foreground">
+                <span className="font-headline font-black text-lg tracking-tighter truncate leading-tight text-foreground">
                   Unified Ledger
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-black">Edition</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-primary font-black">Edition</span>
                   <Zap className="h-2 w-2 text-primary fill-primary" />
                 </div>
               </div>
             </div>
           </SidebarHeader>
           
-          <SidebarContent className="px-4 py-4">
-            <SidebarMenu className="space-y-2">
+          <SidebarContent className="px-3 py-2">
+            <SidebarMenu className="space-y-1">
               {allowedMenuItems.map((item) => {
                 const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard');
                 return (
@@ -105,15 +105,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                       isActive={isActive}
                       tooltip={item.label}
                       className={cn(
-                        "h-14 rounded-2xl px-5 transition-all duration-300",
+                        "h-10 rounded-xl px-4 transition-all",
                         isActive 
-                          ? "bg-primary text-primary-foreground shadow-2xl shadow-primary/30 scale-[1.02]" 
-                          : "hover:bg-primary/10 hover:translate-x-1"
+                          ? "bg-primary text-primary-foreground shadow-lg scale-[1.01]" 
+                          : "hover:bg-primary/10"
                       )}
                     >
                       <Link href={item.href}>
-                        <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-muted-foreground")} />
-                        <span className="font-bold text-sm tracking-tight">{item.label}</span>
+                        <item.icon className={cn("h-4 w-4", isActive ? "text-white" : "text-muted-foreground")} />
+                        <span className="font-bold text-xs tracking-tight">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -122,71 +122,71 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="p-6">
-            <div className="flex flex-col gap-3">
-              <Button variant="ghost" className="justify-start h-10 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5">
-                <HelpCircle className="h-4 w-4 mr-3" />
-                <span className="group-data-[collapsible=icon]:hidden font-semibold text-sm">Concierge</span>
+          <SidebarFooter className="p-4">
+            <div className="flex flex-col gap-1">
+              <Button variant="ghost" className="justify-start h-9 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/5 text-xs">
+                <HelpCircle className="h-4 w-4 mr-2" />
+                <span className="group-data-[collapsible=icon]:hidden font-semibold">Concierge</span>
               </Button>
               <Button 
                 variant="ghost" 
-                className="justify-start h-10 rounded-2xl text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+                className="justify-start h-9 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/5 text-xs"
                 onClick={handleLogout}
               >
-                <LogOut className="h-4 w-4 mr-3" />
-                <span className="group-data-[collapsible=icon]:hidden font-semibold text-sm">Exit Session</span>
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="group-data-[collapsible=icon]:hidden font-semibold">Exit Session</span>
               </Button>
             </div>
           </SidebarFooter>
         </Sidebar>
 
         <SidebarInset className="bg-background">
-          <header className="sticky top-0 z-40 flex h-16 sm:h-24 shrink-0 items-center justify-between gap-4 border-b/10 glass px-4 sm:px-12 shadow-sm">
-            <div className="flex items-center gap-4 sm:gap-8">
-              <SidebarTrigger className="-ml-2 hover:bg-primary/10 rounded-xl h-10 w-10 sm:h-12 sm:w-12 transition-colors" />
+          <header className="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center justify-between gap-4 border-b glass px-4 sm:px-8 shadow-sm">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger className="hover:bg-primary/10 rounded-lg h-9 w-9 transition-colors" />
               <div className="hidden lg:flex relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary" />
                 <Input
                   type="search"
-                  placeholder="Intelligence Search... (⌘K)"
-                  className="w-48 xl:w-96 bg-secondary/50 pl-12 h-12 rounded-2xl border-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-all font-medium text-sm"
+                  placeholder="Intelligence Search..."
+                  className="w-48 xl:w-72 bg-secondary/50 pl-9 h-9 rounded-xl border-none font-medium text-xs"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-6">
+            <div className="flex items-center gap-2 sm:gap-4">
               {mounted && (
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={toggleTheme}
-                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl hover:bg-primary/5 transition-all"
+                  className="h-9 w-9 rounded-lg hover:bg-primary/5"
                 >
                   {resolvedTheme === 'dark' ? (
-                    <Sun className="h-5 w-5 text-amber-400" />
+                    <Sun className="h-4 w-4 text-amber-400" />
                   ) : (
-                    <Moon className="h-5 w-5 text-indigo-600" />
+                    <Moon className="h-4 w-4 text-indigo-600" />
                   )}
                 </Button>
               )}
 
-              <Button variant="ghost" size="icon" className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl hover:bg-primary/5">
-                <Bell className="h-5 w-5 text-muted-foreground" />
-                <span className="absolute top-2.5 right-2.5 flex h-2 w-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-lg hover:bg-primary/5">
+                <Bell className="h-4 w-4 text-muted-foreground" />
+                <span className="absolute top-2 right-2 flex h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-background animate-pulse" />
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 sm:gap-4 p-1 sm:pr-4 hover:bg-primary/5 rounded-xl transition-all">
-                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl shadow-xl overflow-hidden">
-                      <AvatarImage src={`https://picsum.photos/seed/${role}/200/200`} />
-                      <AvatarFallback className={cn("rounded-xl text-white font-black text-xs uppercase", roleConfig.color)}>
+                  <Button variant="ghost" className="flex items-center gap-2 p-1 sm:pr-3 hover:bg-primary/5 rounded-lg">
+                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg shadow-md overflow-hidden">
+                      <AvatarImage src={`https://picsum.photos/seed/${role}/100/100`} />
+                      <AvatarFallback className={cn("rounded-lg text-white font-black text-[10px] uppercase", roleConfig.color)}>
                         {role ? role[0] : 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:flex flex-col items-start text-left">
-                      <span className="text-xs font-black leading-none mb-1 tracking-tight">{roleConfig.title}</span>
-                      <span className="text-[8px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
+                      <span className="text-[10px] font-black leading-none mb-0.5 tracking-tight">{roleConfig.title}</span>
+                      <span className="text-[7px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
                         <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
                         Online
                       </span>
@@ -194,22 +194,21 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 rounded-3xl p-3 glass shadow-2xl">
-                  <DropdownMenuLabel className="px-4 py-2 text-[10px] uppercase font-black text-muted-foreground tracking-widest">Enterprise Access</DropdownMenuLabel>
-                  <DropdownMenuItem className="rounded-2xl px-4 py-3 cursor-pointer text-sm font-semibold focus:bg-primary/5">Organization Profile</DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-2xl px-4 py-3 cursor-pointer text-sm font-semibold focus:bg-primary/5">Security Credentials</DropdownMenuItem>
-                  <DropdownMenuSeparator className="my-2" />
-                  <DropdownMenuItem onClick={handleLogout} className="rounded-2xl px-4 py-3 cursor-pointer text-sm text-destructive font-bold focus:bg-destructive/5">
-                    <LogOut className="mr-3 h-4 w-4" />
-                    Terminate Session
+                <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 glass shadow-xl">
+                  <DropdownMenuItem className="rounded-xl px-3 py-2 cursor-pointer text-xs font-semibold">Profile</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-xl px-3 py-2 cursor-pointer text-xs font-semibold">Security</DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1" />
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-xl px-3 py-2 cursor-pointer text-xs text-destructive font-bold">
+                    <LogOut className="mr-2 h-3.5 w-3.5" />
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-8 lg:p-12 overflow-y-auto bg-[radial-gradient(circle_at_top_right,var(--primary),transparent)] bg-[length:200px_200px] sm:bg-[length:400px_400px] bg-no-repeat bg-fixed">
-            <div className="mx-auto max-w-[1400px] animate-in fade-in slide-in-from-bottom-6 duration-1000 fill-mode-both">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+            <div className="mx-auto max-w-[1200px]">
               {children}
             </div>
           </main>

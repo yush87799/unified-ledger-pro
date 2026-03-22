@@ -247,78 +247,78 @@ export default function BillingPage() {
   );
 
   return (
-    <div className="space-y-8 sm:space-y-12 pb-24 sm:pb-32 px-1">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
-        <div className="space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
+    <div className="space-y-6 sm:space-y-8 pb-12 px-1">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20">
             <Zap className="h-3 w-3 text-primary fill-primary" />
-            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary">POS Active</span>
+            <span className="text-[8px] font-black uppercase tracking-widest text-primary">POS Active</span>
           </div>
-          <h1 className="font-headline text-3xl sm:text-5xl lg:text-6xl font-black tracking-tighter">Billing <span className="text-muted-foreground/30 font-thin italic">Interface</span></h1>
+          <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tighter">Billing <span className="text-muted-foreground/30 font-thin italic">Interface</span></h1>
         </div>
       </div>
 
-      <Tabs defaultValue="create" className="space-y-8 sm:space-y-10" onValueChange={(val) => val === 'history' && loadHistory()}>
-        <TabsList className="bg-secondary/50 p-1 rounded-xl sm:rounded-2xl h-12 sm:h-16 w-full max-w-md glass">
-          <TabsTrigger value="create" className="flex-1 rounded-lg sm:rounded-xl font-bold h-full gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-            <Plus className="h-4 w-4" /> New Invoice
+      <Tabs defaultValue="create" className="space-y-6" onValueChange={(val) => val === 'history' && loadHistory()}>
+        <TabsList className="bg-secondary/50 p-1 rounded-xl h-12 w-full max-w-sm glass">
+          <TabsTrigger value="create" className="flex-1 rounded-lg font-bold h-full gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs">
+            <Plus className="h-3 w-3" /> New Invoice
           </TabsTrigger>
-          <TabsTrigger value="history" className="flex-1 rounded-lg sm:rounded-xl font-bold h-full gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-            <History className="h-4 w-4" /> Past Ledger
+          <TabsTrigger value="history" className="flex-1 rounded-lg font-bold h-full gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs">
+            <History className="h-3 w-3" /> Past Ledger
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="create" className="space-y-8 sm:space-y-10">
-          <div className="flex flex-col lg:flex-row gap-8 sm:gap-10">
-            <div className="flex-1 space-y-8 sm:space-y-10 min-w-0">
-              <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
-                <CardHeader className="p-6 sm:p-10 border-b border-primary/5 bg-primary/[0.02]">
-                  <CardTitle className="font-headline text-lg sm:text-2xl font-black tracking-tight flex items-center gap-3">
-                    <User className="h-5 w-5 text-primary" /> Customer Credentials
+        <TabsContent value="create" className="space-y-6">
+          <div className="flex flex-col xl:flex-row gap-6">
+            <div className="flex-1 space-y-6 min-w-0">
+              <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+                <CardHeader className="p-4 sm:p-6 border-b border-primary/5 bg-primary/[0.02]">
+                  <CardTitle className="font-headline text-base sm:text-lg font-black flex items-center gap-2">
+                    <User className="h-4 w-4 text-primary" /> Customer Details
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 sm:p-10 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                  <div className="space-y-2 sm:space-y-3">
-                    <Label className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest">Entity Name*</Label>
+                <CardContent className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Entity Name*</Label>
                     <Input 
-                      placeholder="Enter legal name" 
-                      className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold text-sm"
+                      placeholder="Legal name" 
+                      className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-xs"
                       value={customer.name}
                       onChange={e => setCustomer({...customer, name: e.target.value})}
                     />
                   </div>
-                  <div className="space-y-2 sm:space-y-3">
-                    <Label className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest">Contact Detail*</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Contact Detail*</Label>
                     <Input 
                       placeholder="+91 00000 00000" 
-                      className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold text-sm"
+                      className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-xs"
                       value={customer.phone}
                       onChange={e => setCustomer({...customer, phone: e.target.value.replace(/[^0-9+]/g, '')})}
                     />
                   </div>
-                  <div className="space-y-2 sm:space-y-3">
-                    <Label className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest">Jurisdiction / State*</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Jurisdiction*</Label>
                     <Select 
                       value={customer.stateCode} 
                       onValueChange={val => setCustomer({...customer, stateCode: val})}
                     >
-                      <SelectTrigger className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold text-sm">
+                      <SelectTrigger className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-xs">
                         <SelectValue placeholder="Select State" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-2xl glass">
+                      <SelectContent className="rounded-xl glass">
                         {INDIAN_STATES.map(state => (
-                          <SelectItem key={state.code} value={state.code} className="rounded-xl font-bold py-3 text-xs sm:text-sm">
+                          <SelectItem key={state.code} value={state.code} className="rounded-lg font-bold py-2 text-xs">
                             {state.code} - {state.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2 sm:space-y-3">
-                    <Label className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest">Registered Address</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Address</Label>
                     <Input 
-                      placeholder="Full billing address" 
-                      className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold text-sm"
+                      placeholder="Billing address" 
+                      className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-xs"
                       value={customer.address}
                       onChange={e => setCustomer({...customer, address: e.target.value})}
                     />
@@ -326,26 +326,26 @@ export default function BillingPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
-                <CardHeader className="p-6 sm:p-10 border-b border-primary/5 bg-primary/[0.02] flex flex-row items-center justify-between gap-4">
-                  <CardTitle className="font-headline text-lg sm:text-2xl font-black tracking-tight flex items-center gap-3">
-                    <ShoppingBag className="h-5 w-5 text-primary" /> Items
+              <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+                <CardHeader className="p-4 sm:p-6 border-b border-primary/5 bg-primary/[0.02] flex flex-row items-center justify-between">
+                  <CardTitle className="font-headline text-base sm:text-lg font-black flex items-center gap-2">
+                    <ShoppingBag className="h-4 w-4 text-primary" /> Items
                   </CardTitle>
-                  <Button variant="ghost" size="sm" onClick={addItem} className="text-primary font-black hover:bg-primary/5 rounded-xl h-10 px-4 sm:px-5 group">
-                    <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform" /> <span className="hidden sm:inline">Add Product</span><span className="sm:hidden">Add</span>
+                  <Button variant="ghost" size="sm" onClick={addItem} className="text-primary font-black hover:bg-primary/5 rounded-lg h-8 px-3 text-xs">
+                    <Plus className="mr-1 h-3 w-3" /> Add Item
                   </Button>
                 </CardHeader>
                 <CardContent className="p-0 overflow-x-auto">
-                  <div className="min-w-[900px]">
+                  <div className="min-w-[800px]">
                     <Table>
                       <TableHeader className="bg-primary/[0.01]">
                         <TableRow className="border-none">
-                          <TableHead className="py-6 pl-10 font-black uppercase text-[9px] tracking-widest w-[30%]">Description</TableHead>
+                          <TableHead className="py-4 pl-6 font-black uppercase text-[9px] tracking-widest w-[30%]">Description</TableHead>
                           <TableHead className="font-black uppercase text-[9px] tracking-widest">Qty & Stock</TableHead>
                           <TableHead className="font-black uppercase text-[9px] tracking-widest">Rate (₹)</TableHead>
                           <TableHead className="font-black uppercase text-[9px] tracking-widest">Tax</TableHead>
-                          <TableHead className="text-right pr-10 font-black uppercase text-[9px] tracking-widest">Total</TableHead>
-                          <TableHead className="w-[60px]"></TableHead>
+                          <TableHead className="text-right pr-6 font-black uppercase text-[9px] tracking-widest">Total</TableHead>
+                          <TableHead className="w-[50px]"></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -355,62 +355,61 @@ export default function BillingPage() {
                           
                           return (
                             <TableRow key={item.id} className="border-none hover:bg-primary/[0.02] transition-colors group">
-                              <TableCell className="py-6 pl-10">
+                              <TableCell className="py-4 pl-6">
                                 <Select 
                                   value={item.productId} 
                                   onValueChange={(val) => handleProductSelect(item.id, val)}
                                 >
-                                  <SelectTrigger className="h-10 rounded-xl bg-secondary/30 border-none font-bold min-w-[200px] text-xs">
+                                  <SelectTrigger className="h-9 rounded-lg bg-secondary/30 border-none font-bold min-w-[180px] text-[11px]">
                                     <SelectValue placeholder={loadingProducts ? "Syncing..." : "Select Product"} />
                                   </SelectTrigger>
-                                  <SelectContent className="rounded-2xl glass">
+                                  <SelectContent className="rounded-xl glass">
                                     {products.map(p => (
-                                      <SelectItem key={p.id} value={p.id} disabled={p.stock <= 0} className="rounded-xl font-bold py-2 text-xs">
-                                        {p.name} <span className="opacity-40 text-[9px] ml-2">[{p.brand}]</span>
+                                      <SelectItem key={p.id} value={p.id} disabled={p.stock <= 0} className="rounded-lg font-bold py-1.5 text-[11px]">
+                                        {p.name} <span className="opacity-40 text-[8px] ml-1">[{p.brand}]</span>
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
                               </TableCell>
                               <TableCell>
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-1.5">
                                     <Input 
                                       value={item.qty} 
-                                      className="h-10 w-16 rounded-xl bg-secondary/30 border-none font-black text-center text-xs"
+                                      className="h-8 w-14 rounded-lg bg-secondary/30 border-none font-black text-center text-[11px]"
                                       onChange={e => handleQtyChange(item.id, e.target.value)}
                                     />
-                                    <span className="text-[10px] font-black uppercase text-muted-foreground">{item.unit}</span>
+                                    <span className="text-[9px] font-black uppercase text-muted-foreground">{item.unit}</span>
                                   </div>
                                   {product && (
                                     <div className={cn(
-                                      "flex items-center gap-1.5 px-2 py-0.5 rounded-md w-fit",
+                                      "flex items-center gap-1 px-1.5 py-0.5 rounded-md w-fit",
                                       product.stock < 10 ? "bg-amber-500/10 text-amber-600" : "bg-emerald-500/10 text-emerald-600"
                                     )}>
-                                      <Info className="h-2.5 w-2.5" />
-                                      <span className="text-[8px] font-black uppercase tracking-widest">Stock: {product.stock}</span>
+                                      <span className="text-[7px] font-black uppercase tracking-widest">Stock: {product.stock}</span>
                                     </div>
                                   )}
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <div className="flex flex-col">
-                                  <span className="font-black text-xs">₹{item.price.toLocaleString()}</span>
+                                <div className="flex flex-col leading-tight">
+                                  <span className="font-black text-[11px]">₹{item.price.toLocaleString()}</span>
                                   {discount > 0 && (
-                                    <span className="text-[9px] text-emerald-500 font-black uppercase tracking-tight">Save ₹{discount.toLocaleString()}</span>
+                                    <span className="text-[8px] text-emerald-500 font-black uppercase tracking-tight">Save ₹{discount.toLocaleString()}</span>
                                   )}
                                   {item.mrp > item.price && (
-                                    <span className="text-[8px] text-muted-foreground line-through">MRP: ₹{item.mrp.toLocaleString()}</span>
+                                    <span className="text-[7px] text-muted-foreground line-through opacity-60">MRP: ₹{item.mrp.toLocaleString()}</span>
                                   )}
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <Badge variant="outline" className="rounded-lg border-primary/20 text-primary font-black text-[9px] px-2 py-1 bg-primary/5">{item.gstRate}%</Badge>
+                                <Badge variant="outline" className="rounded-md border-primary/20 text-primary font-black text-[8px] px-1.5 py-0 bg-primary/5">{item.gstRate}%</Badge>
                               </TableCell>
-                              <TableCell className="text-right pr-10 font-black text-xs">₹{item.total.toLocaleString()}</TableCell>
-                              <TableCell className="pr-4">
-                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl" onClick={() => removeItem(item.id)} disabled={items.length === 1}>
-                                  <Trash2 className="h-4 w-4" />
+                              <TableCell className="text-right pr-6 font-black text-[11px]">₹{item.total.toLocaleString()}</TableCell>
+                              <TableCell className="pr-2">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => removeItem(item.id)} disabled={items.length === 1}>
+                                  <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
                               </TableCell>
                             </TableRow>
@@ -423,39 +422,39 @@ export default function BillingPage() {
               </Card>
             </div>
 
-            <div className="lg:w-[350px] xl:w-[400px] space-y-10">
-              <Card className="border-none bg-primary text-primary-foreground rounded-[1.5rem] sm:rounded-[2.5rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-12 opacity-10 scale-[2.5] rotate-45 pointer-events-none">
-                  <IndianRupee className="h-24 w-24" />
+            <div className="xl:w-[320px] space-y-6">
+              <Card className="border-none bg-primary text-primary-foreground rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8 opacity-10 scale-[2] rotate-45 pointer-events-none">
+                  <IndianRupee className="h-16 w-16" />
                 </div>
-                <div className="space-y-6 relative z-10">
-                  <h3 className="font-headline text-2xl sm:text-3xl font-black tracking-tighter">Summary</h3>
-                  <div className="space-y-4">
+                <div className="space-y-4 relative z-10">
+                  <h3 className="font-headline text-lg font-black tracking-tighter">Summary</h3>
+                  <div className="space-y-3">
                     <div className="flex justify-between items-center opacity-70">
-                      <span className="text-[10px] font-black uppercase tracking-widest">Taxable Value</span>
-                      <span className="font-bold text-sm">₹{totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest">Taxable Value</span>
+                      <span className="font-bold text-xs">₹{totals.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between items-center opacity-70">
-                      <span className="text-[10px] font-black uppercase tracking-widest">Total GST</span>
-                      <span className="font-bold text-sm">₹{totals.gstTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest">Total GST</span>
+                      <span className="font-bold text-xs">₹{totals.gstTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="pt-6 border-t border-white/20">
+                    <div className="pt-4 border-t border-white/20">
                       <div className="flex justify-between items-end">
-                        <span className="font-black uppercase tracking-widest text-[10px] opacity-80">Payable</span>
-                        <span className="font-headline text-3xl sm:text-4xl font-black tracking-tighter">₹{totals.grandTotal.toLocaleString()}</span>
+                        <span className="font-black uppercase tracking-widest text-[9px] opacity-80">Payable</span>
+                        <span className="font-headline text-2xl font-black tracking-tighter">₹{totals.grandTotal.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-4 mt-8">
+                  <div className="flex flex-col gap-3 mt-6">
                     <Button 
-                      className="w-full h-14 rounded-xl bg-white text-primary hover:bg-white/90 font-black text-lg shadow-2xl"
+                      className="w-full h-11 rounded-xl bg-white text-primary hover:bg-white/90 font-black text-sm shadow-lg"
                       onClick={handleSaveInvoice}
                       disabled={isSaving}
                     >
-                      {isSaving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />} Confirm
+                      {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Confirm
                     </Button>
-                    <Button variant="outline" className="w-full h-12 rounded-xl border-white/20 bg-white/5 text-white text-sm" onClick={handlePreviewCurrent}>
-                      <Printer className="h-4 w-4 mr-2" /> Preview Draft
+                    <Button variant="outline" className="w-full h-9 rounded-lg border-white/20 bg-white/5 text-white text-[10px]" onClick={handlePreviewCurrent}>
+                      <Printer className="h-3.5 w-3.5 mr-2" /> Preview Draft
                     </Button>
                   </div>
                 </div>
@@ -465,15 +464,15 @@ export default function BillingPage() {
         </TabsContent>
 
         <TabsContent value="history">
-          <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
-            <CardHeader className="p-6 sm:p-10 border-b border-primary/5 bg-primary/[0.02]">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8">
-                <CardTitle className="font-headline text-2xl font-black tracking-tight">Ledger</CardTitle>
-                <div className="relative w-full max-w-md">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+            <CardHeader className="p-4 sm:p-6 border-b border-primary/5 bg-primary/[0.02]">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <CardTitle className="font-headline text-lg font-black tracking-tight">Ledger</CardTitle>
+                <div className="relative w-full max-w-xs">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
                     placeholder="Search ID or Counterparty..." 
-                    className="pl-12 h-12 rounded-xl bg-secondary/50 border-none font-bold text-sm"
+                    className="pl-9 h-9 rounded-lg bg-secondary/50 border-none font-bold text-xs"
                     value={historySearch}
                     onChange={e => setHistorySearch(e.target.value)}
                   />
@@ -481,31 +480,31 @@ export default function BillingPage() {
               </div>
             </CardHeader>
             <CardContent className="p-0 overflow-x-auto">
-              <div className="min-w-[800px]">
+              <div className="min-w-[700px]">
                 <Table>
                   <TableHeader className="bg-primary/[0.01]">
                     <TableRow className="border-none">
-                      <TableHead className="py-6 pl-10 font-black uppercase text-[9px] tracking-widest">Invoice ID</TableHead>
+                      <TableHead className="py-4 pl-6 font-black uppercase text-[9px] tracking-widest">Invoice ID</TableHead>
                       <TableHead className="font-black uppercase text-[9px] tracking-widest">Date</TableHead>
                       <TableHead className="font-black uppercase text-[9px] tracking-widest">Entity</TableHead>
                       <TableHead className="font-black uppercase text-[9px] tracking-widest">Amount (₹)</TableHead>
-                      <TableHead className="text-right pr-10 font-black uppercase text-[9px] tracking-widest">Audit</TableHead>
+                      <TableHead className="text-right pr-6 font-black uppercase text-[9px] tracking-widest">Audit</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loadingHistory ? (
-                      <TableRow><TableCell colSpan={5} className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-primary" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={5} className="text-center py-12"><Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" /></TableCell></TableRow>
                     ) : filteredHistory.length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className="text-center py-20 text-muted-foreground font-bold">No historical data found.</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground font-bold text-xs">No records.</TableCell></TableRow>
                     ) : filteredHistory.map((inv) => (
                       <TableRow key={inv.id} className="border-none hover:bg-primary/[0.02] group">
-                        <TableCell className="font-mono text-[10px] font-black text-primary py-6 pl-10">{inv.id}</TableCell>
-                        <TableCell className="text-xs font-medium">{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell className="font-black tracking-tight text-xs">{inv.customer.name}</TableCell>
-                        <TableCell className="font-black text-xs">₹{inv.grandTotal.toLocaleString()}</TableCell>
-                        <TableCell className="text-right pr-10">
-                          <Button variant="ghost" size="sm" onClick={() => handleViewInvoice(inv)} className="rounded-xl h-10 px-5 font-black text-primary hover:bg-primary/5 text-xs">
-                            <Eye className="h-3.5 w-3.5 mr-2" /> View
+                        <TableCell className="font-mono text-[9px] font-black text-primary py-4 pl-6">{inv.id}</TableCell>
+                        <TableCell className="text-[10px] font-medium">{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="font-black tracking-tight text-[11px]">{inv.customer.name}</TableCell>
+                        <TableCell className="font-black text-[11px]">₹{inv.grandTotal.toLocaleString()}</TableCell>
+                        <TableCell className="text-right pr-6">
+                          <Button variant="ghost" size="sm" onClick={() => handleViewInvoice(inv)} className="rounded-lg h-8 px-3 font-black text-primary hover:bg-primary/5 text-[10px]">
+                            <Eye className="h-3 w-3 mr-1" /> View
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -519,51 +518,49 @@ export default function BillingPage() {
       </Tabs>
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[800px] p-0 overflow-hidden rounded-[1.5rem] sm:rounded-[2.5rem] border-none glass shadow-2xl">
-          <DialogHeader className="p-6 sm:p-10 bg-primary/5 border-b border-primary/5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-white">
-                  <FileText className="h-6 w-6" />
+        <DialogContent className="max-w-[95vw] sm:max-w-[700px] p-0 overflow-hidden rounded-2xl border-none glass shadow-2xl">
+          <DialogHeader className="p-6 bg-primary/5 border-b border-primary/5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-white">
+                  <FileText className="h-5 w-5" />
                 </div>
-                <div>
-                  <DialogTitle className="font-headline text-xl sm:text-2xl font-black tracking-tighter">Tax Invoice</DialogTitle>
-                </div>
+                <DialogTitle className="font-headline text-lg font-black tracking-tighter">Tax Invoice</DialogTitle>
               </div>
-              <Badge className="bg-emerald-500 text-white border-none px-4 py-1.5 rounded-full text-[9px] font-black tracking-widest">VERIFIED</Badge>
+              <Badge className="bg-emerald-500 text-white border-none px-3 py-1 rounded-full text-[8px] font-black tracking-widest">VERIFIED</Badge>
             </div>
           </DialogHeader>
           
-          <div className="p-6 sm:p-10 space-y-8 max-h-[70vh] overflow-y-auto bg-white text-black">
+          <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto bg-white text-black text-xs">
             {previewInvoice && (
               <>
-                <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
-                  <div className="space-y-4">
-                    <h2 className="text-2xl font-black font-headline text-primary italic">{businessSettings?.brandName || 'Unified Ledger Pro'}</h2>
-                    <div className="space-y-1">
-                       <p className="text-[9px] font-black uppercase text-muted-foreground">GSTIN</p>
-                       <p className="text-xs font-bold">{businessSettings?.gstin || 'N/A'}</p>
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-black font-headline text-primary italic">{businessSettings?.brandName || 'Unified Ledger Pro'}</h2>
+                    <div className="space-y-0.5">
+                       <p className="text-[8px] font-black uppercase text-muted-foreground">GSTIN</p>
+                       <p className="font-bold">{businessSettings?.gstin || 'N/A'}</p>
                     </div>
                   </div>
-                  <div className="text-left sm:text-right space-y-2">
-                    <p className="text-sm font-bold">Date: {new Date(previewInvoice.createdAt!).toLocaleDateString()}</p>
-                    <p className="text-[10px] font-mono font-black text-primary uppercase">Ref: {previewInvoice.id}</p>
+                  <div className="text-right space-y-1">
+                    <p className="font-bold">Date: {new Date(previewInvoice.createdAt!).toLocaleDateString()}</p>
+                    <p className="text-[9px] font-mono font-black text-primary uppercase">Ref: {previewInvoice.id}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-y py-8 border-slate-100">
-                  <div className="space-y-2">
-                    <p className="text-[9px] font-black text-primary uppercase tracking-widest">Billed Entity:</p>
-                    <p className="font-black text-xl">{previewInvoice.customer?.name || 'N/A'}</p>
-                    <div className="text-slate-500 font-medium space-y-0.5 text-xs">
+                <div className="grid grid-cols-2 gap-6 border-y py-6 border-slate-100">
+                  <div className="space-y-1">
+                    <p className="text-[8px] font-black text-primary uppercase tracking-widest">Billed To:</p>
+                    <p className="font-black text-sm">{previewInvoice.customer?.name || 'N/A'}</p>
+                    <div className="text-slate-500 font-medium space-y-0.5 text-[10px]">
                       <p>{previewInvoice.customer?.phone || 'N/A'}</p>
                       <p>{previewInvoice.customer?.address || 'N/A'}</p>
                     </div>
                   </div>
-                  <div className="bg-slate-50 rounded-2xl p-6">
-                    <p className="text-[9px] font-black text-primary uppercase tracking-widest">Remit To:</p>
-                    <p className="font-black text-sm">{businessSettings?.businessName || 'N/A'}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">{businessSettings?.address || 'N/A'}</p>
+                  <div className="bg-slate-50 rounded-xl p-4">
+                    <p className="text-[8px] font-black text-primary uppercase tracking-widest">Remit To:</p>
+                    <p className="font-black text-xs">{businessSettings?.businessName || 'N/A'}</p>
+                    <p className="text-[9px] text-slate-500 font-medium mt-1">{businessSettings?.address || 'N/A'}</p>
                   </div>
                 </div>
 
@@ -571,38 +568,38 @@ export default function BillingPage() {
                   <Table>
                     <TableHeader>
                       <TableRow className="border-b-2 border-black">
-                        <TableHead className="text-black font-black uppercase text-[9px]">Item</TableHead>
-                        <TableHead className="text-black font-black uppercase text-[9px]">Qty</TableHead>
-                        <TableHead className="text-black font-black uppercase text-[9px]">Tax</TableHead>
-                        <TableHead className="text-right text-black font-black uppercase text-[9px]">Total</TableHead>
+                        <TableHead className="text-black font-black uppercase text-[8px]">Item</TableHead>
+                        <TableHead className="text-black font-black uppercase text-[8px]">Qty</TableHead>
+                        <TableHead className="text-black font-black uppercase text-[8px]">Tax</TableHead>
+                        <TableHead className="text-right text-black font-black uppercase text-[8px]">Total</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {previewInvoice.items?.filter(i => i.productId).map((item) => (
                         <TableRow key={item.id} className="border-b border-slate-100">
-                          <TableCell className="text-xs font-black">{item.productName}</TableCell>
-                          <TableCell className="text-xs font-bold">{item.qty} {item.unit}</TableCell>
-                          <TableCell className="text-xs font-bold">{item.gstRate}%</TableCell>
-                          <TableCell className="text-right text-xs font-black">₹{item.total.toLocaleString()}</TableCell>
+                          <TableCell className="font-black">{item.productName}</TableCell>
+                          <TableCell className="font-bold">{item.qty} {item.unit}</TableCell>
+                          <TableCell className="font-bold">{item.gstRate}%</TableCell>
+                          <TableCell className="text-right font-black">₹{item.total.toLocaleString()}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
 
-                <div className="flex justify-end">
-                  <div className="w-full sm:w-[300px] space-y-2">
-                    <div className="flex justify-between text-[10px] opacity-60">
+                <div className="flex justify-end pt-4">
+                  <div className="w-[200px] space-y-1.5">
+                    <div className="flex justify-between text-[9px] opacity-60">
                       <span className="font-black uppercase">Subtotal</span>
                       <span className="font-bold">₹{previewInvoice.subtotal?.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-[10px] opacity-60">
+                    <div className="flex justify-between text-[9px] opacity-60">
                       <span className="font-black uppercase">GST ({previewInvoice.taxType})</span>
                       <span className="font-bold">₹{previewInvoice.gstTotal?.toLocaleString()}</span>
                     </div>
-                    <div className="pt-4 border-t-2 border-black flex justify-between items-end">
-                      <span className="font-black uppercase text-primary text-[11px]">Payable</span>
-                      <span className="font-headline text-3xl font-black">₹{previewInvoice.grandTotal?.toLocaleString()}</span>
+                    <div className="pt-3 border-t-2 border-black flex justify-between items-end">
+                      <span className="font-black uppercase text-primary text-[10px]">Payable</span>
+                      <span className="font-headline text-xl font-black">₹{previewInvoice.grandTotal?.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -610,10 +607,10 @@ export default function BillingPage() {
             )}
           </div>
 
-          <DialogFooter className="p-6 sm:p-10 bg-primary/5 border-t border-primary/5 flex flex-col sm:flex-row gap-4">
-            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="rounded-xl font-black w-full sm:w-auto">Close</Button>
-            <Button onClick={() => window.print()} className="rounded-xl h-12 px-8 font-black text-lg gap-3 w-full sm:w-auto">
-              <Printer className="h-5 w-5" /> Execute Print
+          <DialogFooter className="p-4 bg-primary/5 border-t border-primary/5 flex gap-3">
+            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="rounded-lg font-black h-10 text-xs">Close</Button>
+            <Button onClick={() => window.print()} className="rounded-lg h-10 px-6 font-black text-sm gap-2">
+              <Printer className="h-4 w-4" /> Print
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -56,29 +56,29 @@ export default function DashboardPage() {
   const roleConfig = ROLES[role];
 
   return (
-    <div className="space-y-8 sm:space-y-12 pb-24">
+    <div className="space-y-6 sm:space-y-8 pb-12">
       {/* Executive Header */}
-      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20">
             <Activity className="h-3 w-3 text-primary animate-pulse" />
-            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary">System Pulse Active</span>
+            <span className="text-[8px] font-black uppercase tracking-widest text-primary">System Pulse Active</span>
           </div>
-          <h1 className="font-headline text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-none">
+          <h1 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-none">
             {roleConfig.title} <span className="text-muted-foreground/30 font-thin italic">Terminal</span>
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-lg font-medium max-w-2xl leading-relaxed opacity-80">
-            Intelligence overview of your operational domain. Monitor growth vectors and system health in real-time.
+          <p className="text-muted-foreground text-xs sm:text-sm font-medium max-w-xl opacity-80">
+            Intelligence overview of your operational domain.
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch gap-4">
-          <Button variant="outline" className="h-12 sm:h-14 px-6 rounded-xl sm:rounded-2xl glass font-bold">
-            <Calendar className="mr-3 h-5 w-5 text-primary" /> 
+        <div className="flex flex-col sm:flex-row items-stretch gap-3">
+          <Button variant="outline" className="h-9 px-4 rounded-lg glass font-bold text-xs">
+            <Calendar className="mr-2 h-4 w-4 text-primary" /> 
             {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
           </Button>
           <Link href="/billing">
-            <Button className="w-full h-12 sm:h-14 px-8 rounded-xl sm:rounded-2xl shadow-xl font-black group">
-              <Plus className="mr-3 h-5 w-5 group-hover:rotate-90 transition-transform" /> New Transaction
+            <Button className="h-9 px-6 rounded-lg shadow-lg font-black text-xs group">
+              <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform" /> New Entry
             </Button>
           </Link>
         </div>
@@ -86,107 +86,105 @@ export default function DashboardPage() {
 
       <KPISection role={role} />
       
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 sm:gap-10">
-        <div className="xl:col-span-8 space-y-10 sm:space-y-12">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="xl:col-span-8 space-y-6">
           <ChartsSection role={role} />
           
-          <Card className="border-none glass-card shadow-2xl rounded-[2rem] overflow-hidden">
-            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-primary/5 bg-primary/[0.02] p-6 sm:p-10 gap-6">
+          <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-primary/5 bg-primary/[0.02] p-4 sm:p-6">
               <div>
-                <CardTitle className="font-headline text-2xl sm:text-3xl font-black tracking-tight">Audit Stream</CardTitle>
-                <CardDescription>Real-time ledger of latest financial interactions</CardDescription>
+                <CardTitle className="font-headline text-lg sm:text-xl font-black tracking-tight">Audit Stream</CardTitle>
+                <CardDescription className="text-xs">Real-time ledger of latest financial interactions</CardDescription>
               </div>
               <Link href="/billing">
-                <Button variant="ghost" className="text-primary font-black hover:bg-primary/5 rounded-xl h-10 px-5 group">
-                  Full History <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                <Button variant="ghost" className="text-primary font-black hover:bg-primary/5 rounded-lg h-8 px-4 text-xs group">
+                  Full History <ArrowUpRight className="ml-1 h-3 w-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>
               </Link>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <div className="min-w-[600px]">
-                  <Table>
-                    <TableHeader className="bg-primary/[0.01]">
-                      <TableRow className="border-none">
-                        <TableHead className="py-8 pl-12 font-black uppercase text-[10px] tracking-widest opacity-60">Reference</TableHead>
-                        <TableHead className="font-black uppercase text-[10px] tracking-widest opacity-60">Counterparty</TableHead>
-                        <TableHead className="font-black uppercase text-[10px] tracking-widest opacity-60">Timeline</TableHead>
-                        <TableHead className="font-black uppercase text-[10px] tracking-widest opacity-60">Volume</TableHead>
-                        <TableHead className="pr-12 text-right font-black uppercase text-[10px] tracking-widest opacity-60">State</TableHead>
+            <CardContent className="p-0 overflow-x-auto">
+              <div className="min-w-[500px]">
+                <Table>
+                  <TableHeader className="bg-primary/[0.01]">
+                    <TableRow className="border-none">
+                      <TableHead className="py-4 pl-6 font-black uppercase text-[8px] tracking-widest opacity-60">Reference</TableHead>
+                      <TableHead className="font-black uppercase text-[8px] tracking-widest opacity-60">Counterparty</TableHead>
+                      <TableHead className="font-black uppercase text-[8px] tracking-widest opacity-60">Timeline</TableHead>
+                      <TableHead className="font-black uppercase text-[8px] tracking-widest opacity-60">Volume</TableHead>
+                      <TableHead className="pr-6 text-right font-black uppercase text-[8px] tracking-widest opacity-60">State</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loadingData ? (
+                      <TableRow><TableCell colSpan={5} className="py-12 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto text-primary opacity-40" /></TableCell></TableRow>
+                    ) : recentInvoices.length === 0 ? (
+                      <TableRow><TableCell colSpan={5} className="py-12 text-center font-bold text-muted-foreground italic text-xs">No activity.</TableCell></TableRow>
+                    ) : recentInvoices.map((inv) => (
+                      <TableRow key={inv.id} className="hover:bg-primary/[0.03] transition-colors border-none group">
+                        <TableCell className="font-mono text-[9px] font-black text-primary py-4 pl-6">{inv.id}</TableCell>
+                        <TableCell className="font-black text-xs tracking-tight">{inv.customer.name}</TableCell>
+                        <TableCell className="text-muted-foreground text-[10px] font-bold">{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="font-black text-xs">₹{inv.grandTotal.toLocaleString()}</TableCell>
+                        <TableCell className="pr-6 text-right"><Badge className="bg-emerald-500 text-white border-none px-2 py-0.5 font-black text-[7px] uppercase tracking-widest">PAID</Badge></TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {loadingData ? (
-                        <TableRow><TableCell colSpan={5} className="py-20 text-center"><Loader2 className="h-10 w-10 animate-spin mx-auto text-primary opacity-40" /></TableCell></TableRow>
-                      ) : recentInvoices.length === 0 ? (
-                        <TableRow><TableCell colSpan={5} className="py-20 text-center font-bold text-muted-foreground italic">No interactions found.</TableCell></TableRow>
-                      ) : recentInvoices.map((inv) => (
-                        <TableRow key={inv.id} className="hover:bg-primary/[0.03] transition-colors border-none group">
-                          <TableCell className="font-mono text-xs font-black text-primary py-8 pl-12">{inv.id}</TableCell>
-                          <TableCell className="font-black text-sm tracking-tight">{inv.customer.name}</TableCell>
-                          <TableCell className="text-muted-foreground text-xs font-bold">{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
-                          <TableCell className="font-black text-sm">₹{inv.grandTotal.toLocaleString()}</TableCell>
-                          <TableCell className="pr-12 text-right"><Badge className="bg-emerald-500 text-white border-none px-3 py-1 font-black text-[9px] uppercase tracking-widest">PAID</Badge></TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="xl:col-span-4 space-y-10 sm:space-y-12">
-          <Card className="border-none shadow-2xl bg-primary text-primary-foreground rounded-[3rem] overflow-hidden relative group p-10 flex flex-col justify-between min-h-[400px]">
-            <div className="absolute top-0 right-0 p-12 opacity-10 scale-[2.5] rotate-12 group-hover:rotate-45 transition-all duration-1000 pointer-events-none">
-              <Sparkles className="h-32 w-32" />
+        <div className="xl:col-span-4 space-y-6">
+          <Card className="border-none shadow-xl bg-primary text-primary-foreground rounded-3xl overflow-hidden relative group p-8 flex flex-col justify-between min-h-[320px]">
+            <div className="absolute top-0 right-0 p-8 opacity-10 scale-[1.5] rotate-12 group-hover:rotate-45 transition-all duration-1000 pointer-events-none">
+              <Sparkles className="h-24 w-24" />
             </div>
-            <div className="space-y-8 relative z-10">
-              <Badge className="bg-white/20 text-white border-none px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">AI Engine Alpha</Badge>
-              <div className="space-y-2">
-                <CardTitle className="font-headline text-5xl font-black tracking-tighter leading-none">Market Insights</CardTitle>
-                <CardDescription className="text-primary-foreground/60 font-medium">Intelligence Core 2.0</CardDescription>
+            <div className="space-y-4 relative z-10">
+              <Badge className="bg-white/20 text-white border-none px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest">AI Core</Badge>
+              <div className="space-y-1">
+                <CardTitle className="font-headline text-3xl font-black tracking-tighter leading-none">Insights</CardTitle>
+                <CardDescription className="text-primary-foreground/60 font-medium text-[10px]">Intelligence Engine Alpha</CardDescription>
               </div>
-              <div className="p-6 rounded-[2rem] bg-white/10 backdrop-blur-3xl border border-white/20 shadow-2xl space-y-4">
-                <p className="text-xl font-black leading-tight tracking-tight">High velocity detected in Inventory turnover.</p>
-                <p className="text-sm opacity-80 leading-relaxed font-medium">Predictive models suggest optimizing reorder levels for 14% of SKUs within 48 hours.</p>
+              <div className="p-4 rounded-xl bg-white/10 backdrop-blur-3xl border border-white/20 shadow-xl space-y-2">
+                <p className="text-sm font-black leading-tight tracking-tight">Supply chain volatility identified.</p>
+                <p className="text-[10px] opacity-80 leading-relaxed font-medium">Reorder optimization suggested for 14% of SKUs.</p>
               </div>
             </div>
-            <Link href="/analytics" className="mt-8 relative z-10">
-              <Button variant="secondary" className="w-full h-16 rounded-2xl font-black text-lg shadow-2xl hover:scale-[1.02] transition-transform">
-                Optimize Supply Chain <ArrowUpRight className="ml-2 h-6 w-6" />
+            <Link href="/analytics" className="mt-6 relative z-10">
+              <Button variant="secondary" className="w-full h-11 rounded-xl font-black text-sm shadow-xl hover:scale-[1.02] transition-transform">
+                Optimize Now <ArrowUpRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Link>
           </Card>
 
-          <Card className="border-none glass-card shadow-2xl rounded-[3rem] overflow-hidden">
-            <CardHeader className="p-10 border-b border-primary/5 bg-primary/[0.02]">
-              <div className="flex items-center gap-3">
-                <Search className="h-5 w-5 text-primary" />
-                <CardTitle className="font-headline text-2xl font-black tracking-tight">Stock Sentinel</CardTitle>
+          <Card className="border-none glass-card shadow-lg rounded-3xl overflow-hidden">
+            <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
+              <div className="flex items-center gap-2">
+                <Search className="h-4 w-4 text-primary" />
+                <CardTitle className="font-headline text-lg font-black tracking-tight">Stock Sentinel</CardTitle>
               </div>
-              <CardDescription>Continuous inventory health monitoring</CardDescription>
+              <CardDescription className="text-[10px]">Continuous health monitoring</CardDescription>
             </CardHeader>
-            <CardContent className="p-8 space-y-6">
+            <CardContent className="p-6 space-y-4">
               {loadingData ? (
-                <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                <div className="flex justify-center py-6"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div>
               ) : lowStockItems.length === 0 ? (
-                <div className="text-center py-10 opacity-40 italic font-bold">All Assets Healthy</div>
+                <div className="text-center py-6 opacity-40 italic font-bold text-xs">All Assets Healthy</div>
               ) : lowStockItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-6 rounded-2xl bg-background border border-border/40 hover:border-primary/30 transition-all group">
-                  <div className="space-y-1">
-                    <p className="font-black text-base tracking-tight">{item.name}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{item.stock} {item.unit} Remaining</p>
+                <div key={item.id} className="flex items-center justify-between p-4 rounded-xl bg-background border border-border/40 hover:border-primary/30 transition-all group">
+                  <div className="space-y-0.5">
+                    <p className="font-black text-xs tracking-tight">{item.name}</p>
+                    <p className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{item.stock} {item.unit} Remaining</p>
                   </div>
-                  <Badge variant={item.status === 'Out of Stock' ? 'destructive' : 'secondary'} className="text-[9px] uppercase font-black px-3 py-1 rounded-lg">
+                  <Badge variant={item.status === 'Out of Stock' ? 'destructive' : 'secondary'} className="text-[7px] uppercase font-black px-2 py-0.5 rounded-md">
                     {item.status}
                   </Badge>
                 </div>
               ))}
-              <Link href="/inventory" className="block mt-4">
-                <Button variant="outline" className="w-full text-primary font-black border-primary/10 hover:bg-primary/5 rounded-2xl h-14">
-                  Access Inventory Vault
+              <Link href="/inventory" className="block mt-2">
+                <Button variant="outline" className="w-full text-primary font-black border-primary/10 hover:bg-primary/5 rounded-xl h-10 text-xs">
+                  Inventory Vault
                 </Button>
               </Link>
             </CardContent>
