@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -26,13 +26,19 @@ import {
   Archive,
   AlertCircle,
   TrendingUp,
-  Scaling
+  Scaling,
+  CheckCircle2,
+  XCircle,
+  Clock
 } from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
@@ -49,7 +55,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { apiClient } from '@/lib/api-client';
@@ -71,13 +77,18 @@ const GST_CATEGORIES = [
   { id: 'exempt', name: '0% (Exempt)', rate: 0, examples: 'Essential life goods' },
   { id: 'essential', name: '5% (Mass Use)', rate: 5, examples: 'Packaged foods' },
   { id: 'standard', name: '18% (Standard)', rate: 18, examples: 'Electronics & services' },
-  { id: 'luxury', name: '40% (Luxury)', rate: 40, examples: 'Premium Sin goods' }
+  { id: 'luxury', name: '28% (Luxury)', rate: 28, examples: 'Premium Sin goods' }
 ];
 
 export default function InventoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Filtering States
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -157,11 +168,33 @@ export default function InventoryPage() {
     }
   };
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const toggleStatusFilter = (status: string) => {
+    setStatusFilters(prev => 
+      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+    );
+  };
+
+  const toggleCategoryFilter = (cat: string) => {
+    setCategoryFilters(prev => 
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => {
+      const matchesSearch = 
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        p.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.id.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilters.length === 0 || statusFilters.includes(p.status);
+      const matchesCategory = categoryFilters.length === 0 || categoryFilters.includes(p.gst);
+
+      return matchesSearch && matchesStatus && matchesCategory;
+    });
+  }, [products, searchTerm, statusFilters, categoryFilters]);
+
+  const activeFilterCount = statusFilters.length + categoryFilters.length;
 
   return (
     <div className="space-y-8 sm:space-y-12 pb-24 sm:pb-32">
@@ -317,7 +350,57 @@ export default function InventoryPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-2xl glass font-black text-xs sm:text-sm"><Filter className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" /> Filter Matrix</Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-2xl glass font-black text-xs sm:text-sm relative">
+                  <Filter className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" /> 
+                  Filter Matrix
+                  {activeFilterCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-white h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-black animate-in zoom-in">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 glass rounded-2xl p-2 sm:p-3">
+                <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest opacity-40 px-3 py-2">Stock Availability</DropdownMenuLabel>
+                <DropdownMenuCheckboxItem checked={statusFilters.includes('In Stock')} onCheckedChange={() => toggleStatusFilter('In Stock')} className="rounded-xl font-bold py-2.5">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-500" /> In Stock
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={statusFilters.includes('Low')} onCheckedChange={() => toggleStatusFilter('Low')} className="rounded-xl font-bold py-2.5">
+                  <Clock className="mr-2 h-4 w-4 text-amber-500" /> Low Stock
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={statusFilters.includes('Out of Stock')} onCheckedChange={() => toggleStatusFilter('Out of Stock')} className="rounded-xl font-bold py-2.5">
+                  <XCircle className="mr-2 h-4 w-4 text-destructive" /> Out of Stock
+                </DropdownMenuCheckboxItem>
+                
+                <DropdownMenuSeparator className="my-2" />
+                
+                <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest opacity-40 px-3 py-2">Tax Brackets</DropdownMenuLabel>
+                <DropdownMenuCheckboxItem checked={categoryFilters.includes('0%')} onCheckedChange={() => toggleCategoryFilter('0%')} className="rounded-xl font-bold py-2.5">
+                  GST 0%
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={categoryFilters.includes('5%')} onCheckedChange={() => toggleCategoryFilter('5%')} className="rounded-xl font-bold py-2.5">
+                  GST 5%
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={categoryFilters.includes('18%')} onCheckedChange={() => toggleCategoryFilter('18%')} className="rounded-xl font-bold py-2.5">
+                  GST 18%
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={categoryFilters.includes('28%')} onCheckedChange={() => toggleCategoryFilter('28%')} className="rounded-xl font-bold py-2.5">
+                  GST 28%
+                </DropdownMenuCheckboxItem>
+                
+                {(activeFilterCount > 0) && (
+                  <>
+                    <DropdownMenuSeparator className="my-2" />
+                    <DropdownMenuItem onClick={() => { setStatusFilters([]); setCategoryFilters([]); }} className="rounded-xl font-black text-xs uppercase tracking-widest justify-center text-primary py-3 hover:bg-primary/5">
+                      Reset Filters
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent className="p-0 overflow-x-auto">
@@ -325,6 +408,12 @@ export default function InventoryPage() {
             <div className="p-20 sm:p-32 text-center space-y-3 sm:space-y-4">
               <RefreshCcw className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin" />
               <p className="text-base sm:text-lg font-bold text-muted-foreground tracking-tight">Accessing Secure Vault Data...</p>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="p-20 sm:p-32 text-center space-y-3 sm:space-y-4">
+              <Archive className="mx-auto h-12 w-12 text-muted-foreground/30" />
+              <p className="text-lg font-black text-muted-foreground tracking-tight uppercase">No assets found in current matrix.</p>
+              <Button variant="link" onClick={() => { setSearchTerm(''); setStatusFilters([]); setCategoryFilters([]); }} className="font-black uppercase tracking-widest text-primary">Clear all filters</Button>
             </div>
           ) : (
             <div className="min-w-[1000px]">
