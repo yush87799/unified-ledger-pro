@@ -1,10 +1,6 @@
 
 import { Product, Invoice, BusinessSettings, DashboardStats } from './types';
 
-/**
- * Centralized API Client for Unified Ledger Pro
- * Handles all communication with local Next.js API routes.
- */
 export const apiClient = {
   inventory: {
     getAll: async (): Promise<Product[]> => {
@@ -20,6 +16,21 @@ export const apiClient = {
       });
       if (!res.ok) throw new Error('Failed to save product');
       return res.json();
+    },
+    update: async (product: Product): Promise<Product> => {
+      const res = await fetch('/api/inventory', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product),
+      });
+      if (!res.ok) throw new Error('Failed to update product');
+      return res.json();
+    },
+    delete: async (id: string): Promise<void> => {
+      const res = await fetch(`/api/inventory?id=${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete product');
     }
   },
   invoices: {

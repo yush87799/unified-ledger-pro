@@ -28,6 +28,8 @@ export interface LineItem {
   total: number;
 }
 
+export type PaymentMode = 'cash' | 'online' | 'pending';
+
 export interface Invoice {
   id: string;
   customer: {
@@ -42,7 +44,18 @@ export interface Invoice {
   grandTotal: number;
   taxType: 'INTRA' | 'INTER';
   businessStateCode: string;
+  paymentMode: PaymentMode;
   createdAt: string;
+}
+
+export interface StockLog {
+  id: string;
+  productId: string;
+  productName: string;
+  type: 'in' | 'out';
+  qty: number;
+  timestamp: string;
+  note: string;
 }
 
 export interface BusinessSettings {
@@ -62,13 +75,4 @@ export interface DashboardStats {
   assets: { value: number; trend: number };
   salesTrend: { name: string; sales: number }[];
   revenueVsExpense: { name: string; revenue: number; expense: number }[];
-}
-
-export interface RoleConfig {
-  id: UserRole;
-  title: string;
-  description: string;
-  icon: LucideIcon;
-  allowedMenus: string[];
-  color: string;
 }
