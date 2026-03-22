@@ -55,7 +55,7 @@ export default function BillingPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [items, setItems] = useState<LineItem[]>([
-    { id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }
+    { id: '1', productId: '', productName: '', qty: 1, price: 0, buyingPrice: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }
   ]);
   const [customer, setCustomer] = useState({ name: '', phone: '', address: '', stateCode: '' });
   const [paymentMode, setPaymentMode] = useState<PaymentMode>('cash');
@@ -108,6 +108,7 @@ export default function BillingPage() {
       productName: '', 
       qty: 1, 
       price: 0, 
+      buyingPrice: 0,
       mrp: 0,
       gstRate: 0, 
       unit: 'units', 
@@ -133,6 +134,7 @@ export default function BillingPage() {
           productId,
           productName: product.name,
           price: product.price,
+          buyingPrice: product.buyingPrice || 0,
           mrp: product.mrp,
           gstRate: gstNum,
           unit: product.unit,
@@ -196,7 +198,7 @@ export default function BillingPage() {
       };
       const saved = await apiClient.invoices.create(payload);
       toast({ title: "Settlement Recorded", description: `Interaction ${saved.id} finalized.` });
-      setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }]);
+      setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, buyingPrice: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }]);
       setCustomer({ name: '', phone: '', address: '', stateCode: '' });
       loadInitialData();
     } catch (err) {
@@ -312,7 +314,7 @@ export default function BillingPage() {
                                 <Select value={item.productId} onValueChange={(v) => handleProductSelect(item.id, v)}>
                                   <SelectTrigger className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm"><SelectValue placeholder="Select Asset" /></SelectTrigger>
                                   <SelectContent className="glass border-none rounded-2xl p-2">
-                                    {products.map(p => <SelectItem key={p.id} value={p.id} className="text-sm py-2.5 rounded-xl">{p.name} <span className="opacity-40 text-xs font-bold ml-2">({p.stock} avail)</span></SelectItem>)}
+                                    {products.map(p => <SelectItem key={p.id} value={p.id} className="text-sm py-2.5 rounded-xl">{p.name} <span className="opacity-40 text-[10px] font-bold ml-2">({p.stock} avail @ {p.warehouse})</span></SelectItem>)}
                                   </SelectContent>
                                 </Select>
                               </TableCell>
@@ -409,7 +411,7 @@ export default function BillingPage() {
                     {loadingHistory ? (
                       <TableRow><TableCell colSpan={6} className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-primary opacity-30" /></TableCell></TableRow>
                     ) : filteredHistory.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-20 font-bold text-muted-foreground italic text-sm">No historical interactions recovered.</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={6} className="text-center py-20 font-bold text-muted-foreground italic text-sm">No historical interactions.</TableCell></TableRow>
                     ) : filteredHistory.map((inv) => (
                       <TableRow key={inv.id} className="border-none hover:bg-primary/[0.03] transition-colors">
                         <TableCell className="font-mono text-xs font-black text-primary py-4 pl-7">{inv.id}</TableCell>

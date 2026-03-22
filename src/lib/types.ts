@@ -10,8 +10,10 @@ export interface Product {
   category: string;
   mrp: number;
   price: number;
+  buyingPrice: number;
   stock: number;
   unit: string;
+  warehouse: string;
   status: 'In Stock' | 'Low' | 'Out of Stock';
   gst: string;
 }
@@ -22,6 +24,7 @@ export interface LineItem {
   productName: string;
   qty: number;
   price: number;
+  buyingPrice: number;
   mrp: number;
   gstRate: number;
   unit: string;

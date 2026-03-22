@@ -1,40 +1,5 @@
+
 [
-  {
-    "id": "SKU-9403",
-    "name": "Pencil",
-    "brand": "Generic",
-    "category": "18%",
-    "mrp": 223,
-    "price": 222,
-    "stock": 4,
-    "unit": "pcs",
-    "status": "Low",
-    "gst": "18%"
-  },
-  {
-    "id": "SKU-5919",
-    "name": "Apple",
-    "brand": "Fruit",
-    "category": "18%",
-    "mrp": 120,
-    "price": 1086,
-    "stock": 189,
-    "unit": "kg",
-    "status": "In Stock",
-    "gst": "18%"
-  },
-  {
-    "id": "SKU-4621",
-    "name": "Strawberry",
-    "brand": "Generic",
-    "category": "0%",
-    "mrp": 500,
-    "price": 400,
-    "stock": 250,
-    "unit": "gm",
-    "status": "In Stock",
-    "gst": "0%"
-  },
   {
     "id": "SKU-8271",
     "name": "Ergonomic Office Chair",
@@ -42,8 +7,10 @@
     "category": "Standard Rate",
     "mrp": 18000,
     "price": 14999,
+    "buyingPrice": 11000,
     "stock": 19,
     "unit": "pcs",
+    "warehouse": "Bangalore Central",
     "status": "In Stock",
     "gst": "18%"
   },
@@ -54,9 +21,39 @@
     "category": "Standard Rate",
     "mrp": 8999,
     "price": 7499,
+    "buyingPrice": 5200,
     "stock": 2,
     "unit": "pcs",
+    "warehouse": "Hyderabad Hub",
     "status": "Low",
+    "gst": "18%"
+  },
+  {
+    "id": "SKU-9403",
+    "name": "Pencil Set",
+    "brand": "Apsara",
+    "category": "Standard",
+    "mrp": 225,
+    "price": 222,
+    "buyingPrice": 180,
+    "stock": 4,
+    "unit": "box",
+    "warehouse": "Main Warehouse",
+    "status": "Low",
+    "gst": "18%"
+  },
+  {
+    "id": "SKU-5919",
+    "name": "Red Apples",
+    "brand": "Kashmir Fresh",
+    "category": "Standard",
+    "mrp": 120,
+    "price": 110,
+    "buyingPrice": 85,
+    "stock": 189,
+    "unit": "kg",
+    "warehouse": "Cold Storage A1",
+    "status": "In Stock",
     "gst": "18%"
   }
 ]
