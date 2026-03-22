@@ -44,27 +44,27 @@ export default function DashboardPage() {
   const roleConfig = ROLES[role];
 
   return (
-    <div className="space-y-12 pb-20">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="space-y-4">
+    <div className="space-y-8 sm:space-y-12 pb-12 sm:pb-20">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 sm:gap-8">
+        <div className="space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
             <Activity className="h-3 w-3 text-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">System Pulse Active</span>
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary">System Pulse Active</span>
           </div>
-          <h1 className="font-headline text-5xl font-black tracking-tighter">
+          <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter">
             {roleConfig.title} <span className="text-muted-foreground/30 font-thin italic">Terminal</span>
           </h1>
-          <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
+          <p className="text-muted-foreground text-base sm:text-lg font-medium max-w-2xl leading-relaxed">
             Intelligence overview of your operational domain. Monitor growth vectors and system health in real-time.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="lg" className="rounded-2xl border-primary/10 h-14 px-6 glass hover:bg-primary/5 shadow-xl font-bold">
-            <Calendar className="mr-3 h-5 w-5 text-primary" /> 
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <Button variant="outline" className="rounded-xl sm:rounded-2xl border-primary/10 h-12 sm:h-14 px-4 sm:px-6 glass hover:bg-primary/5 shadow-xl font-bold">
+            <Calendar className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-primary" /> 
             Period: Oct 2023
           </Button>
-          <Button size="lg" className="rounded-2xl shadow-[0_20px_40px_rgba(102,51,204,0.3)] h-14 px-8 group font-bold">
-            <Plus className="mr-3 h-5 w-5 group-hover:rotate-90 transition-transform duration-500" /> 
+          <Button className="rounded-xl sm:rounded-2xl shadow-[0_20px_40px_rgba(102,51,204,0.3)] h-12 sm:h-14 px-6 sm:px-8 group font-bold">
+            <Plus className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-90 transition-transform duration-500" /> 
             New Transaction
           </Button>
         </div>
@@ -72,111 +72,113 @@ export default function DashboardPage() {
 
       <KPISection role={role} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
+        <div className="lg:col-span-12 xl:col-span-8 space-y-8 sm:space-y-10">
           <ChartsSection role={role} />
           
-          <Card className="border-none glass-card shadow-2xl rounded-[2rem] overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-primary/5 bg-primary/[0.02] p-8">
+          <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-primary/5 bg-primary/[0.02] p-6 sm:p-8 gap-4">
               <div>
-                <CardTitle className="font-headline text-2xl font-black tracking-tight">Audit Stream</CardTitle>
-                <CardDescription className="text-sm font-medium">Real-time ledger of latest financial interactions</CardDescription>
+                <CardTitle className="font-headline text-xl sm:text-2xl font-black tracking-tight">Audit Stream</CardTitle>
+                <CardDescription className="text-xs sm:text-sm font-medium">Real-time ledger of latest financial interactions</CardDescription>
               </div>
               <Link href="/billing">
-                <Button variant="ghost" size="sm" className="text-primary font-black hover:bg-primary/5 rounded-xl h-10 px-5 group">
+                <Button variant="ghost" size="sm" className="text-primary font-black hover:bg-primary/5 rounded-xl h-10 px-4 sm:px-5 group w-full sm:w-auto">
                   Full History <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>
               </Link>
             </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-primary/[0.01]">
-                  <TableRow className="hover:bg-transparent border-none">
-                    <TableHead className="py-6 pl-10 font-black uppercase text-[10px] tracking-widest text-muted-foreground">Reference</TableHead>
-                    <TableHead className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Counterparty</TableHead>
-                    <TableHead className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Timeline</TableHead>
-                    <TableHead className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Volume</TableHead>
-                    <TableHead className="pr-10 font-black uppercase text-[10px] tracking-widest text-muted-foreground">State</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentTransactions.map((tx) => (
-                    <TableRow key={tx.id} className="hover:bg-primary/[0.03] transition-colors border-none group">
-                      <TableCell className="font-mono text-[11px] font-black text-primary py-6 pl-10 group-hover:translate-x-2 transition-transform duration-500">{tx.id}</TableCell>
-                      <TableCell className="font-bold text-sm tracking-tight">{tx.customer}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs font-medium">{tx.date}</TableCell>
-                      <TableCell className="font-black text-sm">{tx.amount}</TableCell>
-                      <TableCell className="pr-10 text-right">
-                        <Badge 
-                          className={`rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-[0.1em] border-none shadow-sm ${
-                            tx.status === 'Paid' ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 
-                            tx.status === 'Pending' ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-destructive text-white'
-                          }`}
-                        >
-                          {tx.status}
-                        </Badge>
-                      </TableCell>
+            <CardContent className="p-0 overflow-x-auto">
+              <div className="min-w-[600px]">
+                <Table>
+                  <TableHeader className="bg-primary/[0.01]">
+                    <TableRow className="hover:bg-transparent border-none">
+                      <TableHead className="py-4 sm:py-6 pl-6 sm:pl-10 font-black uppercase text-[9px] sm:text-[10px] tracking-widest text-muted-foreground">Reference</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest text-muted-foreground">Counterparty</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest text-muted-foreground">Timeline</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest text-muted-foreground">Volume</TableHead>
+                      <TableHead className="pr-6 sm:pr-10 text-right font-black uppercase text-[9px] sm:text-[10px] tracking-widest text-muted-foreground">State</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {recentTransactions.map((tx) => (
+                      <TableRow key={tx.id} className="hover:bg-primary/[0.03] transition-colors border-none group">
+                        <TableCell className="font-mono text-[10px] sm:text-[11px] font-black text-primary py-4 sm:py-6 pl-6 sm:pl-10 group-hover:translate-x-2 transition-transform duration-500">{tx.id}</TableCell>
+                        <TableCell className="font-bold text-xs sm:text-sm tracking-tight">{tx.customer}</TableCell>
+                        <TableCell className="text-muted-foreground text-[10px] sm:text-xs font-medium">{tx.date}</TableCell>
+                        <TableCell className="font-black text-xs sm:text-sm">{tx.amount}</TableCell>
+                        <TableCell className="pr-6 sm:pr-10 text-right">
+                          <Badge 
+                            className={`rounded-lg sm:rounded-xl px-3 sm:px-4 py-0.5 sm:py-1 text-[8px] sm:text-[9px] font-black uppercase tracking-[0.1em] border-none shadow-sm ${
+                              tx.status === 'Paid' ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 
+                              tx.status === 'Pending' ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-destructive text-white'
+                            }`}
+                          >
+                            {tx.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="lg:col-span-4 space-y-10">
-          <Card className="border-none shadow-2xl bg-primary text-primary-foreground rounded-[2.5rem] overflow-hidden relative group p-8 pb-10 min-h-[400px] flex flex-col justify-between">
-            <div className="absolute top-0 right-0 p-12 opacity-10 scale-[2] rotate-12 group-hover:rotate-45 transition-all duration-1000">
-              <Sparkles className="h-32 w-32" />
+        <div className="lg:col-span-12 xl:col-span-4 space-y-8 sm:space-y-10">
+          <Card className="border-none shadow-2xl bg-primary text-primary-foreground rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden relative group p-6 sm:p-8 pb-8 sm:pb-10 min-h-[350px] sm:min-h-[400px] flex flex-col justify-between">
+            <div className="absolute top-0 right-0 p-8 sm:p-12 opacity-10 scale-[1.5] sm:scale-[2] rotate-12 group-hover:rotate-45 transition-all duration-1000">
+              <Sparkles className="h-24 w-24 sm:h-32 sm:w-32" />
             </div>
             
-            <div className="space-y-6 relative z-10">
-              <Badge className="bg-white/20 hover:bg-white/30 text-white border-none px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">AI Engine Alpha</Badge>
-              <div className="space-y-2">
-                <CardTitle className="font-headline text-4xl font-black tracking-tighter leading-none">Market Insights</CardTitle>
-                <CardDescription className="text-primary-foreground/60 font-medium text-base">Gemini Intelligence Core 2.0</CardDescription>
+            <div className="space-y-4 sm:space-y-6 relative z-10">
+              <Badge className="bg-white/20 hover:bg-white/30 text-white border-none px-3 sm:px-4 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest w-fit">AI Engine Alpha</Badge>
+              <div className="space-y-1 sm:space-y-2">
+                <CardTitle className="font-headline text-3xl sm:text-4xl font-black tracking-tighter leading-none">Market Insights</CardTitle>
+                <CardDescription className="text-primary-foreground/60 font-medium text-sm sm:text-base">Gemini Intelligence Core 2.0</CardDescription>
               </div>
-              <div className="p-6 rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl space-y-4">
-                <p className="text-lg font-bold leading-tight tracking-tight">
+              <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl space-y-3 sm:space-y-4">
+                <p className="text-base sm:text-lg font-bold leading-tight tracking-tight">
                   High velocity detected in <span className="underline underline-offset-8 decoration-white/40">Premium Tech</span> inventory. 
                 </p>
-                <p className="text-sm opacity-80 leading-relaxed">
+                <p className="text-xs sm:text-sm opacity-80 leading-relaxed">
                   Predictive models suggest a 31% restocking requirement within the next 72 hours.
                 </p>
               </div>
             </div>
 
-            <Button variant="secondary" className="w-full rounded-2xl h-16 font-black text-lg shadow-2xl hover:scale-[1.02] transition-transform active:scale-95 group relative z-10">
-              Optimize Supply Chain <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            <Button variant="secondary" className="w-full rounded-xl sm:rounded-2xl h-14 sm:h-16 font-black text-base sm:text-lg shadow-2xl hover:scale-[1.02] transition-transform active:scale-95 group relative z-10 mt-6">
+              Optimize Supply Chain <ArrowUpRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Button>
           </Card>
 
-          <Card className="border-none glass-card shadow-2xl rounded-[2.5rem] overflow-hidden">
-            <CardHeader className="p-8 border-b border-primary/5 bg-primary/[0.02]">
-              <div className="flex items-center gap-3 mb-2">
-                <Search className="h-4 w-4 text-primary" />
-                <CardTitle className="font-headline text-xl font-black tracking-tight">Stock Sentinel</CardTitle>
+          <Card className="border-none glass-card shadow-2xl rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="p-6 sm:p-8 border-b border-primary/5 bg-primary/[0.02]">
+              <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                <Search className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <CardTitle className="font-headline text-lg sm:text-xl font-black tracking-tight">Stock Sentinel</CardTitle>
               </div>
-              <CardDescription className="font-medium">Continuous inventory health monitoring</CardDescription>
+              <CardDescription className="text-xs sm:text-sm font-medium">Continuous inventory health monitoring</CardDescription>
             </CardHeader>
-            <CardContent className="p-8 space-y-4">
+            <CardContent className="p-6 sm:p-8 space-y-3 sm:space-y-4">
               {lowStockItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-5 rounded-2xl bg-background border border-border/40 hover:border-primary/30 transition-all group cursor-pointer hover:shadow-xl">
-                  <div className="space-y-1">
-                    <p className="font-black text-sm group-hover:text-primary transition-colors tracking-tight">{item.name}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest flex items-center gap-2">
+                <div key={item.id} className="flex items-center justify-between p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-background border border-border/40 hover:border-primary/30 transition-all group cursor-pointer hover:shadow-xl">
+                  <div className="space-y-0.5 sm:space-y-1">
+                    <p className="font-black text-xs sm:text-sm group-hover:text-primary transition-colors tracking-tight">{item.name}</p>
+                    <p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-black tracking-widest flex items-center gap-1.5 sm:gap-2">
                       {item.category} <span className="h-1 w-1 rounded-full bg-muted-foreground/30" /> {item.stock} IN STOCK
                     </p>
                   </div>
                   <Badge 
                     variant={item.status === 'Critical' ? 'destructive' : 'secondary'}
-                    className="text-[9px] uppercase font-black px-3 py-1 rounded-lg shadow-sm border-none"
+                    className="text-[8px] sm:text-[9px] uppercase font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg shadow-sm border-none"
                   >
                     {item.status}
                   </Badge>
                 </div>
               ))}
-              <Button variant="outline" className="w-full text-primary font-black border-primary/10 hover:bg-primary/5 rounded-2xl h-14 mt-4 transition-all">
+              <Button variant="outline" className="w-full text-primary font-black border-primary/10 hover:bg-primary/5 rounded-xl sm:rounded-2xl h-12 sm:h-14 mt-2 sm:mt-4 transition-all text-xs sm:text-sm">
                 Access Inventory Vault
               </Button>
             </CardContent>

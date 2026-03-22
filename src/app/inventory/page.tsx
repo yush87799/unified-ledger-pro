@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -164,93 +163,93 @@ export default function InventoryPage() {
   );
 
   return (
-    <div className="space-y-12 pb-32">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-        <div className="space-y-4">
+    <div className="space-y-8 sm:space-y-12 pb-24 sm:pb-32">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
+        <div className="space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
             <BoxSelect className="h-3 w-3 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Inventory Core Ready</span>
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary">Inventory Core Ready</span>
           </div>
-          <h1 className="font-headline text-5xl font-black tracking-tighter">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
-          <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
+          <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
+          <p className="text-muted-foreground text-base sm:text-lg font-medium max-w-2xl leading-relaxed">
             Central repository for enterprise assets. Manage stock levels, tax classifications, and SKU data.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" className="h-14 px-6 rounded-2xl glass hover:bg-primary/5 font-bold" onClick={loadProducts}>
-            <RefreshCcw className={loading ? 'animate-spin mr-3 h-5 w-5' : 'mr-3 h-5 w-5 text-primary'} /> Resync Data
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <Button variant="outline" className="h-12 sm:h-14 px-4 sm:px-6 rounded-xl sm:rounded-2xl glass hover:bg-primary/5 font-bold" onClick={loadProducts}>
+            <RefreshCcw className={loading ? 'animate-spin mr-3 h-4 w-4 sm:h-5 sm:w-5' : 'mr-3 h-4 w-4 sm:h-5 sm:w-5 text-primary'} /> Resync Data
           </Button>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="h-14 px-8 rounded-2xl shadow-xl font-black group">
-                <Plus className="mr-3 h-5 w-5 group-hover:rotate-90 transition-transform duration-500" /> New Registry
+              <Button className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-2xl shadow-xl font-black group">
+                <Plus className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-90 transition-transform duration-500" /> New Registry
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[650px] p-0 rounded-[2.5rem] overflow-hidden glass border-none shadow-2xl">
-              <DialogHeader className="p-10 bg-primary/5 border-b border-primary/5">
-                <DialogTitle className="font-headline text-3xl font-black tracking-tighter">New Asset Registry</DialogTitle>
-                <DialogDescription className="text-base font-medium">Input product specification for global ledger synchronization.</DialogDescription>
+            <DialogContent className="max-w-[95vw] sm:max-w-[650px] p-0 rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden glass border-none shadow-2xl">
+              <DialogHeader className="p-6 sm:p-10 bg-primary/5 border-b border-primary/5">
+                <DialogTitle className="font-headline text-xl sm:text-3xl font-black tracking-tighter">New Asset Registry</DialogTitle>
+                <DialogDescription className="text-xs sm:text-base font-medium">Input specifications for global synchronization.</DialogDescription>
               </DialogHeader>
-              <div className="p-12 space-y-8 max-h-[60vh] overflow-y-auto">
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Asset Name*</Label>
+              <div className="p-6 sm:p-12 space-y-6 sm:space-y-8 max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="space-y-2">
+                    <Label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Asset Name*</Label>
                     <Input 
                       placeholder="e.g. Ultra Gaming X" 
-                      className="h-14 rounded-2xl bg-secondary/50 border-none font-bold"
+                      className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold"
                       value={newProduct.name}
                       onChange={(e) => setNewProduct(prev => ({...prev, name: e.target.value}))}
                     />
                   </div>
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manufacturer / Brand</Label>
+                  <div className="space-y-2">
+                    <Label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manufacturer / Brand</Label>
                     <Input 
                       placeholder="Brand Entity" 
-                      className="h-14 rounded-2xl bg-secondary/50 border-none font-bold"
+                      className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold"
                       value={newProduct.brand}
                       onChange={(e) => setNewProduct(prev => ({...prev, brand: e.target.value}))}
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">MRP (₹)*</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="space-y-2">
+                    <Label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">MRP (₹)*</Label>
                     <Input 
                       placeholder="Max Retail Price" 
-                      className="h-14 rounded-2xl bg-secondary/50 border-none font-bold"
+                      className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold"
                       value={newProduct.mrp}
                       onChange={(e) => handlePriceInput(e.target.value, 'mrp')}
                       onBlur={validatePricing}
                     />
                   </div>
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Market Price*</Label>
-                    <div className="flex gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Market Price*</Label>
+                    <div className="flex gap-2 sm:gap-3">
                       <Input 
                         placeholder="Selling Price" 
-                        className="h-14 rounded-2xl bg-secondary/50 border-none font-bold flex-1"
+                        className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold flex-1"
                         value={newProduct.actualPrice}
                         onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
                         onBlur={validatePricing}
                       />
-                      <Button variant="outline" className="h-14 w-14 rounded-2xl glass" onClick={() => setNewProduct(p => ({...p, actualPrice: p.mrp}))}><Copy className="h-4 w-4" /></Button>
+                      <Button variant="outline" className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl glass" onClick={() => setNewProduct(p => ({...p, actualPrice: p.mrp}))}><Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Stock Volume*</Label>
-                    <div className="flex gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="space-y-2">
+                    <Label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Stock Volume*</Label>
+                    <div className="flex gap-2 sm:gap-3">
                       <Input 
-                        className="h-14 rounded-2xl bg-secondary/50 border-none font-black flex-1 text-center"
+                        className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-black flex-1 text-center"
                         value={newProduct.stock}
                         onChange={(e) => setNewProduct(prev => ({...prev, stock: sanitizeNumeric(e.target.value)}))}
                       />
                       <Select value={newProduct.unit} onValueChange={(val) => setNewProduct(prev => ({...prev, unit: val}))}>
-                        <SelectTrigger className="h-14 w-32 rounded-2xl bg-secondary/50 border-none font-bold">
+                        <SelectTrigger className="h-12 sm:h-14 w-24 sm:w-32 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="glass">
@@ -259,16 +258,16 @@ export default function InventoryPage() {
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tax Classification*</Label>
+                  <div className="space-y-2">
+                    <Label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tax Classification*</Label>
                     <Select value={newProduct.categoryId} onValueChange={(val) => setNewProduct(prev => ({...prev, categoryId: val}))}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-secondary/50 border-none font-bold">
+                      <SelectTrigger className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold">
                         <SelectValue placeholder="Select Rate" />
                       </SelectTrigger>
                       <SelectContent className="glass">
                         {GST_CATEGORIES.map(cat => (
-                          <SelectItem key={cat.id} value={cat.id} className="rounded-xl font-bold py-3">
-                            {cat.name} <span className="opacity-40 text-[10px] ml-2 font-black">{cat.examples}</span>
+                          <SelectItem key={cat.id} value={cat.id} className="rounded-xl font-bold py-2 sm:py-3">
+                            {cat.name} <span className="opacity-40 text-[9px] ml-2 font-black">{cat.examples}</span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -276,9 +275,9 @@ export default function InventoryPage() {
                   </div>
                 </div>
               </div>
-              <DialogFooter className="p-10 bg-primary/5 border-t border-primary/5">
-                <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-2xl font-black px-8 h-14">Cancel Operation</Button>
-                <Button onClick={handleAddProduct} disabled={isSubmitting} className="rounded-2xl h-14 px-10 font-black text-lg shadow-2xl gap-3 transition-all active:scale-95">
+              <DialogFooter className="p-6 sm:p-10 bg-primary/5 border-t border-primary/5 flex flex-col-reverse sm:flex-row gap-3">
+                <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl sm:rounded-2xl font-black px-6 sm:px-8 h-12 sm:h-14 w-full sm:w-auto">Cancel</Button>
+                <Button onClick={handleAddProduct} disabled={isSubmitting} className="rounded-xl sm:rounded-2xl h-12 sm:h-14 px-8 sm:px-10 font-black text-base sm:text-lg shadow-2xl gap-3 transition-all active:scale-95 w-full sm:w-auto">
                   {isSubmitting ? <RefreshCcw className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
                   Register Asset
                 </Button>
@@ -288,117 +287,119 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8">
         {[
           { label: 'Asset Classes', value: products.length, icon: Archive, color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'Low Liquidity', value: products.filter(p => p.status === 'Low').length, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
           { label: 'Stock Exhaustion', value: products.filter(p => p.status === 'Out of Stock').length, icon: Scaling, color: 'text-destructive', bg: 'bg-destructive/10' },
           { label: 'Manufacturers', value: new Set(products.map(p => p.brand)).size, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none glass-card shadow-xl p-8 flex items-center gap-6 group hover:translate-y-[-4px] transition-all duration-500">
-            <div className={`h-16 w-16 rounded-3xl flex items-center justify-center ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
-              <stat.icon className="h-7 w-7" />
+          <Card key={i} className="border-none glass-card shadow-xl p-6 sm:p-8 flex items-center gap-5 sm:gap-6 group hover:translate-y-[-4px] transition-all duration-500">
+            <div className={`h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-3xl flex items-center justify-center ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
+              <stat.icon className="h-5 w-5 sm:h-7 sm:w-7" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</p>
-              <p className="text-3xl font-black font-headline tracking-tighter mt-1">{stat.value}</p>
+              <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</p>
+              <p className="text-2xl sm:text-3xl font-black font-headline tracking-tighter mt-0.5 sm:mt-1">{stat.value}</p>
             </div>
           </Card>
         ))}
       </div>
 
-      <Card className="border-none glass-card shadow-2xl rounded-[2.5rem] overflow-hidden">
-        <CardHeader className="p-10 border-b border-primary/5 bg-primary/[0.02]">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
-            <div className="relative flex-1 max-w-2xl group">
-              <Search className="absolute left-5 top-4.5 h-6 w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
+      <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
+        <CardHeader className="p-6 sm:p-10 border-b border-primary/5 bg-primary/[0.02]">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 sm:gap-10">
+            <div className="relative flex-1 group">
+              <Search className="absolute left-4 sm:left-5 top-4.5 sm:top-5 h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input 
-                placeholder="Synchronous search through vault... (SKU, Brand, Name)" 
-                className="pl-14 h-16 rounded-2xl bg-secondary/50 border-none focus-visible:ring-2 focus-visible:ring-primary/20 font-bold text-base"
+                placeholder="Synchronous search through vault..." 
+                className="pl-12 sm:pl-14 h-14 sm:h-16 rounded-xl sm:rounded-2xl bg-secondary/50 border-none focus-visible:ring-2 focus-visible:ring-primary/20 font-bold text-sm sm:text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="h-14 px-8 rounded-2xl glass font-black"><Filter className="mr-3 h-5 w-5" /> Filter Matrix</Button>
+            <Button variant="outline" className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl sm:rounded-2xl glass font-black text-xs sm:text-sm"><Filter className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" /> Filter Matrix</Button>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {loading ? (
-            <div className="p-32 text-center space-y-4">
-              <RefreshCcw className="mx-auto h-12 w-12 text-primary animate-spin" />
-              <p className="text-lg font-bold text-muted-foreground tracking-tight">Accessing Secure Vault Data...</p>
+            <div className="p-20 sm:p-32 text-center space-y-3 sm:space-y-4">
+              <RefreshCcw className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin" />
+              <p className="text-base sm:text-lg font-bold text-muted-foreground tracking-tight">Accessing Secure Vault Data...</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader className="bg-primary/[0.01]">
-                <TableRow className="border-none">
-                  <TableHead className="py-8 pl-12 font-black uppercase text-[10px] tracking-widest">SKU ID</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Asset Details</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Matrix Price</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Inventory</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] tracking-widest">GST Rate</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Status</TableHead>
-                  <TableHead className="pr-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProducts.map((p) => (
-                  <TableRow key={p.id} className="border-none hover:bg-primary/[0.03] transition-colors group">
-                    <TableCell className="font-mono text-xs font-black text-primary py-8 pl-12 group-hover:translate-x-2 transition-transform duration-500">{p.id}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="text-base font-black tracking-tight">{p.name}</span>
-                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{p.brand}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="text-base font-black">₹{p.price.toLocaleString()}</span>
-                        {p.mrp > p.price && (
-                          <span className="text-[10px] text-muted-foreground font-black line-through">MRP: ₹{p.mrp.toLocaleString()}</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-black tracking-tighter">{p.stock}</span>
-                        <span className="text-[10px] font-black uppercase text-muted-foreground">{p.unit}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-primary/10 text-primary border-none font-black text-[10px] px-3 py-1 rounded-lg">{p.gst}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        className={`rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-widest border-none shadow-sm ${
-                          p.status === 'In Stock' ? 'bg-emerald-500 text-white' : 
-                          p.status === 'Low' ? 'bg-amber-500 text-white' : 'bg-destructive text-white'
-                        }`}
-                      >
-                        {p.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="pr-12 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-primary/10">
-                            <MoreVertical className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="glass rounded-2xl p-2 w-56">
-                          <DropdownMenuItem className="rounded-xl font-bold py-3">Update Specifications</DropdownMenuItem>
-                          <DropdownMenuItem className="rounded-xl font-bold py-3">Audit Log</DropdownMenuItem>
-                          <DropdownMenuItem className="rounded-xl font-bold py-3 text-destructive">Terminate SKU</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+            <div className="min-w-[1000px]">
+              <Table>
+                <TableHeader className="bg-primary/[0.01]">
+                  <TableRow className="border-none">
+                    <TableHead className="py-6 sm:py-8 pl-10 sm:pl-12 font-black uppercase text-[9px] sm:text-[10px] tracking-widest">SKU ID</TableHead>
+                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Asset Details</TableHead>
+                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Matrix Price</TableHead>
+                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Inventory</TableHead>
+                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">GST Rate</TableHead>
+                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Status</TableHead>
+                    <TableHead className="pr-10 sm:pr-12"></TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {filteredProducts.map((p) => (
+                    <TableRow key={p.id} className="border-none hover:bg-primary/[0.03] transition-colors group">
+                      <TableCell className="font-mono text-[10px] sm:text-xs font-black text-primary py-6 sm:py-8 pl-10 sm:pl-12 group-hover:translate-x-2 transition-transform duration-500">{p.id}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="text-sm sm:text-base font-black tracking-tight">{p.name}</span>
+                          <span className="text-[9px] sm:text-[10px] font-black uppercase text-muted-foreground tracking-widest">{p.brand}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="text-sm sm:text-base font-black">₹{p.price.toLocaleString()}</span>
+                          {p.mrp > p.price && (
+                            <span className="text-[9px] sm:text-[10px] text-muted-foreground font-black line-through">MRP: ₹{p.mrp.toLocaleString()}</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <span className="text-base sm:text-lg font-black tracking-tighter">{p.stock}</span>
+                          <span className="text-[9px] sm:text-[10px] font-black uppercase text-muted-foreground">{p.unit}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-primary/10 text-primary border-none font-black text-[9px] sm:text-[10px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg">{p.gst}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={`rounded-lg sm:rounded-xl px-3 sm:px-4 py-0.5 sm:py-1 text-[8px] sm:text-[9px] font-black uppercase tracking-widest border-none shadow-sm ${
+                            p.status === 'In Stock' ? 'bg-emerald-500 text-white' : 
+                            p.status === 'Low' ? 'bg-amber-500 text-white' : 'bg-destructive text-white'
+                          }`}
+                        >
+                          {p.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="pr-10 sm:pr-12 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl hover:bg-primary/10">
+                              <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="glass rounded-xl sm:rounded-2xl p-1 sm:p-2 w-48 sm:w-56">
+                            <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-xs sm:text-sm">Update Specifications</DropdownMenuItem>
+                            <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-xs sm:text-sm">Audit Log</DropdownMenuItem>
+                            <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-destructive text-xs sm:text-sm">Terminate SKU</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
