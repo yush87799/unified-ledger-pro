@@ -12,82 +12,54 @@ import {
   Tooltip, 
   ResponsiveContainer, 
   LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
-  Cell 
+  Line 
 } from 'recharts';
-import { UserRole } from '@/lib/roles';
+import { UserRole, DashboardStats } from '@/lib/types';
 
-const salesData = [
-  { name: 'Mon', sales: 4000 },
-  { name: 'Tue', sales: 3000 },
-  { name: 'Wed', sales: 2000 },
-  { name: 'Thu', sales: 2780 },
-  { name: 'Fri', sales: 1890 },
-  { name: 'Sat', sales: 2390 },
-  { name: 'Sun', sales: 3490 },
-];
-
-const revenueVsExpenseData = [
-  { name: 'Jan', revenue: 4000, expense: 2400 },
-  { name: 'Feb', revenue: 3000, expense: 1398 },
-  { name: 'Mar', revenue: 2000, expense: 9800 },
-  { name: 'Apr', revenue: 2780, expense: 3908 },
-  { name: 'May', revenue: 1890, expense: 4800 },
-  { name: 'Jun', revenue: 2390, expense: 3800 },
-];
-
-const gstData = [
-  { name: 'CGST', value: 45 },
-  { name: 'SGST', value: 45 },
-  { name: 'IGST', value: 10 },
-];
-
-const COLORS = ['#6633CC', '#84ACDB', '#F59E0B'];
-
-export default function ChartsSection({ role }: { role: UserRole }) {
+export default function ChartsSection({ role, stats }: { role: UserRole; stats: DashboardStats | null }) {
   const isOwner = role === 'owner' || role === 'accountant';
 
+  if (!stats) return <div className="h-[300px] w-full rounded-2xl bg-muted animate-pulse" />;
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {isOwner && (
         <>
-          <Card className="border-none shadow-md bg-card/50">
-            <CardHeader>
-              <CardTitle className="font-headline">Sales Trend</CardTitle>
-              <CardDescription>Daily sales performance for current week</CardDescription>
+          <Card className="border-none shadow-md glass-card rounded-2xl overflow-hidden">
+            <CardHeader className="p-5 pb-2">
+              <CardTitle className="font-headline text-lg font-black tracking-tight">Sales Trend</CardTitle>
+              <CardDescription className="text-xs">Daily performance for current cycle</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[250px] p-4 pt-0">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={salesData}>
+                <LineChart data={stats.salesTrend}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: '11px', fontWeight: 'bold' }}
                   />
-                  <Line type="monotone" dataKey="sales" stroke="#6633CC" strokeWidth={3} dot={{ r: 4, fill: '#6633CC' }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="sales" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 4, fill: 'hsl(var(--primary))' }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-md bg-card/50">
-            <CardHeader>
-              <CardTitle className="font-headline">Revenue vs Expenses</CardTitle>
-              <CardDescription>Monthly financial overview</CardDescription>
+          <Card className="border-none shadow-md glass-card rounded-2xl overflow-hidden">
+            <CardHeader className="p-5 pb-2">
+              <CardTitle className="font-headline text-lg font-black tracking-tight">Revenue vs Expenses</CardTitle>
+              <CardDescription className="text-xs">Monthly fiscal overview</CardDescription>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[250px] p-4 pt-0">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueVsExpenseData}>
+                <BarChart data={stats.revenueVsExpense}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: '11px', fontWeight: 'bold' }}
                   />
-                  <Bar dataKey="revenue" fill="#6633CC" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="expense" fill="#84ACDB" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -97,21 +69,21 @@ export default function ChartsSection({ role }: { role: UserRole }) {
       )}
 
       {role === 'inventory' && (
-        <Card className="col-span-full border-none shadow-md bg-card/50">
-          <CardHeader>
-            <CardTitle className="font-headline">Stock Movement</CardTitle>
-            <CardDescription>Inbound vs Outbound stock trends</CardDescription>
+        <Card className="col-span-full border-none shadow-md glass-card rounded-2xl overflow-hidden">
+          <CardHeader className="p-5 pb-2">
+            <CardTitle className="font-headline text-lg font-black tracking-tight">Movement Trends</CardTitle>
+            <CardDescription className="text-xs">Asset velocity audit</CardDescription>
           </CardHeader>
-          <CardContent className="h-[350px]">
+          <CardContent className="h-[300px] p-4 pt-0">
              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={salesData}>
+                <LineChart data={stats.salesTrend}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: '11px', fontWeight: 'bold' }}
                   />
-                  <Line type="monotone" dataKey="sales" stroke="#6633CC" strokeWidth={3} dot={{ r: 4, fill: '#6633CC' }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="sales" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 4, fill: 'hsl(var(--primary))' }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
           </CardContent>

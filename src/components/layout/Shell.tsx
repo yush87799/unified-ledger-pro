@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -75,7 +76,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-background selection:bg-primary/30 font-body">
+      <div className="flex min-h-screen w-full bg-background selection:bg-primary/30 font-body overflow-x-hidden">
         <Sidebar variant="inset" collapsible="icon" className="border-r-0 glass shadow-2xl z-50">
           <SidebarHeader className="h-16 flex items-center px-4">
             <div className="flex items-center gap-2 overflow-hidden group">
@@ -149,7 +150,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 <Input
                   type="search"
                   placeholder="Intelligence Search..."
-                  className="w-48 xl:w-64 bg-secondary/50 pl-9 h-9 rounded-lg border-none font-medium text-xs"
+                  className="w-48 xl:w-64 bg-secondary/30 pl-9 h-9 rounded-lg border-none font-medium text-xs"
                 />
               </div>
             </div>

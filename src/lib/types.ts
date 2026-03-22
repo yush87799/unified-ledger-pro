@@ -55,6 +55,15 @@ export interface BusinessSettings {
   stateCode: string;
 }
 
+export interface DashboardStats {
+  revenue: { value: number; trend: number };
+  profit: { value: number; trend: number };
+  tax: { value: number };
+  assets: { value: number; trend: number };
+  salesTrend: { name: string; sales: number }[];
+  revenueVsExpense: { name: string; revenue: number; expense: number }[];
+}
+
 export interface RoleConfig {
   id: UserRole;
   title: string;

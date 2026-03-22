@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -42,7 +43,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -158,9 +158,9 @@ export default function InventoryPage() {
   }, [products, searchTerm, statusFilters]);
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-12">
+    <div className="space-y-6 pb-12 animate-in fade-in duration-700">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary/10 border border-primary/20">
             <BoxSelect className="h-4 w-4 text-primary" />
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Inventory Core</span>
@@ -168,12 +168,12 @@ export default function InventoryPage() {
           <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tighter leading-none">Global <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="h-10 px-4 rounded-lg glass font-bold text-xs" onClick={loadProducts}>
-            <RefreshCcw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> Resync
+          <Button variant="outline" className="h-9 px-4 rounded-lg glass font-bold text-xs" onClick={loadProducts}>
+            <RefreshCcw className={cn("mr-2 h-3.5 w-3.5", loading && "animate-spin")} /> Resync
           </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="h-10 px-5 rounded-lg shadow-lg font-black text-xs gap-2">
+              <Button className="h-9 px-4 rounded-lg shadow-lg font-black text-xs gap-2">
                 <Plus className="h-4 w-4" /> New Asset
               </Button>
             </DialogTrigger>
@@ -185,20 +185,20 @@ export default function InventoryPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Asset Name*</Label>
-                    <Input className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
+                    <Input className="h-9 rounded-lg bg-secondary/30 border-none font-bold text-sm" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Brand</Label>
-                    <Input className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm" value={newProduct.brand} onChange={e => setNewProduct({...newProduct, brand: e.target.value})} />
+                    <Input className="h-9 rounded-lg bg-secondary/30 border-none font-bold text-sm" value={newProduct.brand} onChange={e => setNewProduct({...newProduct, brand: e.target.value})} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Stock*</Label>
                     <div className="flex gap-2">
-                      <Input className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm flex-1" value={newProduct.stock} onChange={e => setNewProduct({...newProduct, stock: sanitizeNumeric(e.target.value)})} />
+                      <Input className="h-9 rounded-lg bg-secondary/30 border-none font-bold text-sm flex-1" value={newProduct.stock} onChange={e => setNewProduct({...newProduct, stock: sanitizeNumeric(e.target.value)})} />
                       <Select value={newProduct.unit} onValueChange={val => setNewProduct({...newProduct, unit: val})}>
-                        <SelectTrigger className="h-10 w-24 rounded-lg bg-secondary/50 border-none font-bold text-sm"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-9 w-24 rounded-lg bg-secondary/30 border-none font-bold text-sm"><SelectValue /></SelectTrigger>
                         <SelectContent className="glass border-none"><SelectGroup>{UNITS.map(u => <SelectItem key={u.id} value={u.id} className="text-sm">{u.name}</SelectItem>)}</SelectGroup></SelectContent>
                       </Select>
                     </div>
@@ -206,7 +206,7 @@ export default function InventoryPage() {
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Tax Rate*</Label>
                     <Select value={newProduct.categoryId} onValueChange={val => setNewProduct({...newProduct, categoryId: val})}>
-                      <SelectTrigger className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm"><SelectValue placeholder="Rate" /></SelectTrigger>
+                      <SelectTrigger className="h-9 rounded-lg bg-secondary/30 border-none font-bold text-sm"><SelectValue placeholder="Rate" /></SelectTrigger>
                       <SelectContent className="glass border-none"><SelectGroup>{GST_CATEGORIES.map(c => <SelectItem key={c.id} value={c.id} className="text-sm">{c.name}</SelectItem>)}</SelectGroup></SelectContent>
                     </Select>
                   </div>
@@ -214,18 +214,18 @@ export default function InventoryPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">MRP (₹)*</Label>
-                    <Input className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm" value={newProduct.mrp} onChange={e => setNewProduct({...newProduct, mrp: sanitizeNumeric(e.target.value)})} />
+                    <Input className="h-9 rounded-lg bg-secondary/30 border-none font-bold text-sm" value={newProduct.mrp} onChange={e => setNewProduct({...newProduct, mrp: sanitizeNumeric(e.target.value)})} />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Price (₹)*</Label>
-                    <Input className="h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm" value={newProduct.actualPrice} onChange={e => setNewProduct({...newProduct, actualPrice: sanitizeNumeric(e.target.value)})} />
+                    <Input className="h-9 rounded-lg bg-secondary/30 border-none font-bold text-sm" value={newProduct.actualPrice} onChange={e => setNewProduct({...newProduct, actualPrice: sanitizeNumeric(e.target.value)})} />
                   </div>
                 </div>
               </div>
               <DialogFooter className="p-5 bg-primary/5 border-t border-primary/5 gap-3">
-                <Button variant="ghost" className="rounded-lg font-bold text-sm h-10" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button className="rounded-lg h-10 px-6 font-black text-sm shadow-md" onClick={handleAddProduct} disabled={isSubmitting}>
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />} Save
+                <Button variant="ghost" className="rounded-lg font-bold text-xs h-9" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                <Button className="rounded-lg h-9 px-6 font-black text-xs shadow-md" onClick={handleAddProduct} disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> : <Save className="h-3.5 w-3.5 mr-2" />} Save
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -240,13 +240,13 @@ export default function InventoryPage() {
           { label: 'Exhaustion', value: products.filter(p => p.status === 'Out of Stock').length, icon: Scaling, color: 'text-destructive', bg: 'bg-destructive/10' },
           { label: 'Brands', value: new Set(products.map(p => p.brand)).size, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none glass-card shadow-md p-4 flex items-center gap-4">
+          <Card key={i} className="border-none glass-card shadow-md p-4 flex items-center gap-4 rounded-xl">
             <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center", stat.bg, stat.color)}>
               <stat.icon className="h-5 w-5" />
             </div>
             <div className="leading-tight">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
-              <p className="text-xl font-black font-headline tracking-tighter mt-1">{stat.value}</p>
+              <p className="text-lg font-black font-headline tracking-tighter mt-1">{stat.value}</p>
             </div>
           </Card>
         ))}
@@ -257,11 +257,11 @@ export default function InventoryPage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="relative flex-1 group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary" />
-              <Input placeholder="Synchronous Search..." className="pl-10 h-10 rounded-lg bg-secondary/50 border-none font-bold text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              <Input placeholder="Synchronous Search..." className="pl-10 h-10 rounded-lg bg-secondary/30 border-none font-bold text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-10 px-5 rounded-lg glass font-black text-xs">
+                <Button variant="outline" className="h-10 px-4 rounded-lg glass font-black text-xs">
                   <Filter className="mr-2 h-4 w-4" /> Filters {statusFilters.length > 0 && `(${statusFilters.length})`}
                 </Button>
               </DropdownMenuTrigger>
@@ -296,7 +296,7 @@ export default function InventoryPage() {
                   <TableRow><TableCell colSpan={7} className="py-12 text-center font-bold text-muted-foreground italic text-sm">No assets found.</TableCell></TableRow>
                 ) : filteredProducts.map((p) => (
                   <TableRow key={p.id} className="border-none hover:bg-primary/[0.03] transition-colors group">
-                    <TableCell className="font-mono text-xs font-black text-primary py-4 pl-8">{p.id}</TableCell>
+                    <TableCell className="font-mono text-[11px] font-black text-primary py-4 pl-8">{p.id}</TableCell>
                     <TableCell>
                       <div className="flex flex-col leading-tight">
                         <span className="text-sm font-black tracking-tight">{p.name}</span>

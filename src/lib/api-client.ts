@@ -1,5 +1,5 @@
 
-import { Product, Invoice, BusinessSettings } from './types';
+import { Product, Invoice, BusinessSettings, DashboardStats } from './types';
 
 /**
  * Centralized API Client for Unified Ledger Pro
@@ -51,6 +51,13 @@ export const apiClient = {
         body: JSON.stringify(settings),
       });
       if (!res.ok) throw new Error('Failed to update settings');
+      return res.json();
+    }
+  },
+  dashboard: {
+    getStats: async (): Promise<DashboardStats> => {
+      const res = await fetch('/api/dashboard/stats');
+      if (!res.ok) throw new Error('Failed to fetch dashboard metrics');
       return res.json();
     }
   }
