@@ -1,3 +1,4 @@
+
 import { 
   LayoutDashboard, 
   Package, 
@@ -32,7 +33,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'Full oversight of finances, sales, and growth insights.',
     icon: TrendingUp,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'gst', 'analytics', 'users', 'settings'],
-    color: 'bg-indigo-600'
+    color: 'bg-primary'
   },
   admin: {
     id: 'admin',
@@ -40,7 +41,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'System configuration, user roles, and operational control.',
     icon: ShieldCheck,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'users', 'settings'],
-    color: 'bg-slate-500'
+    color: 'bg-slate-600'
   },
   billing: {
     id: 'billing',

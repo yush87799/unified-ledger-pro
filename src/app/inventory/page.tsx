@@ -55,7 +55,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/select";
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { apiClient } from '@/lib/api-client';
@@ -403,7 +403,7 @@ export default function InventoryPage() {
             </DropdownMenu>
           </div>
         </CardHeader>
-        <CardContent className="p-0 overflow-x-auto">
+        <CardContent className="p-0">
           {loading ? (
             <div className="p-20 sm:p-32 text-center space-y-3 sm:space-y-4">
               <RefreshCcw className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin" />
@@ -416,74 +416,76 @@ export default function InventoryPage() {
               <Button variant="link" onClick={() => { setSearchTerm(''); setStatusFilters([]); setCategoryFilters([]); }} className="font-black uppercase tracking-widest text-primary">Clear all filters</Button>
             </div>
           ) : (
-            <div className="min-w-[1000px]">
-              <Table>
-                <TableHeader className="bg-primary/[0.01]">
-                  <TableRow className="border-none">
-                    <TableHead className="py-6 sm:py-8 pl-10 sm:pl-12 font-black uppercase text-[9px] sm:text-[10px] tracking-widest">SKU ID</TableHead>
-                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Asset Details</TableHead>
-                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Matrix Price</TableHead>
-                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Inventory</TableHead>
-                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">GST Rate</TableHead>
-                    <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Status</TableHead>
-                    <TableHead className="pr-10 sm:pr-12"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProducts.map((p) => (
-                    <TableRow key={p.id} className="border-none hover:bg-primary/[0.03] transition-colors group">
-                      <TableCell className="font-mono text-[10px] sm:text-xs font-black text-primary py-6 sm:py-8 pl-10 sm:pl-12 group-hover:translate-x-2 transition-transform duration-500">{p.id}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="text-sm sm:text-base font-black tracking-tight">{p.name}</span>
-                          <span className="text-[9px] sm:text-[10px] font-black uppercase text-muted-foreground tracking-widest">{p.brand}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="text-sm sm:text-base font-black">₹{p.price.toLocaleString()}</span>
-                          {p.mrp > p.price && (
-                            <span className="text-[9px] sm:text-[10px] text-muted-foreground font-black line-through">MRP: ₹{p.mrp.toLocaleString()}</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                          <span className="text-base sm:text-lg font-black tracking-tighter">{p.stock}</span>
-                          <span className="text-[9px] sm:text-[10px] font-black uppercase text-muted-foreground">{p.unit}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className="bg-primary/10 text-primary border-none font-black text-[9px] sm:text-[10px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg">{p.gst}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          className={`rounded-lg sm:rounded-xl px-3 sm:px-4 py-0.5 sm:py-1 text-[8px] sm:text-[9px] font-black uppercase tracking-widest border-none shadow-sm ${
-                            p.status === 'In Stock' ? 'bg-emerald-500 text-white' : 
-                            p.status === 'Low' ? 'bg-amber-500 text-white' : 'bg-destructive text-white'
-                          }`}
-                        >
-                          {p.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="pr-10 sm:pr-12 text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl hover:bg-primary/10">
-                              <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="glass rounded-xl sm:rounded-2xl p-1 sm:p-2 w-48 sm:w-56">
-                            <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-xs sm:text-sm">Update Specifications</DropdownMenuItem>
-                            <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-xs sm:text-sm">Audit Log</DropdownMenuItem>
-                            <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-destructive text-xs sm:text-sm">Terminate SKU</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-[1000px]">
+                <Table>
+                  <TableHeader className="bg-primary/[0.01]">
+                    <TableRow className="border-none">
+                      <TableHead className="py-6 sm:py-8 pl-10 sm:pl-12 font-black uppercase text-[9px] sm:text-[10px] tracking-widest">SKU ID</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Asset Details</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Matrix Price</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Inventory</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">GST Rate</TableHead>
+                      <TableHead className="font-black uppercase text-[9px] sm:text-[10px] tracking-widest">Status</TableHead>
+                      <TableHead className="pr-10 sm:pr-12"></TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProducts.map((p) => (
+                      <TableRow key={p.id} className="border-none hover:bg-primary/[0.03] transition-colors group">
+                        <TableCell className="font-mono text-[10px] sm:text-xs font-black text-primary py-6 sm:py-8 pl-10 sm:pl-12 group-hover:translate-x-2 transition-transform duration-500">{p.id}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="text-sm sm:text-base font-black tracking-tight">{p.name}</span>
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase text-muted-foreground tracking-widest">{p.brand}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="text-sm sm:text-base font-black">₹{p.price.toLocaleString()}</span>
+                            {p.mrp > p.price && (
+                              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-black line-through">MRP: ₹{p.mrp.toLocaleString()}</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5 sm:gap-2">
+                            <span className="text-base sm:text-lg font-black tracking-tighter">{p.stock}</span>
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase text-muted-foreground">{p.unit}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-primary/10 text-primary border-none font-black text-[9px] sm:text-[10px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg">{p.gst}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            className={`rounded-lg sm:rounded-xl px-3 sm:px-4 py-0.5 sm:py-1 text-[8px] sm:text-[9px] font-black uppercase tracking-widest border-none shadow-sm ${
+                              p.status === 'In Stock' ? 'bg-emerald-500 text-white' : 
+                              p.status === 'Low' ? 'bg-amber-500 text-white' : 'bg-destructive text-white'
+                            }`}
+                          >
+                            {p.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="pr-10 sm:pr-12 text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl hover:bg-primary/10">
+                                <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="glass rounded-xl sm:rounded-2xl p-1 sm:p-2 w-48 sm:w-56">
+                              <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-xs sm:text-sm">Update Specifications</DropdownMenuItem>
+                              <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-xs sm:text-sm">Audit Log</DropdownMenuItem>
+                              <DropdownMenuItem className="rounded-lg sm:rounded-xl font-bold py-2 sm:py-3 text-destructive text-xs sm:text-sm">Terminate SKU</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
         </CardContent>
