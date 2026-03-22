@@ -39,33 +39,33 @@
   .dark {
     /* High-Contrast "Night Navy" Dark Theme */
     --background: 222 47% 4%;
-    --foreground: 213 31% 91%;
+    --foreground: 210 40% 98%; /* Brighter white for dark mode legibility */
     --card: 222 47% 6%;
-    --card-foreground: 213 31% 91%;
+    --card-foreground: 210 40% 98%;
     --popover: 222 47% 4%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 255 85% 65%; /* Brighter for Dark */
+    --popover-foreground: 210 40% 98%;
+    --primary: 255 85% 70%; /* Brighter for Dark mode */
     --primary-foreground: 222 47% 4%;
     --secondary: 222 47% 12%;
-    --secondary-foreground: 213 31% 91%;
-    --muted: 222 47% 12%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 255 85% 65%;
-    --accent-foreground: 213 31% 91%;
-    --destructive: 0 63% 40%;
-    --destructive-foreground: 213 31% 91%;
-    --border: 222 47% 12%;
-    --input: 222 47% 12%;
-    --ring: 255 85% 65%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 47% 15%;
+    --muted-foreground: 215 20% 75%; /* Increased contrast for muted text */
+    --accent: 255 85% 70%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 47% 15%;
+    --input: 222 47% 15%;
+    --ring: 255 85% 70%;
 
     --sidebar-background: 222 47% 3%;
-    --sidebar-foreground: 215 20% 80%;
-    --sidebar-primary: 255 85% 65%;
+    --sidebar-foreground: 215 20% 90%;
+    --sidebar-primary: 255 85% 70%;
     --sidebar-primary-foreground: 222 47% 4%;
     --sidebar-accent: 222 47% 12%;
-    --sidebar-accent-foreground: 213 31% 91%;
-    --sidebar-border: 222 47% 12%;
-    --sidebar-ring: 255 85% 65%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 15%;
+    --sidebar-ring: 255 85% 70%;
   }
 }
 
@@ -76,7 +76,7 @@
 }
 
 @layer utilities {
-  .glass { @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10; }
-  .glass-card { @apply bg-card/60 dark:bg-card/40 backdrop-blur-xl border border-border/50 shadow-xl; }
+  .glass { @apply bg-white/70 dark:bg-black/60 backdrop-blur-md border border-white/20 dark:border-white/10; }
+  .glass-card { @apply bg-card/60 dark:bg-card/50 backdrop-blur-xl border border-border/50 shadow-xl; }
   .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-indigo-500 to-violet-600; }
 }

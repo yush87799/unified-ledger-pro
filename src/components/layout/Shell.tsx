@@ -87,8 +87,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   Unified Ledger
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-[8px] uppercase tracking-[0.2em] text-primary font-black">Pro Edition</span>
-                  <Zap className="h-2 w-2 text-primary fill-primary" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-black">Pro Edition</span>
+                  <Zap className="h-2.5 w-2.5 text-primary fill-primary" />
                 </div>
               </div>
             </div>
@@ -105,15 +105,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                       isActive={isActive}
                       tooltip={item.label}
                       className={cn(
-                        "h-9 rounded-xl px-3 transition-all",
+                        "h-10 rounded-xl px-3 transition-all",
                         isActive 
-                          ? "bg-primary text-primary-foreground shadow-md scale-[1.01]" 
+                          ? "bg-primary text-primary-foreground shadow-md" 
                           : "hover:bg-primary/10"
                       )}
                     >
                       <Link href={item.href}>
                         <item.icon className={cn("h-4 w-4", isActive ? "text-white" : "text-muted-foreground")} />
-                        <span className="font-bold text-xs tracking-tight">{item.label}</span>
+                        <span className="font-bold text-sm tracking-tight">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -123,83 +123,83 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </SidebarContent>
 
           <SidebarFooter className="p-3">
-            <div className="flex flex-col gap-0.5">
-              <Button variant="ghost" className="justify-start h-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/5 text-[10px]">
-                <HelpCircle className="h-3.5 w-3.5 mr-2" />
-                <span className="group-data-[collapsible=icon]:hidden font-semibold">Concierge</span>
+            <div className="flex flex-col gap-1">
+              <Button variant="ghost" className="justify-start h-9 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/5 text-xs font-semibold">
+                <HelpCircle className="h-4 w-4 mr-2" />
+                <span className="group-data-[collapsible=icon]:hidden">Concierge</span>
               </Button>
               <Button 
                 variant="ghost" 
-                className="justify-start h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/5 text-[10px]"
+                className="justify-start h-9 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/5 text-xs font-bold"
                 onClick={handleLogout}
               >
-                <LogOut className="h-3.5 w-3.5 mr-2" />
-                <span className="group-data-[collapsible=icon]:hidden font-semibold">Exit Session</span>
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="group-data-[collapsible=icon]:hidden">Exit Session</span>
               </Button>
             </div>
           </SidebarFooter>
         </Sidebar>
 
         <SidebarInset className="bg-background">
-          <header className="sticky top-0 z-40 flex h-12 sm:h-14 shrink-0 items-center justify-between gap-4 border-b glass px-4 sm:px-6 shadow-sm">
+          <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between gap-4 border-b glass px-4 sm:px-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="hover:bg-primary/10 rounded-lg h-8 w-8 transition-colors" />
+              <SidebarTrigger className="hover:bg-primary/10 rounded-lg h-9 w-9 transition-colors" />
               <div className="hidden lg:flex relative group">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-focus-within:text-primary" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary" />
                 <Input
                   type="search"
                   placeholder="Intelligence Search..."
-                  className="w-48 xl:w-64 bg-secondary/50 pl-8 h-8 rounded-lg border-none font-medium text-[10px]"
+                  className="w-48 xl:w-64 bg-secondary/50 pl-9 h-9 rounded-lg border-none font-medium text-xs"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-4">
               {mounted && (
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={toggleTheme}
-                  className="h-8 w-8 rounded-lg hover:bg-primary/5"
+                  className="h-9 w-9 rounded-lg hover:bg-primary/5"
                 >
                   {resolvedTheme === 'dark' ? (
-                    <Sun className="h-3.5 w-3.5 text-amber-400" />
+                    <Sun className="h-4 w-4 text-amber-400" />
                   ) : (
-                    <Moon className="h-3.5 w-3.5 text-indigo-600" />
+                    <Moon className="h-4 w-4 text-indigo-600" />
                   )}
                 </Button>
               )}
 
-              <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-lg hover:bg-primary/5">
-                <Bell className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="absolute top-1.5 right-1.5 flex h-1.5 w-1.5 rounded-full bg-primary ring-1 ring-background animate-pulse" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-lg hover:bg-primary/5">
+                <Bell className="h-4 w-4 text-muted-foreground" />
+                <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-primary ring-1 ring-background animate-pulse" />
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 p-1 sm:pr-2 hover:bg-primary/5 rounded-lg h-9">
-                    <Avatar className="h-7 w-7 rounded-lg shadow-sm overflow-hidden">
+                  <Button variant="ghost" className="flex items-center gap-3 p-1 sm:pr-2 hover:bg-primary/5 rounded-lg h-10">
+                    <Avatar className="h-8 w-8 rounded-lg shadow-sm overflow-hidden">
                       <AvatarImage src={`https://picsum.photos/seed/${role}/100/100`} />
-                      <AvatarFallback className={cn("rounded-lg text-white font-black text-[9px] uppercase", roleConfig.color)}>
+                      <AvatarFallback className={cn("rounded-lg text-white font-black text-xs uppercase", roleConfig.color)}>
                         {role ? role[0] : 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:flex flex-col items-start text-left leading-tight">
-                      <span className="text-[9px] font-black tracking-tight">{roleConfig.title}</span>
-                      <span className="text-[7px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
-                        <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
+                      <span className="text-xs font-black tracking-tight">{roleConfig.title}</span>
+                      <span className="text-[10px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                         Live
                       </span>
                     </div>
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 rounded-xl p-1.5 glass shadow-xl border-none">
-                  <DropdownMenuItem className="rounded-lg px-2 py-1.5 cursor-pointer text-[10px] font-semibold">Profile</DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-lg px-2 py-1.5 cursor-pointer text-[10px] font-semibold">Security</DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-56 rounded-xl p-2 glass shadow-xl border-none">
+                  <DropdownMenuItem className="rounded-lg px-3 py-2 cursor-pointer text-sm font-semibold">Profile</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-lg px-3 py-2 cursor-pointer text-sm font-semibold">Security</DropdownMenuItem>
                   <DropdownMenuSeparator className="my-1" />
-                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-2 py-1.5 cursor-pointer text-[10px] text-destructive font-bold">
-                    <LogOut className="mr-2 h-3 w-3" />
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-2 cursor-pointer text-sm text-destructive font-bold">
+                    <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -207,7 +207,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-5 lg:p-6 overflow-y-auto">
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
             <div className="mx-auto max-w-[1400px]">
               {children}
             </div>
