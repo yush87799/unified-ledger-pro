@@ -76,7 +76,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-background selection:bg-primary/30">
+      <div className="flex min-h-screen w-full bg-background selection:bg-primary/30 font-body">
         <Sidebar variant="inset" collapsible="icon" className="border-r-0 glass shadow-2xl z-50">
           <SidebarHeader className="h-20 sm:h-24 flex items-center px-4 sm:px-6">
             <div className="flex items-center gap-3 sm:gap-4 overflow-hidden group">
@@ -125,16 +125,16 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
           <SidebarFooter className="p-4 sm:p-6">
             <div className="flex flex-col gap-2 sm:gap-3">
-              <Button variant="ghost" className="justify-start h-10 sm:h-11 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5">
-                <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-3" />
+              <Button variant="ghost" className="justify-start h-10 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5">
+                <HelpCircle className="h-4 w-4 mr-3" />
                 <span className="group-data-[collapsible=icon]:hidden font-semibold text-xs sm:text-sm">Concierge</span>
               </Button>
               <Button 
                 variant="ghost" 
-                className="justify-start h-10 sm:h-11 rounded-2xl text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+                className="justify-start h-10 rounded-2xl text-muted-foreground hover:text-destructive hover:bg-destructive/5"
                 onClick={handleLogout}
               >
-                <LogOut className="h-4 w-4 sm:h-5 sm:w-5 mr-3" />
+                <LogOut className="h-4 w-4 mr-3" />
                 <span className="group-data-[collapsible=icon]:hidden font-semibold text-xs sm:text-sm">Exit Session</span>
               </Button>
             </div>
@@ -144,67 +144,64 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <SidebarInset className="bg-background">
           <header className="sticky top-0 z-40 flex h-16 sm:h-24 shrink-0 items-center justify-between gap-4 border-b/10 glass px-4 sm:px-12 shadow-sm">
             <div className="flex items-center gap-3 sm:gap-8">
-              <SidebarTrigger className="-ml-2 hover:bg-primary/10 rounded-xl sm:rounded-2xl h-10 w-10 sm:h-12 sm:w-12 transition-colors" />
+              <SidebarTrigger className="-ml-2 hover:bg-primary/10 rounded-xl h-10 w-10 sm:h-12 sm:w-12 transition-colors" />
               <div className="hidden lg:flex relative group">
-                <Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
                   type="search"
                   placeholder="Intelligence Search... (⌘K)"
                   className="w-64 xl:w-96 bg-secondary/50 pl-12 h-12 rounded-2xl border-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-all font-medium text-sm"
                 />
-                <div className="absolute right-4 top-3.5 hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-lg border bg-background text-[10px] text-muted-foreground font-black tracking-tighter">
-                  <Command className="h-3 w-3" /> K
-                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
               {mounted && (
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={toggleTheme}
-                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl hover:bg-primary/5 transition-all group"
+                  className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl hover:bg-primary/5 transition-all"
                 >
                   {resolvedTheme === 'dark' ? (
-                    <Sun className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 group-hover:rotate-45 transition-transform" />
+                    <Sun className="h-5 w-5 text-amber-400" />
                   ) : (
-                    <Moon className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 group-hover:-rotate-12 transition-transform" />
+                    <Moon className="h-5 w-5 text-indigo-600" />
                   )}
                 </Button>
               )}
 
-              <Button variant="ghost" size="icon" className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl hover:bg-primary/5">
-                <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
-                <span className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 flex h-2.5 w-2.5 rounded-full bg-primary ring-2 sm:ring-4 ring-background animate-pulse"></span>
+              <Button variant="ghost" size="icon" className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl hover:bg-primary/5">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                <span className="absolute top-2.5 right-2.5 flex h-2 w-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 sm:gap-4 p-1 sm:p-1.5 sm:pr-5 hover:bg-primary/5 rounded-xl sm:rounded-2xl transition-all border border-transparent hover:border-primary/10">
-                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl shadow-2xl">
+                  <Button variant="ghost" className="flex items-center gap-2 sm:gap-4 p-1 sm:pr-4 hover:bg-primary/5 rounded-xl transition-all">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl shadow-xl">
                       <AvatarImage src={`https://picsum.photos/seed/${role}/200/200`} />
-                      <AvatarFallback className={cn("rounded-lg sm:rounded-xl text-white font-black text-xs sm:text-sm", roleConfig.color)}>
+                      <AvatarFallback className={cn("rounded-xl text-white font-black text-xs", roleConfig.color)}>
                         {role[0].toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden sm:flex flex-col items-start text-left">
-                      <span className="text-xs sm:text-sm font-black leading-none mb-1 tracking-tight text-foreground">{roleConfig.title}</span>
-                      <span className="text-[8px] sm:text-[10px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
-                        <span className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-primary animate-pulse" />
+                      <span className="text-xs font-black leading-none mb-1 tracking-tight">{roleConfig.title}</span>
+                      <span className="text-[8px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
+                        <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
                         Online
                       </span>
                     </div>
-                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 sm:w-72 rounded-2xl sm:rounded-3xl p-2 sm:p-3 glass shadow-2xl">
-                  <DropdownMenuLabel className="px-4 py-2 sm:py-3 text-[9px] sm:text-[10px] uppercase font-black text-muted-foreground tracking-widest">Enterprise Access</DropdownMenuLabel>
-                  <DropdownMenuItem className="rounded-xl sm:rounded-2xl px-4 py-2 sm:py-3 cursor-pointer text-xs sm:text-sm font-semibold focus:bg-primary/5">Organization Profile</DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-xl sm:rounded-2xl px-4 py-2 sm:py-3 cursor-pointer text-xs sm:text-sm font-semibold focus:bg-primary/5">Security Credentials</DropdownMenuItem>
-                  <DropdownMenuSeparator className="my-1 sm:my-2" />
-                  <DropdownMenuItem onClick={handleLogout} className="rounded-xl sm:rounded-2xl px-4 py-2 sm:py-3 cursor-pointer text-xs sm:text-sm text-destructive font-bold focus:bg-destructive/5">
-                    <LogOut className="mr-3 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <DropdownMenuContent align="end" className="w-64 rounded-3xl p-3 glass shadow-2xl">
+                  <DropdownMenuLabel className="px-4 py-2 text-[10px] uppercase font-black text-muted-foreground tracking-widest">Enterprise Access</DropdownMenuLabel>
+                  <DropdownMenuItem className="rounded-2xl px-4 py-3 cursor-pointer text-sm font-semibold focus:bg-primary/5">Organization Profile</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-2xl px-4 py-3 cursor-pointer text-sm font-semibold focus:bg-primary/5">Security Credentials</DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-2xl px-4 py-3 cursor-pointer text-sm text-destructive font-bold focus:bg-destructive/5">
+                    <LogOut className="mr-3 h-4 w-4" />
                     Terminate Session
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -212,7 +209,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-10 md:p-16 overflow-y-auto bg-[radial-gradient(circle_at_top_right,var(--primary),transparent)] bg-[length:200px_200px] sm:bg-[length:400px_400px] bg-no-repeat bg-fixed">
+          <main className="flex-1 p-4 sm:p-10 lg:p-16 overflow-y-auto bg-[radial-gradient(circle_at_top_right,var(--primary),transparent)] bg-[length:150px_150px] sm:bg-[length:400px_400px] bg-no-repeat bg-fixed">
             <div className="mx-auto max-w-[1400px] animate-in fade-in slide-in-from-bottom-6 duration-1000 fill-mode-both">
               {children}
             </div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -85,7 +84,6 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Filtering States
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<string[]>([]);
 
@@ -135,7 +133,7 @@ export default function InventoryPage() {
 
   const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.stock || !newProduct.categoryId || !newProduct.mrp || !newProduct.actualPrice) {
-      toast({ title: "Required Data Missing", description: "All asterisked fields must be completed.", variant: "destructive" });
+      toast({ title: "Required Data Missing", description: "All fields must be completed.", variant: "destructive" });
       return;
     }
     if (!validatePricing()) return;
@@ -197,15 +195,15 @@ export default function InventoryPage() {
   const activeFilterCount = statusFilters.length + categoryFilters.length;
 
   return (
-    <div className="space-y-8 sm:space-y-12 pb-24 sm:pb-32">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8">
+    <div className="space-y-6 sm:space-y-12 pb-24 sm:pb-32">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 px-1">
         <div className="space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
             <BoxSelect className="h-3 w-3 text-primary" />
             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary">Inventory Core Ready</span>
           </div>
-          <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
-          <p className="text-muted-foreground text-base sm:text-lg font-medium max-w-2xl leading-relaxed">
+          <h1 className="font-headline text-3xl sm:text-5xl lg:text-6xl font-black tracking-tighter">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
+          <p className="text-muted-foreground text-sm sm:text-lg font-medium max-w-2xl leading-relaxed">
             Central repository for enterprise assets. Manage stock levels, tax classifications, and SKU data.
           </p>
         </div>
@@ -266,7 +264,6 @@ export default function InventoryPage() {
                         value={newProduct.actualPrice}
                         onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
                       />
-                      <Button variant="outline" className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl glass" onClick={() => setNewProduct(p => ({...p, actualPrice: p.mrp}))}><Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
                     </div>
                   </div>
                 </div>
@@ -319,33 +316,33 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8 px-1">
         {[
           { label: 'Asset Classes', value: products.length, icon: Archive, color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'Low Liquidity', value: products.filter(p => p.status === 'Low').length, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
           { label: 'Stock Exhaustion', value: products.filter(p => p.status === 'Out of Stock').length, icon: Scaling, color: 'text-destructive', bg: 'bg-destructive/10' },
           { label: 'Manufacturers', value: new Set(products.map(p => p.brand)).size, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none glass-card shadow-xl p-6 sm:p-8 flex items-center gap-5 sm:gap-6 group hover:translate-y-[-4px] transition-all duration-500">
+          <Card key={i} className="border-none glass-card shadow-xl p-6 sm:p-8 flex items-center gap-4 sm:gap-6 group hover:translate-y-[-4px] transition-all duration-500">
             <div className={`h-12 w-12 sm:h-16 sm:w-16 rounded-xl sm:rounded-3xl flex items-center justify-center ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
               <stat.icon className="h-5 w-5 sm:h-7 sm:w-7" />
             </div>
             <div>
               <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</p>
-              <p className="text-2xl sm:text-3xl font-black font-headline tracking-tighter mt-0.5 sm:mt-1">{stat.value}</p>
+              <p className="text-xl sm:text-3xl font-black font-headline tracking-tighter mt-0.5 sm:mt-1">{stat.value}</p>
             </div>
           </Card>
         ))}
       </div>
 
-      <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
+      <Card className="border-none glass-card shadow-2xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden mx-1">
         <CardHeader className="p-6 sm:p-10 border-b border-primary/5 bg-primary/[0.02]">
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 sm:gap-10">
             <div className="relative flex-1 group">
-              <Search className="absolute left-4 sm:left-5 top-4.5 sm:top-5 h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input 
                 placeholder="Synchronous search through vault..." 
-                className="pl-12 sm:pl-14 h-14 sm:h-16 rounded-xl sm:rounded-2xl bg-secondary/50 border-none focus-visible:ring-2 focus-visible:ring-primary/20 font-bold text-sm sm:text-base"
+                className="pl-12 sm:pl-14 h-12 sm:h-16 rounded-xl sm:rounded-2xl bg-secondary/50 border-none focus-visible:ring-2 focus-visible:ring-primary/20 font-bold text-sm sm:text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -405,14 +402,14 @@ export default function InventoryPage() {
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
-            <div className="p-20 sm:p-32 text-center space-y-3 sm:space-y-4">
+            <div className="p-16 sm:p-32 text-center space-y-3 sm:space-y-4">
               <RefreshCcw className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-primary animate-spin" />
-              <p className="text-base sm:text-lg font-bold text-muted-foreground tracking-tight">Accessing Secure Vault Data...</p>
+              <p className="text-sm sm:text-lg font-bold text-muted-foreground tracking-tight">Accessing Secure Vault Data...</p>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="p-20 sm:p-32 text-center space-y-3 sm:space-y-4">
+            <div className="p-16 sm:p-32 text-center space-y-3 sm:space-y-4">
               <Archive className="mx-auto h-12 w-12 text-muted-foreground/30" />
-              <p className="text-lg font-black text-muted-foreground tracking-tight uppercase">No assets found in current matrix.</p>
+              <p className="text-base sm:text-lg font-black text-muted-foreground tracking-tight uppercase">No assets found in current matrix.</p>
               <Button variant="link" onClick={() => { setSearchTerm(''); setStatusFilters([]); setCategoryFilters([]); }} className="font-black uppercase tracking-widest text-primary">Clear all filters</Button>
             </div>
           ) : (
