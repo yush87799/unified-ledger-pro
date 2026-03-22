@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -26,7 +25,11 @@ import {
   Copy,
   Tag,
   Scaling,
-  RefreshCcw
+  RefreshCcw,
+  Zap,
+  BoxSelect,
+  Archive,
+  AlertCircle
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -66,30 +69,10 @@ const UNITS = [
 ];
 
 const GST_CATEGORIES = [
-  { 
-    id: 'exempt', 
-    name: '0% (Exempt)', 
-    rate: 0, 
-    examples: 'Fresh fruits/vegetables, milk, bread, salt, life-saving medicines',
-  },
-  { 
-    id: 'essential', 
-    name: '5% (Mass Use/Essential)', 
-    rate: 5, 
-    examples: 'Packaged food, cooking oil, tea, spices, fertilizers',
-  },
-  { 
-    id: 'standard', 
-    name: '18% (Standard Rate)', 
-    rate: 18, 
-    examples: 'Electronics (TVs, laptops), refrigerators, telecom, banking',
-  },
-  { 
-    id: 'luxury', 
-    name: '40% (Luxury/Sin Goods)', 
-    rate: 40, 
-    examples: 'Luxury cars, motorcycles, personal aircraft, aerated drinks, tobacco',
-  }
+  { id: 'exempt', name: '0% (Exempt)', rate: 0, examples: 'Essential life goods' },
+  { id: 'essential', name: '5% (Mass Use)', rate: 5, examples: 'Packaged foods' },
+  { id: 'standard', name: '18% (Standard)', rate: 18, examples: 'Electronics & services' },
+  { id: 'luxury', name: '40% (Luxury)', rate: 40, examples: 'Premium Sin goods' }
 ];
 
 export default function InventoryPage() {
@@ -99,7 +82,6 @@ export default function InventoryPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form State
   const [newProduct, setNewProduct] = useState({
     name: '',
     brand: '',
@@ -112,10 +94,7 @@ export default function InventoryPage() {
 
   const [selectedGSTRate, setSelectedGSTRate] = useState<number | null>(null);
 
-  // Fetch products on mount
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  useEffect(() => { fetchProducts(); }, []);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -126,36 +105,24 @@ export default function InventoryPage() {
         setProducts(data);
       }
     } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Failed to fetch inventory from the local backend.",
-        variant: "destructive"
-      });
+      toast({ title: "Sync Failed", description: "Database communication error.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
   const handlePriceInput = (value: string, field: 'mrp' | 'actualPrice') => {
-    // Strictly allow only positive digits and a single dot.
     let sanitized = value.replace(/[^0-9.]/g, '');
     const parts = sanitized.split('.');
-    if (parts.length > 2) {
-      sanitized = `${parts[0]}.${parts.slice(1).join('')}`;
-    }
+    if (parts.length > 2) sanitized = `${parts[0]}.${parts.slice(1).join('')}`;
     setNewProduct(prev => ({ ...prev, [field]: sanitized }));
   };
 
   const validatePricing = () => {
     const mrpNum = parseFloat(newProduct.mrp) || 0;
     const priceNum = parseFloat(newProduct.actualPrice) || 0;
-
     if (newProduct.mrp && newProduct.actualPrice && priceNum > mrpNum) {
-      toast({
-        title: "Pricing Conflict",
-        description: "Actual Selling Price cannot be greater than the Maximum Retail Price (MRP).",
-        variant: "destructive"
-      });
+      toast({ title: "Pricing Conflict", description: "Selling price cannot exceed MRP.", variant: "destructive" });
       return false;
     }
     return true;
@@ -167,38 +134,25 @@ export default function InventoryPage() {
     setSelectedGSTRate(category ? category.rate : null);
   };
 
-  const generateSKU = () => {
-    return `SKU-${Math.floor(1000 + Math.random() * 9000)}`;
-  };
-
   const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.stock || !newProduct.categoryId || !newProduct.mrp || !newProduct.actualPrice) {
-      toast({
-        title: "Missing Fields",
-        description: "Please fill in all mandatory details to add the product.",
-        variant: "destructive"
-      });
+      toast({ title: "Required Data Missing", description: "All asterisked fields must be completed.", variant: "destructive" });
       return;
     }
-
     if (!validatePricing()) return;
 
     setIsSubmitting(true);
-    const mrpNum = parseFloat(newProduct.mrp) || 0;
-    const priceNum = parseFloat(newProduct.actualPrice) || 0;
     const categoryObj = GST_CATEGORIES.find(c => c.id === newProduct.categoryId);
-    const stockNum = Math.max(0, parseInt(newProduct.stock) || 0);
-    
     const productToAdd = {
-      id: generateSKU(),
+      id: `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
       name: newProduct.name,
       brand: newProduct.brand || 'Generic',
       category: categoryObj?.name.split(' (')[0] || 'Other',
-      mrp: mrpNum,
-      price: priceNum,
-      stock: stockNum,
+      mrp: parseFloat(newProduct.mrp),
+      price: parseFloat(newProduct.actualPrice),
+      stock: parseInt(newProduct.stock),
       unit: newProduct.unit,
-      status: stockNum === 0 ? 'Out of Stock' : stockNum < 10 ? 'Low' : 'In Stock',
+      status: parseInt(newProduct.stock) === 0 ? 'Out of Stock' : parseInt(newProduct.stock) < 10 ? 'Low' : 'In Stock',
       gst: `${categoryObj?.rate}%`
     };
 
@@ -208,217 +162,144 @@ export default function InventoryPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productToAdd)
       });
-
       if (response.ok) {
-        const savedProduct = await response.json();
-        setProducts([savedProduct, ...products]);
+        setProducts([productToAdd, ...products]);
         setIsDialogOpen(false);
         setNewProduct({ name: '', brand: '', stock: '', unit: 'units', categoryId: '', mrp: '', actualPrice: '' });
-        setSelectedGSTRate(null);
-        
-        toast({
-          title: "Product Added",
-          description: `${productToAdd.name} added to inventory. SKU: ${productToAdd.id}`,
-        });
-      } else {
-        throw new Error('Failed to save product');
+        toast({ title: "Vault Updated", description: `${productToAdd.name} registered successfully.` });
       }
     } catch (error) {
-      toast({
-        title: "Submission Failed",
-        description: "Could not save the product to the local backend.",
-        variant: "destructive"
-      });
+      toast({ title: "Submission Error", description: "Failed to update central repository.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const calculateDiscount = () => {
-    const mrp = parseFloat(newProduct.mrp);
-    const price = parseFloat(newProduct.actualPrice);
-    if (!mrp || !price || mrp <= 0) return null;
-    
-    const amount = mrp - price;
-    const percentage = (amount / mrp) * 100;
-    if (amount < 0) return null;
-    return { amount, percentage };
-  };
-
-  const discount = calculateDiscount();
-
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    p.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.brand.toLowerCase().includes(searchTerm.toLowerCase())
+    p.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="font-headline text-3xl font-bold text-foreground">Inventory Management</h1>
-          <p className="text-muted-foreground">Local backend connected. All data is saved to inventory.json.</p>
+    <div className="space-y-12 pb-32">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+            <BoxSelect className="h-3 w-3 text-indigo-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Inventory Core Ready</span>
+          </div>
+          <h1 className="font-headline text-5xl font-black tracking-tighter">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
+          <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
+            Central repository for your enterprise assets. Manage stock levels, tax classifications, and SKU data.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="hidden sm:flex border-primary/20 hover:bg-primary/5" onClick={fetchProducts}>
-            <RefreshCcw className={`mr-2 h-4 w-4 text-primary ${loading ? 'animate-spin' : ''}`} /> Refresh Data
+        <div className="flex items-center gap-4">
+          <Button variant="outline" className="h-14 px-6 rounded-2xl glass hover:bg-primary/5 font-bold" onClick={fetchProducts}>
+            <RefreshCcw className={loading ? 'animate-spin mr-3 h-5 w-5' : 'mr-3 h-5 w-5 text-primary'} /> Resync Data
           </Button>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="rounded-full shadow-lg shadow-primary/20">
-                <Plus className="mr-2 h-4 w-4" /> Add Product
+              <Button className="h-14 px-8 rounded-2xl shadow-[0_20px_40px_rgba(102,51,204,0.3)] font-black group">
+                <Plus className="mr-3 h-5 w-5 group-hover:rotate-90 transition-transform duration-500" /> New Registry
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="font-headline text-2xl">Add New Product</DialogTitle>
-                <DialogDescription>
-                  Enter product details. Pricing and GST will be automatically computed.
-                </DialogDescription>
+            <DialogContent className="sm:max-w-[650px] p-0 rounded-[2.5rem] overflow-hidden glass border-none shadow-2xl">
+              <DialogHeader className="p-10 bg-primary/5 border-b border-primary/5">
+                <DialogTitle className="font-headline text-3xl font-black tracking-tighter">New Asset Registry</DialogTitle>
+                <DialogDescription className="text-base font-medium">Input product specification for global ledger synchronization.</DialogDescription>
               </DialogHeader>
-              <div className="flex flex-col gap-5 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">Name*</Label>
-                  <Input 
-                    id="name" 
-                    placeholder="e.g. Wireless Mouse" 
-                    className="col-span-3" 
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct(prev => ({...prev, name: e.target.value}))}
-                  />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="brand" className="text-right">Brand</Label>
-                  <Input 
-                    id="brand" 
-                    placeholder="Brand name (optional)" 
-                    className="col-span-3" 
-                    value={newProduct.brand}
-                    onChange={(e) => setNewProduct(prev => ({...prev, brand: e.target.value}))}
-                  />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="mrp" className="text-right">MRP (₹)*</Label>
-                  <Input 
-                    id="mrp" 
-                    placeholder="Max Retail Price" 
-                    className="col-span-3" 
-                    value={newProduct.mrp}
-                    onChange={(e) => handlePriceInput(e.target.value, 'mrp')}
-                    onBlur={validatePricing}
-                  />
-                </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="actualPrice" className="text-right">Selling Price*</Label>
-                  <div className="col-span-3 flex gap-2">
+              <div className="p-12 space-y-8 max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Asset Name*</Label>
                     <Input 
-                      id="actualPrice" 
-                      placeholder="Actual Selling Price" 
-                      className="flex-1" 
-                      value={newProduct.actualPrice}
-                      onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
+                      placeholder="e.g. Ultra Gaming X" 
+                      className="h-14 rounded-2xl bg-secondary/50 border-none font-bold"
+                      value={newProduct.name}
+                      onChange={(e) => setNewProduct(prev => ({...prev, name: e.target.value}))}
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manufacturer / Brand</Label>
+                    <Input 
+                      placeholder="Brand Entity" 
+                      className="h-14 rounded-2xl bg-secondary/50 border-none font-bold"
+                      value={newProduct.brand}
+                      onChange={(e) => setNewProduct(prev => ({...prev, brand: e.target.value}))}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">MRP (₹)*</Label>
+                    <Input 
+                      placeholder="Max Retail Price" 
+                      className="h-14 rounded-2xl bg-secondary/50 border-none font-bold"
+                      value={newProduct.mrp}
+                      onChange={(e) => handlePriceInput(e.target.value, 'mrp')}
                       onBlur={validatePricing}
                     />
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      type="button"
-                      onClick={() => {
-                        const sanitizedMrp = newProduct.mrp.replace(/[^0-9.]/g, '');
-                        setNewProduct(prev => ({...prev, actualPrice: sanitizedMrp}));
-                      }}
-                      className="text-[10px] h-10 px-2"
-                    >
-                      <Copy className="h-3 w-3 mr-1" /> Same as MRP
-                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Market Price*</Label>
+                    <div className="flex gap-3">
+                      <Input 
+                        placeholder="Selling Price" 
+                        className="h-14 rounded-2xl bg-secondary/50 border-none font-bold flex-1"
+                        value={newProduct.actualPrice}
+                        onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
+                        onBlur={validatePricing}
+                      />
+                      <Button variant="outline" className="h-14 w-14 rounded-2xl glass" onClick={() => setNewProduct(p => ({...p, actualPrice: p.mrp}))}><Copy className="h-4 w-4" /></Button>
+                    </div>
                   </div>
                 </div>
 
-                {discount && discount.amount > 0 && (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <div className="col-start-2 col-span-3 flex items-center gap-3 text-xs">
-                      <div className="flex items-center gap-1 text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded">
-                        <Tag className="h-3 w-3" />
-                        Save ₹{discount.amount.toLocaleString()} ({discount.percentage.toFixed(1)}% Off)
-                      </div>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Stock Volume*</Label>
+                    <div className="flex gap-3">
+                      <Input 
+                        type="number" 
+                        className="h-14 rounded-2xl bg-secondary/50 border-none font-black flex-1 text-center"
+                        value={newProduct.stock}
+                        onChange={(e) => setNewProduct(prev => ({...prev, stock: e.target.value}))}
+                      />
+                      <Select value={newProduct.unit} onValueChange={(val) => setNewProduct(prev => ({...prev, unit: val}))}>
+                        <SelectTrigger className="h-14 w-32 rounded-2xl bg-secondary/50 border-none font-bold">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="glass">
+                          {UNITS.map(u => <SelectItem key={u.id} value={u.id} className="rounded-xl font-bold">{u.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                )}
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="stock" className="text-right">Stock Qty*</Label>
-                  <div className="col-span-3 flex gap-2">
-                    <Input 
-                      id="stock" 
-                      type="number" 
-                      min="0"
-                      placeholder="Qty" 
-                      className="flex-1" 
-                      value={newProduct.stock}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === "" || parseInt(val) >= 0) {
-                          setNewProduct(prev => ({...prev, stock: val}));
-                        }
-                      }}
-                    />
-                    <Select 
-                      onValueChange={(val) => setNewProduct(prev => ({...prev, unit: val}))} 
-                      value={newProduct.unit}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Unit" />
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tax Classification*</Label>
+                    <Select value={newProduct.categoryId} onValueChange={handleCategoryChange}>
+                      <SelectTrigger className="h-14 rounded-2xl bg-secondary/50 border-none font-bold">
+                        <SelectValue placeholder="Select Rate" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {UNITS.map((u) => (
-                          <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                      <SelectContent className="glass">
+                        {GST_CATEGORIES.map(cat => (
+                          <SelectItem key={cat.id} value={cat.id} className="rounded-xl font-bold py-3">
+                            {cat.name} <span className="opacity-40 text-[10px] ml-2 font-black">{cat.examples}</span>
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="category" className="text-right">Category*</Label>
-                  <Select onValueChange={handleCategoryChange} value={newProduct.categoryId}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select classification" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GST_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          <div className="flex flex-col">
-                            <span className="font-medium">{cat.name}</span>
-                            <span className="text-[10px] text-muted-foreground line-clamp-1">{cat.examples}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {selectedGSTRate !== null && (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right text-xs text-muted-foreground">Applied Tax</Label>
-                    <div className="col-span-3 p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between">
-                      <span className="text-xs font-medium">Applied GST Rate:</span>
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground text-[10px]">
-                        {selectedGSTRate}%
-                      </Badge>
-                    </div>
-                  </div>
-                )}
               </div>
-              <DialogFooter className="mt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleAddProduct} disabled={isSubmitting}>
-                  {isSubmitting ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  Save Product
+              <DialogFooter className="p-10 bg-primary/5 border-t border-primary/5">
+                <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-2xl font-black px-8 h-14">Cancel Operation</Button>
+                <Button onClick={handleAddProduct} disabled={isSubmitting} className="rounded-2xl h-14 px-10 font-black text-lg shadow-2xl gap-3 transition-all active:scale-95">
+                  {isSubmitting ? <RefreshCcw className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                  Register Asset
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -426,158 +307,109 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card className="border-none shadow-sm bg-card/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-indigo-500/10 rounded-xl">
-                <Package className="h-6 w-6 text-indigo-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total SKUs</p>
-                <p className="text-2xl font-bold font-headline">{products.length}</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {[
+          { label: 'Asset Classes', value: products.length, icon: Archive, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+          { label: 'Low Liquidity', value: products.filter(p => p.status === 'Low').length, icon: AlertCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+          { label: 'Stock Exhaustion', value: products.filter(p => p.status === 'Out of Stock').length, icon: Scaling, color: 'text-destructive', bg: 'bg-destructive/10' },
+          { label: 'Manufacturer Entities', value: new Set(products.map(p => p.brand)).size, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none glass-card shadow-xl p-8 flex items-center gap-6 group hover:translate-y-[-4px] transition-all duration-500">
+            <div className={`h-16 w-16 rounded-3xl flex items-center justify-center ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-500`}>
+              <stat.icon className="h-7 w-7" />
             </div>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-sm bg-card/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-amber-500/10 rounded-xl">
-                <ArrowUpRight className="h-6 w-6 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Low Stock</p>
-                <p className="text-2xl font-bold font-headline">
-                  {products.filter(p => p.status === 'Low').length}
-                </p>
-              </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</p>
+              <p className="text-3xl font-black font-headline tracking-tighter mt-1">{stat.value}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-sm bg-card/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-destructive/10 rounded-xl">
-                <Scaling className="h-6 w-6 text-destructive" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Out of Stock</p>
-                <p className="text-2xl font-bold font-headline">
-                  {products.filter(p => p.status === 'Out of Stock').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-none shadow-sm bg-card/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-500/10 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Top Brands</p>
-                <p className="text-2xl font-bold font-headline">
-                  {new Set(products.map(p => p.brand)).size}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </Card>
+        ))}
       </div>
 
-      <Card className="border-none shadow-md overflow-hidden bg-card/50">
-        <CardHeader className="border-b bg-muted/20 pb-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+      <Card className="border-none glass-card shadow-2xl rounded-[2.5rem] overflow-hidden">
+        <CardHeader className="p-10 border-b border-primary/5 bg-primary/[0.02]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
+            <div className="relative flex-1 max-w-2xl group">
+              <Search className="absolute left-5 top-4.5 h-6 w-6 text-muted-foreground group-focus-within:text-primary transition-colors" />
               <Input 
-                placeholder="Search products, brands, SKU..." 
-                className="pl-9 bg-background"
+                placeholder="Synchronous search through vault... (SKU, Brand, Name)" 
+                className="pl-14 h-16 rounded-2xl bg-secondary/50 border-none focus-visible:ring-2 focus-visible:ring-primary/20 font-bold text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="border-border">
-                <Filter className="mr-2 h-4 w-4" /> Filters
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => setSearchTerm('')}>Clear</Button>
+            <div className="flex items-center gap-4">
+              <Button variant="outline" className="h-14 px-8 rounded-2xl glass font-black"><Filter className="mr-3 h-5 w-5" /> Filter Matrix</Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0 overflow-x-auto">
+        <CardContent className="p-0">
           {loading ? (
-            <div className="p-12 text-center">
-              <RefreshCcw className="mx-auto h-8 w-8 text-primary animate-spin mb-4" />
-              <p className="text-muted-foreground">Syncing with local backend...</p>
+            <div className="p-32 text-center space-y-4">
+              <RefreshCcw className="mx-auto h-12 w-12 text-primary animate-spin" />
+              <p className="text-lg font-bold text-muted-foreground tracking-tight">Accessing Secure Vault Data...</p>
             </div>
           ) : (
             <Table>
-              <TableHeader className="bg-muted/30">
-                <TableRow>
-                  <TableHead className="w-[120px]">SKU ID</TableHead>
-                  <TableHead>Product / Brand</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Price (Selling/MRP)</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>GST</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right"></TableHead>
+              <TableHeader className="bg-primary/[0.01]">
+                <TableRow className="border-none">
+                  <TableHead className="py-8 pl-12 font-black uppercase text-[10px] tracking-widest">SKU ID</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Asset Details</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Matrix Price</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Inventory</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] tracking-widest">GST Rate</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] tracking-widest">Status</TableHead>
+                  <TableHead className="pr-12"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((p) => (
-                  <TableRow key={p.id} className="hover:bg-muted/10 transition-colors">
-                    <TableCell className="font-mono text-xs font-semibold text-primary">{p.id}</TableCell>
+                  <TableRow key={p.id} className="border-none hover:bg-primary/[0.03] transition-colors group">
+                    <TableCell className="font-mono text-xs font-black text-primary py-8 pl-12 group-hover:translate-x-2 transition-transform duration-500">{p.id}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium">{p.name}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">{p.brand}</span>
+                        <span className="text-base font-black tracking-tight">{p.name}</span>
+                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{p.brand}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-xs">{p.category}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-bold text-foreground">₹{Number(p.price).toLocaleString()}</span>
+                        <span className="text-base font-black">₹{Number(p.price).toLocaleString()}</span>
                         {Number(p.mrp) > Number(p.price) && (
-                          <span className="text-[10px] text-muted-foreground line-through decoration-destructive/50">
-                            MRP: ₹{Number(p.mrp).toLocaleString()}
-                          </span>
+                          <span className="text-[10px] text-muted-foreground font-black line-through">MRP: ₹{Number(p.mrp).toLocaleString()}</span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold">{p.stock}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase">{p.unit}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-black tracking-tighter">{p.stock}</span>
+                        <span className="text-[10px] font-black uppercase text-muted-foreground">{p.unit}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5 text-[10px]">
-                        {p.gst}
-                      </Badge>
+                      <Badge className="bg-primary/10 text-primary border-none font-black text-[10px] px-3 py-1 rounded-lg">{p.gst}</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        variant={p.status === 'In Stock' ? 'default' : p.status === 'Low' ? 'secondary' : 'destructive'}
-                        className="rounded-full px-2 py-0 text-[10px] font-bold"
+                        className={`rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-widest border-none shadow-sm ${
+                          p.status === 'In Stock' ? 'bg-emerald-500 text-white' : 
+                          p.status === 'Low' ? 'bg-amber-500 text-white' : 'bg-destructive text-white'
+                        }`}
                       >
                         {p.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="pr-12 text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl hover:bg-primary/10 transition-all">
+                            <MoreVertical className="h-5 w-5" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Edit Details</DropdownMenuItem>
-                          <DropdownMenuItem>Manage Stock</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">Delete Product</DropdownMenuItem>
+                        <DropdownMenuContent align="end" className="glass rounded-2xl p-2 w-56">
+                          <DropdownMenuItem className="rounded-xl font-bold py-3">Update Specifications</DropdownMenuItem>
+                          <DropdownMenuItem className="rounded-xl font-bold py-3">Audit Log</DropdownMenuItem>
+                          <DropdownMenuItem className="rounded-xl font-bold py-3 text-destructive">Terminate SKU</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -585,13 +417,6 @@ export default function InventoryPage() {
                 ))}
               </TableBody>
             </Table>
-          )}
-          {!loading && filteredProducts.length === 0 && (
-            <div className="p-12 text-center">
-              <Package className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
-              <h3 className="text-lg font-semibold">No products found</h3>
-              <p className="text-muted-foreground">Try adding a product or adjusting your search.</p>
-            </div>
           )}
         </CardContent>
       </Card>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -16,7 +15,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Download, Filter, ArrowUpRight, Calendar, Sparkles } from 'lucide-react';
+import { Plus, Download, Filter, ArrowUpRight, Calendar, Sparkles, Activity, Search } from 'lucide-react';
 import Link from 'next/link';
 
 const recentTransactions = [
@@ -45,74 +44,73 @@ export default function DashboardPage() {
   const roleConfig = ROLES[role];
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className="text-[10px] tracking-widest font-bold uppercase bg-primary/5 text-primary border-primary/20 px-2 py-0.5">
-              Live Monitoring
-            </Badge>
+    <div className="space-y-12 pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20">
+            <Activity className="h-3 w-3 text-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">System Pulse Active</span>
           </div>
-          <h1 className="font-headline text-4xl font-bold tracking-tight">
-            Dashboard <span className="text-muted-foreground font-normal">/</span> {roleConfig.title}
+          <h1 className="font-headline text-5xl font-black tracking-tighter">
+            {roleConfig.title} <span className="text-muted-foreground/30 font-thin italic">Terminal</span>
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Analytics and operations overview for your business entity.
+          <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
+            Intelligence overview of your operational domain. Monitor growth vectors and system health in real-time.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="lg" className="rounded-xl border-primary/10 hover:bg-primary/5 shadow-sm">
-            <Calendar className="mr-2 h-4 w-4" /> 
-            Range: Oct 2023
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="lg" className="rounded-2xl border-primary/10 h-14 px-6 glass hover:bg-primary/5 shadow-xl font-bold">
+            <Calendar className="mr-3 h-5 w-5 text-primary" /> 
+            Period: Oct 2023
           </Button>
-          <Button size="lg" className="rounded-xl shadow-xl shadow-primary/30 px-8 group">
-            <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 transition-transform" /> 
-            Create Transaction
+          <Button size="lg" className="rounded-2xl shadow-[0_20px_40px_rgba(102,51,204,0.3)] h-14 px-8 group font-bold">
+            <Plus className="mr-3 h-5 w-5 group-hover:rotate-90 transition-transform duration-500" /> 
+            New Transaction
           </Button>
         </div>
       </div>
 
       <KPISection role={role} />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-8 space-y-10">
           <ChartsSection role={role} />
           
-          <Card className="border-none shadow-xl bg-card/60 backdrop-blur-md rounded-2xl overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/20 pb-6">
+          <Card className="border-none glass-card shadow-2xl rounded-[2rem] overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-primary/5 bg-primary/[0.02] p-8">
               <div>
-                <CardTitle className="font-headline text-xl">Recent Activity</CardTitle>
-                <CardDescription>Real-time audit of latest generated invoices</CardDescription>
+                <CardTitle className="font-headline text-2xl font-black tracking-tight">Audit Stream</CardTitle>
+                <CardDescription className="text-sm font-medium">Real-time ledger of latest financial interactions</CardDescription>
               </div>
               <Link href="/billing">
-                <Button variant="ghost" size="sm" className="text-primary font-bold hover:bg-primary/10 group">
-                  Audit History <ArrowUpRight className="ml-1 h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <Button variant="ghost" size="sm" className="text-primary font-black hover:bg-primary/5 rounded-xl h-10 px-5 group">
+                  Full History <ArrowUpRight className="ml-2 h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>
               </Link>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
-                <TableHeader className="bg-muted/10">
+                <TableHeader className="bg-primary/[0.01]">
                   <TableRow className="hover:bg-transparent border-none">
-                    <TableHead className="py-4 pl-6">ID REFERENCE</TableHead>
-                    <TableHead>CUSTOMER</TableHead>
-                    <TableHead>DATE</TableHead>
-                    <TableHead>AMOUNT</TableHead>
-                    <TableHead className="pr-6">STATUS</TableHead>
+                    <TableHead className="py-6 pl-10 font-black uppercase text-[10px] tracking-widest text-muted-foreground">Reference</TableHead>
+                    <TableHead className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Counterparty</TableHead>
+                    <TableHead className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Timeline</TableHead>
+                    <TableHead className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Volume</TableHead>
+                    <TableHead className="pr-10 font-black uppercase text-[10px] tracking-widest text-muted-foreground">State</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {recentTransactions.map((tx) => (
-                    <TableRow key={tx.id} className="hover:bg-primary/5 transition-colors border-none group">
-                      <TableCell className="font-mono text-xs font-bold text-primary py-4 pl-6 group-hover:translate-x-1 transition-transform">{tx.id}</TableCell>
-                      <TableCell className="font-medium">{tx.customer}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{tx.date}</TableCell>
-                      <TableCell className="font-bold">{tx.amount}</TableCell>
-                      <TableCell className="pr-6">
+                    <TableRow key={tx.id} className="hover:bg-primary/[0.03] transition-colors border-none group">
+                      <TableCell className="font-mono text-[11px] font-black text-primary py-6 pl-10 group-hover:translate-x-2 transition-transform duration-500">{tx.id}</TableCell>
+                      <TableCell className="font-bold text-sm tracking-tight">{tx.customer}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs font-medium">{tx.date}</TableCell>
+                      <TableCell className="font-black text-sm">{tx.amount}</TableCell>
+                      <TableCell className="pr-10 text-right">
                         <Badge 
-                          className={`rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                            tx.status === 'Paid' ? 'bg-emerald-500 hover:bg-emerald-600' : 
-                            tx.status === 'Pending' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-destructive'
+                          className={`rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-[0.1em] border-none shadow-sm ${
+                            tx.status === 'Paid' ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 
+                            tx.status === 'Pending' ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-destructive text-white'
                           }`}
                         >
                           {tx.status}
@@ -126,49 +124,60 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="space-y-8">
-          <Card className="border-none shadow-xl bg-primary text-primary-foreground rounded-2xl overflow-hidden relative group">
-            <div className="absolute top-0 right-0 p-8 opacity-10 scale-150 rotate-12 group-hover:rotate-45 transition-transform duration-1000">
-              <Sparkles className="h-24 w-24" />
+        <div className="lg:col-span-4 space-y-10">
+          <Card className="border-none shadow-2xl bg-primary text-primary-foreground rounded-[2.5rem] overflow-hidden relative group p-8 pb-10 min-h-[400px] flex flex-col justify-between">
+            <div className="absolute top-0 right-0 p-12 opacity-10 scale-[2] rotate-12 group-hover:rotate-45 transition-all duration-1000">
+              <Sparkles className="h-32 w-32" />
             </div>
-            <CardHeader className="relative">
-              <CardTitle className="font-headline text-2xl">AI Insights</CardTitle>
-              <CardDescription className="text-primary-foreground/70">Powered by Gemini AI Core</CardDescription>
-            </CardHeader>
-            <CardContent className="relative space-y-4">
-              <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
-                <p className="text-sm font-medium leading-relaxed">
-                  Demand for <span className="underline underline-offset-4 decoration-2">Ergonomic Chairs</span> is projected to rise by 24% next month.
+            
+            <div className="space-y-6 relative z-10">
+              <Badge className="bg-white/20 hover:bg-white/30 text-white border-none px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">AI Engine Alpha</Badge>
+              <div className="space-y-2">
+                <CardTitle className="font-headline text-4xl font-black tracking-tighter leading-none">Market Insights</CardTitle>
+                <CardDescription className="text-primary-foreground/60 font-medium text-base">Gemini Intelligence Core 2.0</CardDescription>
+              </div>
+              <div className="p-6 rounded-3xl bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl space-y-4">
+                <p className="text-lg font-bold leading-tight tracking-tight">
+                  High velocity detected in <span className="underline underline-offset-8 decoration-white/40">Premium Tech</span> inventory. 
+                </p>
+                <p className="text-sm opacity-80 leading-relaxed">
+                  Predictive models suggest a 31% restocking requirement within the next 72 hours.
                 </p>
               </div>
-              <Button variant="secondary" className="w-full rounded-xl h-11 font-bold">
-                Generate Demand Forecast
-              </Button>
-            </CardContent>
+            </div>
+
+            <Button variant="secondary" className="w-full rounded-2xl h-16 font-black text-lg shadow-2xl hover:scale-[1.02] transition-transform active:scale-95 group relative z-10">
+              Optimize Supply Chain <ArrowUpRight className="ml-2 h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </Button>
           </Card>
 
-          <Card className="border-none shadow-xl bg-card/60 backdrop-blur-md rounded-2xl overflow-hidden">
-            <CardHeader className="border-b bg-muted/20">
-              <CardTitle className="font-headline text-xl">Stock Alert Monitor</CardTitle>
-              <CardDescription>Critical & Low stock notifications</CardDescription>
+          <Card className="border-none glass-card shadow-2xl rounded-[2.5rem] overflow-hidden">
+            <CardHeader className="p-8 border-b border-primary/5 bg-primary/[0.02]">
+              <div className="flex items-center gap-3 mb-2">
+                <Search className="h-4 w-4 text-primary" />
+                <CardTitle className="font-headline text-xl font-black tracking-tight">Stock Sentinel</CardTitle>
+              </div>
+              <CardDescription className="font-medium">Continuous inventory health monitoring</CardDescription>
             </CardHeader>
-            <CardContent className="p-4 space-y-3">
+            <CardContent className="p-8 space-y-4">
               {lowStockItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-4 rounded-xl bg-background border border-border/50 hover:border-primary/20 transition-all group">
+                <div key={item.id} className="flex items-center justify-between p-5 rounded-2xl bg-background border border-border/40 hover:border-primary/30 transition-all group cursor-pointer hover:shadow-xl">
                   <div className="space-y-1">
-                    <p className="font-bold text-sm group-hover:text-primary transition-colors">{item.name}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{item.category} • {item.stock} in stock</p>
+                    <p className="font-black text-sm group-hover:text-primary transition-colors tracking-tight">{item.name}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest flex items-center gap-2">
+                      {item.category} <span className="h-1 w-1 rounded-full bg-muted-foreground/30" /> {item.stock} IN STOCK
+                    </p>
                   </div>
                   <Badge 
                     variant={item.status === 'Critical' ? 'destructive' : 'secondary'}
-                    className="text-[9px] uppercase font-black px-2 py-0.5 rounded-lg"
+                    className="text-[9px] uppercase font-black px-3 py-1 rounded-lg shadow-sm border-none"
                   >
                     {item.status}
                   </Badge>
                 </div>
               ))}
-              <Button variant="outline" className="w-full text-primary font-bold border-primary/20 hover:bg-primary/5 rounded-xl h-11 mt-4">
-                Full Inventory Report &rarr;
+              <Button variant="outline" className="w-full text-primary font-black border-primary/10 hover:bg-primary/5 rounded-2xl h-14 mt-4 transition-all">
+                Access Inventory Vault
               </Button>
             </CardContent>
           </Card>

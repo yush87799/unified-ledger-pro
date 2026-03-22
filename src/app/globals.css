@@ -1,72 +1,71 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 251 35% 95%; /* #EFEDF6 */
-    --foreground: 240 10% 3.9%;
+    /* Premium Indigo & Slate Theme */
+    --background: 240 20% 98%; /* Soft cool white */
+    --foreground: 224 71% 4%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 224 71% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 255 60% 50%; /* #6633CC approx */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 212 55% 69%; /* #84ACDB */
-    --secondary-foreground: 240 10% 3.9%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 255 60% 50%;
-    --radius: 0.75rem;
-    --chart-1: 255 60% 50%;
-    --chart-2: 212 55% 69%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 255 60% 50%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 255 60% 96%;
-    --sidebar-accent-foreground: 255 60% 30%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 255 60% 50%;
-  }
-  .dark {
-    --background: 222 47% 11%; /* Dark Slate/Navy */
-    --foreground: 210 40% 98%;
-    --card: 222 47% 13%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 255 70% 65%; /* Brighter Indigo for Dark Mode */
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 250 84% 54%; /* Vibrant Pro Indigo */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 224 71% 4%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 250 84% 54%;
+    --accent-foreground: 224 71% 4%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 255 70% 65%;
-    --sidebar-background: 222 47% 10%;
-    --sidebar-foreground: 215 20.2% 80.1%;
-    --sidebar-primary: 255 70% 65%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 32% 20%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 32% 20%;
-    --sidebar-ring: 255 70% 65%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 250 84% 54%;
+    --radius: 1rem;
+    
+    --sidebar-background: 240 10% 99%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 250 84% 54%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 84% 96%;
+    --sidebar-accent-foreground: 250 84% 30%;
+    --sidebar-border: 240 6% 92%;
+    --sidebar-ring: 250 84% 54%;
+  }
+
+  .dark {
+    /* Deep Charcoal & Indigo Dark Theme */
+    --background: 224 71% 4%; /* Near black blue */
+    --foreground: 213 31% 91%;
+    --card: 224 71% 6%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 250 84% 64%; /* Brighter Indigo for Dark */
+    --primary-foreground: 224 71% 4%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 222 47% 11%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 250 84% 64%;
+    --accent-foreground: 213 31% 91%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 213 31% 91%;
+    --border: 222 47% 11%;
+    --input: 222 47% 11%;
+    --ring: 250 84% 64%;
+
+    --sidebar-background: 224 71% 3%;
+    --sidebar-foreground: 215 20% 80%;
+    --sidebar-primary: 250 84% 64%;
+    --sidebar-primary-foreground: 224 71% 4%;
+    --sidebar-accent: 222 47% 11%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 222 47% 11%;
+    --sidebar-ring: 250 84% 64%;
   }
 }
 
@@ -78,6 +77,19 @@
     @apply bg-background text-foreground font-body antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline;
+    @apply font-headline tracking-tight;
+  }
+}
+
+/* Custom Utilities for Premium Look */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+  .glass-card {
+    @apply bg-card/60 dark:bg-card/40 backdrop-blur-xl border border-border/50 shadow-2xl;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-500 to-purple-500;
   }
 }
