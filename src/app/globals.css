@@ -4,92 +4,79 @@
 
 @layer base {
   :root {
-    /* Premium Indigo & Slate Theme */
-    --background: 240 20% 98%; /* Soft cool white */
+    /* Sophisticated Executive Light Theme */
+    --background: 210 40% 98%;
     --foreground: 224 71% 4%;
     --card: 0 0% 100%;
     --card-foreground: 224 71% 4%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71% 4%;
-    --primary: 250 84% 54%; /* Vibrant Pro Indigo */
+    --primary: 255 85% 58%; /* Pro Indigo */
     --primary-foreground: 0 0% 100%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 224 71% 4%;
     --muted: 240 5% 96%;
     --muted-foreground: 240 4% 46%;
-    --accent: 250 84% 54%;
+    --accent: 255 85% 58%;
     --accent-foreground: 224 71% 4%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 250 84% 54%;
-    --radius: 1rem;
+    --ring: 255 85% 58%;
+    --radius: 0.75rem;
     
-    --sidebar-background: 240 10% 99%;
+    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 250 84% 54%;
+    --sidebar-primary: 255 85% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 250 84% 96%;
-    --sidebar-accent-foreground: 250 84% 30%;
+    --sidebar-accent: 255 85% 96%;
+    --sidebar-accent-foreground: 255 85% 30%;
     --sidebar-border: 240 6% 92%;
-    --sidebar-ring: 250 84% 54%;
+    --sidebar-ring: 255 85% 58%;
   }
 
   .dark {
-    /* Deep Charcoal & Indigo Dark Theme */
-    --background: 224 71% 4%; /* Near black blue */
+    /* High-Contrast "Night Navy" Dark Theme */
+    --background: 222 47% 4%;
     --foreground: 213 31% 91%;
-    --card: 224 71% 6%;
+    --card: 222 47% 6%;
     --card-foreground: 213 31% 91%;
-    --popover: 224 71% 4%;
+    --popover: 222 47% 4%;
     --popover-foreground: 213 31% 91%;
-    --primary: 250 84% 64%; /* Brighter Indigo for Dark */
-    --primary-foreground: 224 71% 4%;
-    --secondary: 222 47% 11%;
+    --primary: 255 85% 65%; /* Brighter for Dark */
+    --primary-foreground: 222 47% 4%;
+    --secondary: 222 47% 12%;
     --secondary-foreground: 213 31% 91%;
-    --muted: 222 47% 11%;
+    --muted: 222 47% 12%;
     --muted-foreground: 215 20% 65%;
-    --accent: 250 84% 64%;
+    --accent: 255 85% 65%;
     --accent-foreground: 213 31% 91%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 63% 40%;
     --destructive-foreground: 213 31% 91%;
-    --border: 222 47% 11%;
-    --input: 222 47% 11%;
-    --ring: 250 84% 64%;
+    --border: 222 47% 12%;
+    --input: 222 47% 12%;
+    --ring: 255 85% 65%;
 
-    --sidebar-background: 224 71% 3%;
+    --sidebar-background: 222 47% 3%;
     --sidebar-foreground: 215 20% 80%;
-    --sidebar-primary: 250 84% 64%;
-    --sidebar-primary-foreground: 224 71% 4%;
-    --sidebar-accent: 222 47% 11%;
+    --sidebar-primary: 255 85% 65%;
+    --sidebar-primary-foreground: 222 47% 4%;
+    --sidebar-accent: 222 47% 12%;
     --sidebar-accent-foreground: 213 31% 91%;
-    --sidebar-border: 222 47% 11%;
-    --sidebar-ring: 250 84% 64%;
+    --sidebar-border: 222 47% 12%;
+    --sidebar-ring: 255 85% 65%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground font-body antialiased;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-headline tracking-tight;
-  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground font-body antialiased selection:bg-primary/20; }
+  h1, h2, h3, h4, h5, h6 { @apply font-headline tracking-tight; }
 }
 
-/* Custom Utilities for Premium Look */
 @layer utilities {
-  .glass {
-    @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10;
-  }
-  .glass-card {
-    @apply bg-card/60 dark:bg-card/40 backdrop-blur-xl border border-border/50 shadow-2xl;
-  }
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-500 to-purple-500;
-  }
+  .glass { @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10; }
+  .glass-card { @apply bg-card/60 dark:bg-card/40 backdrop-blur-xl border border-border/50 shadow-xl; }
+  .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-indigo-500 to-violet-600; }
 }

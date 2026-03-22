@@ -40,7 +40,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'System configuration, user roles, and operational control.',
     icon: ShieldCheck,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'users', 'settings'],
-    color: 'bg-slate-500'
+    color: 'bg-slate-600'
   },
   billing: {
     id: 'billing',
@@ -64,7 +64,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'Warehouse operations, stock levels, and supply chain updates.',
     icon: Boxes,
     allowedMenus: ['dashboard', 'inventory'],
-    color: 'bg-blue-600'
+    color: 'bg-sky-600'
   }
 };
 
