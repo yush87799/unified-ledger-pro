@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -43,8 +42,6 @@ import {
   ShoppingBag,
   Zap,
   IndianRupee,
-  CreditCard,
-  Wallet,
   Clock3
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -176,11 +173,11 @@ export default function BillingPage() {
 
   const handleSaveInvoice = async () => {
     if (!customer.name || !customer.phone || !customer.stateCode) {
-      toast({ title: "Incomplete Customer Info", variant: "destructive" });
+      toast({ title: "Entity Info Missing", variant: "destructive" });
       return;
     }
     if (items.some(i => !i.productId || i.qty <= 0)) {
-      toast({ title: "Invalid Items", variant: "destructive" });
+      toast({ title: "Asset Stream Incomplete", variant: "destructive" });
       return;
     }
 
@@ -197,12 +194,12 @@ export default function BillingPage() {
         businessStateCode: businessSettings?.stateCode || '29'
       };
       const saved = await apiClient.invoices.create(payload);
-      toast({ title: "Finalized", description: `Invoice ${saved.id} recorded.` });
+      toast({ title: "Settlement Recorded", description: `Interaction ${saved.id} finalized.` });
       setItems([{ id: '1', productId: '', productName: '', qty: 1, price: 0, mrp: 0, gstRate: 0, unit: 'units', total: 0 }]);
       setCustomer({ name: '', phone: '', address: '', stateCode: '' });
       loadInitialData();
     } catch (err) {
-      toast({ title: "Sync Error", variant: "destructive" });
+      toast({ title: "Sync Failure", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -210,7 +207,7 @@ export default function BillingPage() {
 
   const handlePreviewCurrent = () => {
     setPreviewInvoice({
-      id: 'DRAFT',
+      id: 'DRAFT-TERM',
       customer,
       items: items.filter(i => i.productId),
       subtotal: totals.subtotal,
@@ -230,78 +227,78 @@ export default function BillingPage() {
   );
 
   return (
-    <div className="space-y-4 pb-12 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20">
-            <Zap className="h-3 w-3 text-primary fill-primary" />
-            <span className="text-[9px] font-black uppercase tracking-widest text-primary">Terminal v3.1</span>
+    <div className="space-y-6 pb-16 animate-in fade-in duration-500">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-md bg-primary/10 border border-primary/20">
+            <Zap className="h-4 w-4 text-primary fill-primary" />
+            <span className="text-xs font-black uppercase tracking-widest text-primary">Terminal v4.0 Active</span>
           </div>
-          <h1 className="font-headline text-xl sm:text-2xl font-black tracking-tighter leading-none">POS <span className="text-muted-foreground/30 font-thin italic">Interface</span></h1>
+          <h1 className="font-headline text-3xl font-black tracking-tighter leading-none">Point of <span className="text-muted-foreground/30 font-thin italic">Sale</span></h1>
         </div>
       </div>
 
-      <Tabs defaultValue="create" className="space-y-4" onValueChange={(val) => val === 'history' && loadHistory()}>
-        <TabsList className="bg-secondary/50 p-1 rounded-xl h-10 w-full max-w-xs glass">
-          <TabsTrigger value="create" className="flex-1 rounded-lg font-bold h-full gap-2 text-[10px]"><Plus className="h-3 w-3" /> New</TabsTrigger>
-          <TabsTrigger value="history" className="flex-1 rounded-lg font-bold h-full gap-2 text-[10px]"><History className="h-3 w-3" /> Ledger</TabsTrigger>
+      <Tabs defaultValue="create" className="space-y-6" onValueChange={(val) => val === 'history' && loadHistory()}>
+        <TabsList className="bg-secondary/50 p-1.5 rounded-2xl h-12 w-full max-w-sm glass">
+          <TabsTrigger value="create" className="flex-1 rounded-xl font-bold h-full gap-2.5 text-xs"><Plus className="h-4 w-4" /> New Interaction</TabsTrigger>
+          <TabsTrigger value="history" className="flex-1 rounded-xl font-bold h-full gap-2.5 text-xs"><History className="h-4 w-4" /> Historical Ledger</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="create" className="space-y-4">
-          <div className="flex flex-col xl:flex-row gap-4">
-            <div className="flex-1 space-y-4 min-w-0">
-              <Card className="border-none glass-card shadow-md rounded-xl overflow-hidden">
-                <CardHeader className="p-3 sm:p-4 border-b border-primary/5 bg-primary/[0.02]">
-                  <CardTitle className="font-headline text-sm font-black flex items-center gap-2"><User className="h-3.5 w-3.5 text-primary" /> Entity Hub</CardTitle>
+        <TabsContent value="create" className="space-y-6">
+          <div className="flex flex-col xl:flex-row gap-8">
+            <div className="flex-1 space-y-6 min-w-0">
+              <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+                <CardHeader className="p-5 border-b border-primary/5 bg-primary/[0.02]">
+                  <CardTitle className="font-headline text-base font-black flex items-center gap-3"><User className="h-4 w-4 text-primary" /> Entity Intelligence</CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Legal Name*</Label>
-                    <Input placeholder="Entity" className="h-8 rounded-lg bg-secondary/30 border-none font-bold text-xs" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
+                <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Legal Entity*</Label>
+                    <Input placeholder="Client Name" className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Contact*</Label>
-                    <Input placeholder="+91..." className="h-8 rounded-lg bg-secondary/30 border-none font-bold text-xs" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
+                  <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Contact Matrix*</Label>
+                    <Input placeholder="+91..." className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Jurisdiction*</Label>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Jurisdiction*</Label>
                     <Select value={customer.stateCode} onValueChange={val => setCustomer({...customer, stateCode: val})}>
-                      <SelectTrigger className="h-8 rounded-lg bg-secondary/30 border-none font-bold text-xs"><SelectValue placeholder="Select" /></SelectTrigger>
-                      <SelectContent className="glass border-none">
-                        {INDIAN_STATES.map(s => <SelectItem key={s.code} value={s.code} className="text-xs">{s.code} - {s.name}</SelectItem>)}
+                      <SelectTrigger className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm"><SelectValue placeholder="Select Area" /></SelectTrigger>
+                      <SelectContent className="glass border-none rounded-xl">
+                        {INDIAN_STATES.map(s => <SelectItem key={s.code} value={s.code} className="text-sm py-2">{s.code} - {s.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-[9px] uppercase font-black tracking-widest opacity-60">Payment*</Label>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Settlement Mode*</Label>
                     <Select value={paymentMode} onValueChange={(val: PaymentMode) => setPaymentMode(val)}>
-                      <SelectTrigger className="h-8 rounded-lg bg-secondary/30 border-none font-bold text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent className="glass border-none">
-                        <SelectItem value="cash" className="text-xs">Cash Asset</SelectItem>
-                        <SelectItem value="online" className="text-xs">Digital/Online</SelectItem>
-                        <SelectItem value="pending" className="text-xs text-amber-500">Pending Dues</SelectItem>
+                      <SelectTrigger className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm"><SelectValue /></SelectTrigger>
+                      <SelectContent className="glass border-none rounded-xl">
+                        <SelectItem value="cash" className="text-sm py-2">Liquid Cash</SelectItem>
+                        <SelectItem value="online" className="text-sm py-2">Digital Transfer</SelectItem>
+                        <SelectItem value="pending" className="text-sm py-2 text-amber-500 font-bold">Pending Credit</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-none glass-card shadow-md rounded-xl overflow-hidden">
-                <CardHeader className="p-3 sm:p-4 border-b border-primary/5 bg-primary/[0.02] flex flex-row items-center justify-between">
-                  <CardTitle className="font-headline text-sm font-black flex items-center gap-2"><ShoppingBag className="h-3.5 w-3.5 text-primary" /> Assets</CardTitle>
-                  <Button variant="ghost" size="sm" onClick={addItem} className="text-primary font-black h-7 px-2 text-[10px]"><Plus className="mr-1 h-3 w-3" /> Add Row</Button>
+              <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+                <CardHeader className="p-5 border-b border-primary/5 bg-primary/[0.02] flex flex-row items-center justify-between">
+                  <CardTitle className="font-headline text-base font-black flex items-center gap-3"><ShoppingBag className="h-4 w-4 text-primary" /> Asset Stream</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={addItem} className="text-primary font-black h-9 px-4 text-xs rounded-xl hover:bg-primary/5"><Plus className="mr-2 h-4 w-4" /> Add Row</Button>
                 </CardHeader>
                 <CardContent className="p-0 overflow-x-auto">
-                  <div className="min-w-[700px]">
+                  <div className="min-w-[800px]">
                     <Table>
                       <TableHeader className="bg-primary/[0.01]">
                         <TableRow className="border-none">
-                          <TableHead className="py-3 pl-6 font-black uppercase text-[9px] tracking-widest">Asset</TableHead>
-                          <TableHead className="font-black uppercase text-[9px] tracking-widest">Qty/Unit</TableHead>
-                          <TableHead className="font-black uppercase text-[9px] tracking-widest">Rate (₹)</TableHead>
-                          <TableHead className="font-black uppercase text-[9px] tracking-widest">Tax</TableHead>
-                          <TableHead className="text-right pr-6 font-black uppercase text-[9px] tracking-widest">Value</TableHead>
-                          <TableHead className="w-[40px]"></TableHead>
+                          <TableHead className="py-4 pl-8 font-black uppercase text-xs tracking-widest">Enterprise Asset</TableHead>
+                          <TableHead className="font-black uppercase text-xs tracking-widest">Qty Matrix</TableHead>
+                          <TableHead className="font-black uppercase text-xs tracking-widest">Rate (₹)</TableHead>
+                          <TableHead className="font-black uppercase text-xs tracking-widest">Tax Bracket</TableHead>
+                          <TableHead className="text-right pr-8 font-black uppercase text-xs tracking-widest">Net Value</TableHead>
+                          <TableHead className="w-[50px]"></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -310,29 +307,29 @@ export default function BillingPage() {
                           const savings = item.mrp > item.price ? item.mrp - item.price : 0;
                           return (
                             <TableRow key={item.id} className="border-none hover:bg-primary/[0.02]">
-                              <TableCell className="py-2 pl-6">
+                              <TableCell className="py-3 pl-8">
                                 <Select value={item.productId} onValueChange={(v) => handleProductSelect(item.id, v)}>
-                                  <SelectTrigger className="h-7 rounded-lg bg-secondary/30 border-none font-bold text-xs"><SelectValue placeholder="Asset" /></SelectTrigger>
-                                  <SelectContent className="glass border-none">
-                                    {products.map(p => <SelectItem key={p.id} value={p.id} className="text-xs">{p.name} <span className="opacity-40 text-[9px]">({p.stock} avail)</span></SelectItem>)}
+                                  <SelectTrigger className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm"><SelectValue placeholder="Select Asset" /></SelectTrigger>
+                                  <SelectContent className="glass border-none rounded-xl">
+                                    {products.map(p => <SelectItem key={p.id} value={p.id} className="text-sm py-2">{p.name} <span className="opacity-40 text-xs font-bold ml-2">({p.stock} avail)</span></SelectItem>)}
                                   </SelectContent>
                                 </Select>
                               </TableCell>
                               <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <Input value={item.qty} className="h-7 w-12 rounded-lg bg-secondary/30 border-none font-black text-center text-xs" onChange={e => handleQtyChange(item.id, e.target.value)} />
-                                  <span className="text-[9px] font-black uppercase opacity-40">{item.unit}</span>
+                                <div className="flex items-center gap-3">
+                                  <Input value={item.qty} className="h-10 w-16 rounded-xl bg-secondary/30 border-none font-black text-center text-sm" onChange={e => handleQtyChange(item.id, e.target.value)} />
+                                  <span className="text-xs font-black uppercase opacity-40">{item.unit}</span>
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <div className="flex flex-col leading-none">
-                                  <span className="font-black text-xs">₹{item.price.toLocaleString()}</span>
-                                  {savings > 0 && <span className="text-[8px] text-emerald-500 font-black uppercase">Save ₹{savings.toLocaleString()}</span>}
+                                <div className="flex flex-col leading-tight">
+                                  <span className="font-black text-base">₹{item.price.toLocaleString()}</span>
+                                  {savings > 0 && <span className="text-[10px] text-emerald-500 font-black uppercase tracking-tight">Save ₹{savings.toLocaleString()}</span>}
                                 </div>
                               </TableCell>
-                              <TableCell><Badge variant="outline" className="rounded-md border-primary/20 text-primary font-black text-[9px] px-1 py-0">{item.gstRate}%</Badge></TableCell>
-                              <TableCell className="text-right pr-6 font-black text-xs">₹{item.total.toLocaleString()}</TableCell>
-                              <TableCell className="pr-2"><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeItem(item.id)}><Trash2 className="h-3 w-3" /></Button></TableCell>
+                              <TableCell><Badge variant="outline" className="rounded-md border-primary/20 text-primary font-black text-xs px-2 py-0.5">{item.gstRate}%</Badge></TableCell>
+                              <TableCell className="text-right pr-8 font-black text-base">₹{item.total.toLocaleString()}</TableCell>
+                              <TableCell className="pr-4"><Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive" onClick={() => removeItem(item.id)}><Trash2 className="h-4 w-4" /></Button></TableCell>
                             </TableRow>
                           );
                         })}
@@ -343,29 +340,40 @@ export default function BillingPage() {
               </Card>
             </div>
 
-            <div className="xl:w-[280px] space-y-4">
-              <Card className="border-none bg-primary text-primary-foreground rounded-xl p-5 shadow-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10 scale-[1.5] rotate-45 pointer-events-none"><IndianRupee className="h-12 w-12" /></div>
-                <div className="space-y-4 relative z-10">
-                  <h3 className="font-headline text-sm font-black tracking-tight">Financial Summary</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center opacity-80 text-[10px] font-bold uppercase tracking-widest"><span>Taxable Value</span><span>₹{totals.subtotal.toLocaleString()}</span></div>
-                    <div className="flex justify-between items-center opacity-80 text-[10px] font-bold uppercase tracking-widest"><span>Total Tax</span><span>₹{totals.gstTotal.toLocaleString()}</span></div>
-                    <div className="pt-2 border-t border-white/20">
+            <div className="xl:w-[320px] space-y-6">
+              <Card className="border-none bg-primary text-primary-foreground rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 opacity-10 scale-[1.8] rotate-45 pointer-events-none group-hover:rotate-12 transition-transform duration-700"><IndianRupee className="h-16 w-16" /></div>
+                <div className="space-y-6 relative z-10">
+                  <h3 className="font-headline text-lg font-black tracking-tight">Financial Matrix</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center opacity-80 text-xs font-bold uppercase tracking-widest"><span>Taxable Base</span><span>₹{totals.subtotal.toLocaleString()}</span></div>
+                    <div className="flex justify-between items-center opacity-80 text-xs font-bold uppercase tracking-widest"><span>Asset Tax</span><span>₹{totals.gstTotal.toLocaleString()}</span></div>
+                    <div className="pt-4 border-t border-white/20">
                       <div className="flex justify-between items-end">
-                        <span className="font-black uppercase tracking-widest text-[9px] opacity-90">Net Payable</span>
-                        <span className="font-headline text-xl font-black tracking-tighter">₹{totals.grandTotal.toLocaleString()}</span>
+                        <span className="font-black uppercase tracking-widest text-[10px] opacity-90">Net Settlement</span>
+                        <span className="font-headline text-3xl font-black tracking-tighter">₹{totals.grandTotal.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2 mt-4">
-                    <Button className="w-full h-9 rounded-lg bg-white text-primary hover:bg-white/90 font-black text-xs shadow-md" onClick={handleSaveInvoice} disabled={isSaving}>
-                      {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Save className="h-3.5 w-3.5 mr-1.5" />} Finalize
+                  <div className="flex flex-col gap-3 mt-6">
+                    <Button className="w-full h-12 rounded-xl bg-white text-primary hover:bg-white/90 font-black text-sm shadow-2xl" onClick={handleSaveInvoice} disabled={isSaving}>
+                      {isSaving ? <Loader2 className="h-5 w-5 animate-spin mr-2.5" /> : <Save className="h-5 w-5 mr-2.5" />} Finalize Interaction
                     </Button>
-                    <Button variant="outline" className="w-full h-8 rounded-lg border-white/20 bg-white/5 text-white text-[10px]" onClick={handlePreviewCurrent}>
-                      <Printer className="h-3.5 w-3.5 mr-1.5" /> Quick Preview
+                    <Button variant="outline" className="w-full h-10 rounded-xl border-white/20 bg-white/5 text-white text-xs font-bold" onClick={handlePreviewCurrent}>
+                      <Printer className="h-4 w-4 mr-2.5" /> Snapshot Preview
                     </Button>
                   </div>
+                </div>
+              </Card>
+
+              <Card className="border-none glass-card p-5 rounded-2xl shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center"><Clock3 className="h-4 w-4 text-primary" /></div>
+                  <h4 className="font-black text-sm tracking-tight">System Temporal</h4>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium opacity-60">Interaction Timestamp:</p>
+                  <p className="text-sm font-black font-mono">{new Date().toLocaleString()}</p>
                 </div>
               </Card>
             </div>
@@ -373,40 +381,42 @@ export default function BillingPage() {
         </TabsContent>
 
         <TabsContent value="history">
-          <Card className="border-none glass-card shadow-md rounded-xl overflow-hidden">
-            <CardHeader className="p-3 sm:p-4 border-b border-primary/5 bg-primary/[0.02]">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <CardTitle className="font-headline text-sm font-black tracking-tight">Historical Ledger</CardTitle>
-                <div className="relative w-full max-w-xs">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                  <Input placeholder="Search Ledger..." className="pl-8 h-8 rounded-lg bg-secondary/30 border-none font-bold text-[10px]" value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
+          <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
+            <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <CardTitle className="font-headline text-xl font-black tracking-tight">Historical Ledger Audit</CardTitle>
+                <div className="relative w-full max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder="Search Matrix Ledger..." className="pl-10 h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={historySearch} onChange={e => setHistorySearch(e.target.value)} />
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-0 overflow-x-auto">
-              <div className="min-w-[700px]">
+              <div className="min-w-[800px]">
                 <Table>
                   <TableHeader className="bg-primary/[0.01]">
                     <TableRow className="border-none">
-                      <TableHead className="py-3 pl-8 font-black uppercase text-[9px] tracking-widest">ID</TableHead>
-                      <TableHead className="font-black uppercase text-[9px] tracking-widest">Timeline</TableHead>
-                      <TableHead className="font-black uppercase text-[9px] tracking-widest">Counterparty</TableHead>
-                      <TableHead className="font-black uppercase text-[9px] tracking-widest">Payment</TableHead>
-                      <TableHead className="font-black uppercase text-[9px] tracking-widest">Amount</TableHead>
-                      <TableHead className="text-right pr-8 font-black uppercase text-[9px] tracking-widest">Action</TableHead>
+                      <TableHead className="py-5 pl-8 font-black uppercase text-xs tracking-widest">Interaction ID</TableHead>
+                      <TableHead className="font-black uppercase text-xs tracking-widest">Timeline</TableHead>
+                      <TableHead className="font-black uppercase text-xs tracking-widest">Counterparty</TableHead>
+                      <TableHead className="font-black uppercase text-xs tracking-widest">Settlement</TableHead>
+                      <TableHead className="font-black uppercase text-xs tracking-widest">Net Value</TableHead>
+                      <TableHead className="text-right pr-8 font-black uppercase text-xs tracking-widest">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loadingHistory ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-12"><Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={6} className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-primary opacity-40" /></TableCell></TableRow>
+                    ) : filteredHistory.length === 0 ? (
+                      <TableRow><TableCell colSpan={6} className="text-center py-20 font-bold text-muted-foreground italic text-sm">No historical interactions recovered.</TableCell></TableRow>
                     ) : filteredHistory.map((inv) => (
                       <TableRow key={inv.id} className="border-none hover:bg-primary/[0.02]">
-                        <TableCell className="font-mono text-[9px] font-black text-primary py-3 pl-8">{inv.id}</TableCell>
-                        <TableCell className="text-xs font-medium">{new Date(inv.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</TableCell>
-                        <TableCell className="font-black tracking-tight text-xs">{inv.customer.name}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[8px] font-black uppercase">{inv.paymentMode}</Badge></TableCell>
-                        <TableCell className="font-black text-xs">₹{inv.grandTotal.toLocaleString()}</TableCell>
-                        <TableCell className="text-right pr-8"><Button variant="ghost" size="sm" className="h-7 px-2 font-black text-primary text-[10px]"><Eye className="h-3 w-3 mr-1" /> View</Button></TableCell>
+                        <TableCell className="font-mono text-xs font-black text-primary py-4 pl-8">{inv.id}</TableCell>
+                        <TableCell className="text-sm font-medium">{new Date(inv.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</TableCell>
+                        <TableCell className="font-black tracking-tight text-base">{inv.customer.name}</TableCell>
+                        <TableCell><Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest">{inv.paymentMode}</Badge></TableCell>
+                        <TableCell className="font-black text-base">₹{inv.grandTotal.toLocaleString()}</TableCell>
+                        <TableCell className="text-right pr-8"><Button variant="ghost" size="sm" className="h-9 px-4 font-black text-primary text-xs rounded-xl hover:bg-primary/5"><Eye className="h-4 w-4 mr-2" /> View Details</Button></TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -418,41 +428,41 @@ export default function BillingPage() {
       </Tabs>
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[600px] p-0 overflow-hidden rounded-xl border-none glass shadow-2xl">
-          <div className="p-6 max-h-[80vh] overflow-y-auto bg-white text-black text-xs">
+        <DialogContent className="max-w-[95vw] sm:max-w-[650px] p-0 overflow-hidden rounded-2xl border-none glass shadow-2xl">
+          <div className="p-8 max-h-[85vh] overflow-y-auto bg-white text-black text-sm">
             {previewInvoice && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-start border-b pb-4">
-                  <div className="space-y-1">
-                    <h2 className="text-lg font-black font-headline text-primary italic uppercase tracking-tighter">{businessSettings?.brandName}</h2>
-                    <p className="font-bold text-[9px] opacity-60">GSTIN: {businessSettings?.gstin}</p>
-                    <p className="font-medium text-[10px] text-slate-500 max-w-[200px]">{businessSettings?.address}</p>
+              <div className="space-y-8">
+                <div className="flex justify-between items-start border-b border-slate-200 pb-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-black font-headline text-primary italic uppercase tracking-tighter">{businessSettings?.brandName}</h2>
+                    <p className="font-bold text-xs opacity-60 tracking-wider">GSTIN: {businessSettings?.gstin}</p>
+                    <p className="font-medium text-xs text-slate-500 max-w-[250px] leading-relaxed">{businessSettings?.address}</p>
                   </div>
-                  <div className="text-right space-y-1">
-                    <Badge className="bg-emerald-500 text-white border-none px-2 py-0.5 rounded-full text-[9px] font-black">TAX INVOICE</Badge>
-                    <p className="font-bold text-[10px]">DT: {new Date(previewInvoice.createdAt!).toLocaleString()}</p>
-                    <p className="font-mono font-black text-primary text-[10px]">REF: {previewInvoice.id}</p>
+                  <div className="text-right space-y-2">
+                    <Badge className="bg-emerald-500 text-white border-none px-3 py-1 rounded-full text-[10px] font-black tracking-widest">OFFICIAL TAX INVOICE</Badge>
+                    <p className="font-bold text-xs mt-2">DATE: {new Date(previewInvoice.createdAt!).toLocaleString()}</p>
+                    <p className="font-mono font-black text-primary text-xs">REF: {previewInvoice.id}</p>
                   </div>
                 </div>
-                <div className="flex justify-between text-[10px] border-b pb-4">
-                  <div><p className="font-black text-primary uppercase text-[8px]">Client:</p><p className="font-black text-sm">{previewInvoice.customer?.name}</p><p className="opacity-60">{previewInvoice.customer?.phone}</p></div>
-                  <div className="text-right"><p className="font-black text-primary uppercase text-[8px]">Settlement:</p><Badge variant="outline" className="font-black text-[10px] uppercase mt-1">{previewInvoice.paymentMode}</Badge></div>
+                <div className="flex justify-between text-xs border-b border-slate-200 pb-6">
+                  <div className="space-y-1"><p className="font-black text-primary uppercase text-[10px] tracking-widest">Billed To:</p><p className="font-black text-lg tracking-tight">{previewInvoice.customer?.name}</p><p className="opacity-70 font-bold">{previewInvoice.customer?.phone}</p></div>
+                  <div className="text-right space-y-1"><p className="font-black text-primary uppercase text-[10px] tracking-widest">Payment Matrix:</p><Badge variant="outline" className="font-black text-xs uppercase mt-1 tracking-widest border-slate-300">{previewInvoice.paymentMode}</Badge></div>
                 </div>
                 <Table>
-                  <TableHeader><TableRow className="border-b-2 border-black"><TableHead className="text-black font-black uppercase text-[9px] h-8">Item</TableHead><TableHead className="text-black font-black uppercase text-[9px] h-8">Qty</TableHead><TableHead className="text-right text-black font-black uppercase text-[9px] h-8">Total</TableHead></TableRow></TableHeader>
+                  <TableHeader><TableRow className="border-b-2 border-black"><TableHead className="text-black font-black uppercase text-xs h-10">Asset Description</TableHead><TableHead className="text-black font-black uppercase text-xs h-10">Quantity</TableHead><TableHead className="text-right text-black font-black uppercase text-xs h-10">Net Value</TableHead></TableRow></TableHeader>
                   <TableBody>
                     {previewInvoice.items?.map((item) => (
-                      <TableRow key={item.id} className="border-b border-slate-100 hover:bg-transparent"><TableCell className="font-bold py-2">{item.productName}</TableCell><TableCell className="font-medium py-2">{item.qty} {item.unit}</TableCell><TableCell className="text-right font-black py-2">₹{item.total.toLocaleString()}</TableCell></TableRow>
+                      <TableRow key={item.id} className="border-b border-slate-100 hover:bg-transparent"><TableCell className="font-bold py-3 text-base">{item.productName}</TableCell><TableCell className="font-medium py-3 text-sm">{item.qty} {item.unit}</TableCell><TableCell className="text-right font-black py-3 text-base">₹{item.total.toLocaleString()}</TableCell></TableRow>
                     ))}
                   </TableBody>
                 </Table>
-                <div className="flex justify-end pt-4"><div className="w-[180px] space-y-1"><div className="flex justify-between text-[10px] opacity-70"><span className="font-black uppercase">Subtotal</span><span className="font-bold">₹{previewInvoice.subtotal?.toLocaleString()}</span></div><div className="flex justify-between text-[10px] opacity-70"><span className="font-black uppercase">Tax</span><span className="font-bold">₹{previewInvoice.gstTotal?.toLocaleString()}</span></div><div className="pt-2 border-t border-black flex justify-between items-end"><span className="font-black uppercase text-primary text-[10px]">Total</span><span className="font-headline text-xl font-black tracking-tighter">₹{previewInvoice.grandTotal?.toLocaleString()}</span></div></div></div>
+                <div className="flex justify-end pt-6"><div className="w-[220px] space-y-2"><div className="flex justify-between text-xs opacity-70"><span className="font-black uppercase tracking-widest">Subtotal Base</span><span className="font-bold">₹{previewInvoice.subtotal?.toLocaleString()}</span></div><div className="flex justify-between text-xs opacity-70"><span className="font-black uppercase tracking-widest">Total Asset Tax</span><span className="font-bold">₹{previewInvoice.gstTotal?.toLocaleString()}</span></div><div className="pt-4 border-t-2 border-black flex justify-between items-end"><span className="font-black uppercase text-primary text-xs tracking-widest">Grand Total</span><span className="font-headline text-3xl font-black tracking-tighter">₹{previewInvoice.grandTotal?.toLocaleString()}</span></div></div></div>
               </div>
             )}
           </div>
-          <DialogFooter className="p-4 bg-primary/5 border-t border-primary/5 flex gap-2">
-            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="rounded-lg font-black h-8 text-[10px]">Close</Button>
-            <Button onClick={() => window.print()} className="rounded-lg h-8 px-4 font-black text-[10px] gap-1.5"><Printer className="h-3.5 w-3.5" /> Print</Button>
+          <DialogFooter className="p-6 bg-primary/5 border-t border-primary/5 flex gap-3">
+            <Button variant="ghost" onClick={() => setIsPreviewOpen(false)} className="rounded-xl font-black h-11 text-xs px-6">Close Monitor</Button>
+            <Button onClick={() => window.print()} className="rounded-xl h-11 px-8 font-black text-xs gap-2.5 shadow-xl"><Printer className="h-4 w-4" /> Print Ledger</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -39,17 +39,17 @@
   .dark {
     /* High-Contrast "Night Navy" Dark Theme */
     --background: 222 47% 4%;
-    --foreground: 210 40% 98%; /* Brighter white for dark mode legibility */
+    --foreground: 210 40% 98%; 
     --card: 222 47% 6%;
     --card-foreground: 210 40% 98%;
     --popover: 222 47% 4%;
     --popover-foreground: 210 40% 98%;
-    --primary: 255 85% 70%; /* Brighter for Dark mode */
+    --primary: 255 85% 70%; 
     --primary-foreground: 222 47% 4%;
     --secondary: 222 47% 12%;
     --secondary-foreground: 210 40% 98%;
     --muted: 222 47% 15%;
-    --muted-foreground: 215 20% 75%; /* Increased contrast for muted text */
+    --muted-foreground: 215 20% 75%; 
     --accent: 255 85% 70%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 70% 50%;

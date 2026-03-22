@@ -6,9 +6,9 @@
     "category": "0%",
     "mrp": 50,
     "price": 40,
-    "stock": 2,
+    "stock": 0,
     "unit": "kg",
-    "status": "Low",
+    "status": "Out of Stock",
     "gst": "0%"
   },
   {
