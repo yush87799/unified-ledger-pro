@@ -4,6 +4,11 @@
 
 This is a comprehensive, high-velocity financial ecosystem built to synchronize inventory, handle intelligent billing, and maintain global tax compliance. 
 
+## 🌐 Live Deployment
+
+- **Production Domain:** [https://unified-ledger-pro.vercel.app](https://unified-ledger-pro.vercel.app)
+- **Latest Preview:** [https://unified-ledger-gzxbtvasw-pratyushs-projects-8cf4f6d2.vercel.app](https://unified-ledger-gzxbtvasw-pratyushs-projects-8cf4f6d2.vercel.app)
+
 ## 🚀 Tech Stack
 
 This project is built with a modern frontend stack:
