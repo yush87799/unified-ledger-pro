@@ -87,14 +87,14 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   Unified Ledger
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-xs uppercase font-black tracking-widest text-primary">Pro Edition</span>
+                  <span className="text-[10px] uppercase font-black tracking-widest text-primary">Pro Edition</span>
                 </div>
               </div>
             </div>
           </SidebarHeader>
           
           <SidebarContent className="px-3 py-1">
-            <SidebarMenu className="space-y-0.5">
+            <SidebarMenu className="space-y-1">
               {allowedMenuItems.map((item) => {
                 const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/dashboard');
                 return (
@@ -104,7 +104,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                       isActive={isActive}
                       tooltip={item.label}
                       className={cn(
-                        "h-9 rounded-lg px-3 transition-all",
+                        "h-10 rounded-lg px-3 transition-all",
                         isActive 
                           ? "bg-primary text-primary-foreground shadow-md" 
                           : "hover:bg-primary/10"
@@ -123,13 +123,13 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
           <SidebarFooter className="p-3">
             <div className="flex flex-col gap-1">
-              <Button variant="ghost" className="justify-start h-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/5 text-xs font-semibold">
+              <Button variant="ghost" className="justify-start h-9 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/5 text-xs font-semibold">
                 <HelpCircle className="h-4 w-4 mr-2.5" />
                 <span className="group-data-[collapsible=icon]:hidden">Concierge</span>
               </Button>
               <Button 
                 variant="ghost" 
-                className="justify-start h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/5 text-xs font-bold"
+                className="justify-start h-9 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/5 text-xs font-bold"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2.5" />
@@ -140,9 +140,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         </Sidebar>
 
         <SidebarInset className="bg-background">
-          <header className="sticky top-0 z-40 flex h-12 shrink-0 items-center justify-between gap-4 border-b glass px-6 shadow-sm">
+          <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between gap-4 border-b glass px-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="hover:bg-primary/10 rounded-lg h-8 w-8 transition-colors" />
+              <SidebarTrigger className="hover:bg-primary/10 rounded-lg h-9 w-9 transition-colors" />
               <div className="hidden lg:flex relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-focus-within:text-primary" />
                 <Input
@@ -155,18 +155,18 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
             <div className="flex items-center gap-3">
               {mounted && (
-                <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 rounded-lg hover:bg-primary/5">
-                  {resolvedTheme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-600" />}
+                <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9 rounded-lg hover:bg-primary/5">
+                  {resolvedTheme === 'dark' ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-indigo-600" />}
                 </Button>
               )}
-              <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-lg hover:bg-primary/5">
-                <Bell className="h-4 w-4 text-muted-foreground" />
-                <span className="absolute top-2 right-2 flex h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-background animate-pulse" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-lg hover:bg-primary/5">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2.5 p-1 hover:bg-primary/5 rounded-lg h-9">
-                    <Avatar className="h-7 w-7 rounded-lg shadow-sm overflow-hidden border border-border/50">
+                  <Button variant="ghost" className="flex items-center gap-2.5 p-1 hover:bg-primary/5 rounded-lg h-10">
+                    <Avatar className="h-8 w-8 rounded-lg shadow-sm overflow-hidden border border-border/50">
                       <AvatarImage src={`https://picsum.photos/seed/${role}/100/100`} />
                       <AvatarFallback className={cn("rounded-lg text-white font-black text-xs uppercase", roleConfig.color)}>
                         {role ? role[0] : 'U'}
@@ -174,8 +174,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                     </Avatar>
                     <div className="hidden sm:flex flex-col items-start text-left leading-none">
                       <span className="text-sm font-black tracking-tight">{roleConfig.title}</span>
-                      <span className="text-xs uppercase font-black text-primary tracking-widest flex items-center gap-1.5 mt-0.5">
-                        <span className="h-1 w-1 rounded-full bg-primary animate-pulse" />
+                      <span className="text-[10px] uppercase font-black text-primary tracking-widest flex items-center gap-1.5 mt-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                         Live
                       </span>
                     </div>
@@ -183,11 +183,11 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52 rounded-xl p-1.5 glass shadow-xl border-none">
-                  <DropdownMenuItem className="rounded-lg px-3 py-1.5 cursor-pointer text-sm font-semibold">User Profile</DropdownMenuItem>
-                  <DropdownMenuItem className="rounded-lg px-3 py-1.5 cursor-pointer text-sm font-semibold">System Diagnostics</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-lg px-3 py-2 cursor-pointer text-sm font-semibold">User Profile</DropdownMenuItem>
+                  <DropdownMenuItem className="rounded-lg px-3 py-2 cursor-pointer text-sm font-semibold">System Diagnostics</DropdownMenuItem>
                   <DropdownMenuSeparator className="my-1" />
-                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-1.5 cursor-pointer text-sm text-destructive font-bold">
-                    <LogOut className="mr-2 h-3.5 w-3.5" /> Sign Out
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg px-3 py-2 cursor-pointer text-sm text-destructive font-bold">
+                    <LogOut className="mr-2 h-4 w-4" /> Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
