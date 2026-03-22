@@ -85,7 +85,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 <Boxes className="h-7 w-7" />
               </div>
               <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                <span className="font-headline font-black text-xl tracking-tighter truncate leading-tight">
+                <span className="font-headline font-black text-xl tracking-tighter truncate leading-tight text-foreground">
                   Unified Ledger
                 </span>
                 <div className="flex items-center gap-1">
@@ -190,7 +190,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden lg:flex flex-col items-start text-left">
-                      <span className="text-sm font-black leading-none mb-1 tracking-tight">{roleConfig.title}</span>
+                      <span className="text-sm font-black leading-none mb-1 tracking-tight text-foreground">{roleConfig.title}</span>
                       <span className="text-[10px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
                         <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                         Online

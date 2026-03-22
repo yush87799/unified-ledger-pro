@@ -89,7 +89,7 @@ export default function LandingPage() {
                   "w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110",
                   role.color
                 )}>
-                  <role.icon className="h-8 w-8 text-white" />
+                  <role.icon className="h-8 w-8 text-white fill-white/20" />
                 </div>
                 <div className="space-y-3">
                   <CardTitle className="font-headline text-3xl font-black tracking-tighter">{role.title}</CardTitle>
