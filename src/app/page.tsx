@@ -36,7 +36,7 @@ export default function LandingPage() {
             variant="outline" 
             size="icon" 
             onClick={toggleTheme}
-            className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-background border-primary/20 shadow-2xl hover:bg-primary/5 transition-all group scale-90 sm:scale-100"
+            className="h-10 w-10 sm:h-14 sm:w-14 rounded-2xl bg-background border-primary/20 shadow-2xl hover:bg-primary/5 transition-all group scale-90 sm:scale-100"
           >
             {resolvedTheme === 'dark' ? (
               <Sun className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 group-hover:rotate-45 transition-transform" />
@@ -52,11 +52,11 @@ export default function LandingPage() {
       <div className="absolute -top-24 -left-24 w-48 h-48 sm:w-96 sm:h-96 bg-primary/20 rounded-full blur-[80px] sm:blur-[120px] animate-pulse" />
       <div className="absolute -bottom-24 -right-24 w-48 h-48 sm:w-96 sm:h-96 bg-indigo-500/20 rounded-full blur-[80px] sm:blur-[120px] animate-pulse delay-1000" />
 
-      <div className="max-w-6xl w-full text-center space-y-10 sm:space-y-20 relative z-10 py-12">
+      <div className="max-w-6xl w-full text-center space-y-12 sm:space-y-20 relative z-10 py-12">
         <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-top-12 duration-1000">
-          <div className="inline-flex items-center gap-3 px-4 sm:px-6 py-2 rounded-full glass border-primary/20 mb-2">
-            <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-primary fill-primary" />
-            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-primary">Enterprise Financial Ecosystem</span>
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass border-primary/20 mb-2">
+            <Zap className="h-3 w-3 text-primary fill-primary" />
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-primary">Enterprise Financial Ecosystem</span>
           </div>
           
           <h1 className="font-headline text-4xl font-black tracking-tight sm:text-7xl lg:text-8xl text-foreground leading-[1.1] px-2">
@@ -69,9 +69,9 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 opacity-60 px-4">
-            <div className="flex items-center gap-2 font-bold"><ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /><span className="text-[10px] sm:text-xs tracking-widest uppercase">Secured</span></div>
-            <div className="flex items-center gap-2 font-bold"><Globe className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /><span className="text-[10px] sm:text-xs tracking-widest uppercase">Compliant</span></div>
-            <div className="flex items-center gap-2 font-bold"><Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /><span className="text-[10px] sm:text-xs tracking-widest uppercase">Real-Time</span></div>
+            <div className="flex items-center gap-2 font-bold"><ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /><span className="text-[10px] sm:text-xs tracking-widest uppercase text-foreground">Secured</span></div>
+            <div className="flex items-center gap-2 font-bold"><Globe className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /><span className="text-[10px] sm:text-xs tracking-widest uppercase text-foreground">Compliant</span></div>
+            <div className="flex items-center gap-2 font-bold"><Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /><span className="text-[10px] sm:text-xs tracking-widest uppercase text-foreground">Real-Time</span></div>
           </div>
         </div>
 
