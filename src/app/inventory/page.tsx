@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -221,7 +222,6 @@ export default function InventoryPage() {
                       className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold"
                       value={newProduct.mrp}
                       onChange={(e) => handlePriceInput(e.target.value, 'mrp')}
-                      onBlur={validatePricing}
                     />
                   </div>
                   <div className="space-y-2">
@@ -232,7 +232,6 @@ export default function InventoryPage() {
                         className="h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-secondary/50 border-none font-bold flex-1"
                         value={newProduct.actualPrice}
                         onChange={(e) => handlePriceInput(e.target.value, 'actualPrice')}
-                        onBlur={validatePricing}
                       />
                       <Button variant="outline" className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl glass" onClick={() => setNewProduct(p => ({...p, actualPrice: p.mrp}))}><Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
                     </div>
@@ -397,9 +396,9 @@ export default function InventoryPage() {
                 </TableBody>
               </Table>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
