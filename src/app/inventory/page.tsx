@@ -126,7 +126,7 @@ export default function InventoryPage() {
       categoryId: 'standard', mrp: '', actualPrice: '', 
       buyingPrice: '', warehouse: settings?.warehouses?.[0] || 'Main Warehouse' 
     });
-    // Decoupled activation
+    // DECOUPLING FIX: 150ms delay ensures the UI cleans up before the modal portal opens.
     setTimeout(() => setIsDialogOpen(true), 150);
   };
 
@@ -145,8 +145,7 @@ export default function InventoryPage() {
       buyingPrice: (p.buyingPrice || 0).toString(),
       warehouse: p.warehouse || settings?.warehouses?.[0] || 'Main Warehouse'
     });
-    // DECOUPLING FIX: 150ms delay ensures the DropdownMenu unmounts and cleans up its own body-lock.
-    // This is critical to prevent the background from becoming uninteractable.
+    // DECOUPLING FIX: Ensures DropdownMenu unmounts first.
     setTimeout(() => setIsDialogOpen(true), 150);
   }, [settings]);
 
@@ -160,12 +159,11 @@ export default function InventoryPage() {
       return;
     }
 
-    // MRP GUARDRAILS
+    // MRP INTEGRITY GUARDRAILS
     if (priceNum > mrpNum) {
       toast({ title: "Pricing Anomaly", description: "Selling rate cannot exceed MRP.", variant: "destructive" });
       return;
     }
-
     if (buyingPriceNum > mrpNum) {
       toast({ title: "Financial Risk", description: "Buying price cannot exceed MRP.", variant: "destructive" });
       return;
@@ -281,11 +279,11 @@ export default function InventoryPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 glass rounded-2xl p-2 border-none shadow-2xl">
-                <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest opacity-50 px-2 py-2">Availability State</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-[11px] uppercase font-black tracking-widest opacity-50 px-2 py-2">Availability State</DropdownMenuLabel>
                 <DropdownMenuCheckboxItem checked={statusFilters.includes('In Stock')} onCheckedChange={() => toggleStatusFilter('In Stock')} className="rounded-xl font-bold text-sm py-2.5">Fully Stocked</DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem checked={statusFilters.includes('Low')} onCheckedChange={() => toggleStatusFilter('Low')} className="rounded-xl font-bold text-sm py-2.5">Low Inventory</DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem checked={statusFilters.includes('Out of Stock')} onCheckedChange={() => toggleStatusFilter('Out of Stock')} className="rounded-xl font-bold text-sm py-2.5">Exhausted</DropdownMenuCheckboxItem>
-                {statusFilters.length > 0 && <><DropdownMenuSeparator className="my-2"/><DropdownMenuItem onClick={() => setStatusFilters([])} className="rounded-xl font-black text-xs uppercase tracking-widest justify-center text-primary py-2.5">Clear Filters</DropdownMenuItem></>}
+                {statusFilters.length > 0 && <><DropdownMenuSeparator className="my-2"/><DropdownMenuItem onClick={() => setStatusFilters([])} className="rounded-xl font-black text-[11px] uppercase tracking-widest justify-center text-primary py-2.5">Clear Filters</DropdownMenuItem></>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -309,7 +307,7 @@ export default function InventoryPage() {
                 {loading ? (
                   <TableRow><TableCell colSpan={8} className="py-24 text-center"><Loader2 className="h-10 w-10 animate-spin mx-auto text-primary opacity-30" /></TableCell></TableRow>
                 ) : filteredProducts.length === 0 ? (
-                  <TableRow><TableCell colSpan={8} className="py-24 text-center font-bold text-muted-foreground italic text-sm">No assets recovered in current view.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="py-24 text-center font-bold text-muted-foreground italic text-sm">No assets recovered.</TableCell></TableRow>
                 ) : filteredProducts.map((p) => (
                   <TableRow key={p.id} className="border-none hover:bg-primary/[0.04] transition-colors group">
                     <TableCell className="py-6 pl-8">
@@ -318,7 +316,7 @@ export default function InventoryPage() {
                         <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest opacity-60 mt-1">{p.id} | {p.brand}</span>
                       </div>
                     </TableCell>
-                    <TableCell><Badge variant="outline" className="rounded-md border-primary/20 text-primary font-black text-[10px] uppercase tracking-tighter px-2.5 py-0.5">{p.warehouse || 'Default'}</Badge></TableCell>
+                    <TableCell><Badge variant="outline" className="rounded-md border-primary/20 text-primary font-black text-[11px] uppercase tracking-tighter px-2.5 py-0.5">{p.warehouse || 'Default'}</Badge></TableCell>
                     <TableCell className="font-bold text-sm">₹{(p.buyingPrice || 0).toLocaleString()}</TableCell>
                     <TableCell className="font-black text-sm">₹{p.price.toLocaleString()}</TableCell>
                     <TableCell>
@@ -327,10 +325,10 @@ export default function InventoryPage() {
                         <span className="text-[11px] font-black uppercase opacity-40">{p.unit}</span>
                       </div>
                     </TableCell>
-                    <TableCell><Badge variant="secondary" className="font-black text-[10px] rounded-md px-2 py-0.5">{p.gst}</Badge></TableCell>
+                    <TableCell><Badge variant="secondary" className="font-black text-[11px] rounded-md px-2 py-0.5">{p.gst}</Badge></TableCell>
                     <TableCell>
                       <Badge className={cn(
-                        "rounded-md px-3 py-1 text-[10px] font-black uppercase tracking-widest border-none text-white",
+                        "rounded-md px-3 py-1 text-[11px] font-black uppercase tracking-widest border-none text-white",
                         p.status === 'In Stock' ? 'bg-emerald-500 shadow-md shadow-emerald-500/20' : p.status === 'Low' ? 'bg-amber-500 shadow-md shadow-amber-500/20' : 'bg-destructive shadow-md shadow-destructive/20'
                       )}>{p.status}</Badge>
                     </TableCell>
@@ -341,7 +339,7 @@ export default function InventoryPage() {
                           <DropdownMenuItem 
                             className="rounded-xl font-bold py-3 text-sm cursor-pointer" 
                             onSelect={(e) => { 
-                              e.preventDefault(); // CRITICAL: Stop Radix from closing the dropdown and managing body-lock focus simultaneously.
+                              e.preventDefault(); 
                               openEditDialog(p); 
                             }}
                           >

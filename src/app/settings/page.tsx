@@ -174,7 +174,7 @@ export default function SettingsPage() {
           <Card className="border-none glass-card shadow-lg rounded-2xl overflow-hidden">
             <CardHeader className="p-6 border-b border-primary/5 bg-primary/[0.02]">
               <CardTitle className="font-headline text-lg font-black tracking-tight">Warehouse Matrix</CardTitle>
-              <CardDescription className="text-xs font-medium opacity-70">Manage centralized storage and store locations.</CardDescription>
+              <CardDescription className="text-sm font-medium opacity-70">Manage centralized storage and store locations.</CardDescription>
             </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-8">
               <div className="flex flex-col sm:flex-row gap-4">
@@ -195,7 +195,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <Label className="text-[12px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Active Locations</Label>
+                <Label className="text-[11px] uppercase font-black tracking-widest text-muted-foreground opacity-70">Active Locations</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {(settings.warehouses || []).map((w, idx) => (
                     <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-transparent hover:border-primary/20 transition-all group">
@@ -217,7 +217,7 @@ export default function SettingsPage() {
                   ))}
                   {(!settings.warehouses || settings.warehouses.length === 0) && (
                     <div className="col-span-full text-center py-12 border-2 border-dashed rounded-2xl opacity-40">
-                      <p className="text-sm font-bold italic">No warehouses registered in system matrix.</p>
+                      <p className="text-sm font-bold italic">No warehouses registered.</p>
                     </div>
                   )}
                 </div>

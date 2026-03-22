@@ -35,15 +35,16 @@ export async function GET() {
   try {
     const data = await fs.readFile(SETTINGS_FILE, 'utf-8');
     const parsed = JSON.parse(data);
-    // Ensure warehouses is always an array in the response and merged with defaults if empty
-    const warehouses = Array.isArray(parsed.warehouses) && parsed.warehouses.length > 0 
+    
+    // Ensure warehouses is an array and merged correctly
+    const finalWarehouses = Array.isArray(parsed.warehouses) && parsed.warehouses.length > 0 
       ? parsed.warehouses 
       : DEFAULT_SETTINGS.warehouses;
 
     return NextResponse.json({ 
       ...DEFAULT_SETTINGS, 
       ...parsed,
-      warehouses
+      warehouses: finalWarehouses
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to read settings' }, { status: 500 });
@@ -54,6 +55,10 @@ export async function POST(request: Request) {
   await ensureDataFile();
   try {
     const newSettings = await request.json();
+    // Ensure we don't save empty warehouses if it's meant to be a list
+    if (!newSettings.warehouses || !Array.isArray(newSettings.warehouses)) {
+      newSettings.warehouses = DEFAULT_SETTINGS.warehouses;
+    }
     await fs.writeFile(SETTINGS_FILE, JSON.stringify(newSettings, null, 2));
     return NextResponse.json(newSettings);
   } catch (error) {
