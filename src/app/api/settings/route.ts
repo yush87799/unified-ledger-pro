@@ -19,7 +19,8 @@ async function ensureDataFile() {
         phone: "+91 98765 43210",
         address: "Plot 45, Tech Park Phase 2, Bangalore, Karnataka - 560001",
         gstin: "29AAAAA0000A1Z5",
-        stateCode: "29" // Default Karnataka
+        stateCode: "29",
+        warehouses: ["Main Warehouse", "North Sector Hub"]
       };
       await fs.writeFile(SETTINGS_FILE, JSON.stringify(defaultSettings, null, 2));
     }

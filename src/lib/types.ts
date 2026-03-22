@@ -69,6 +69,7 @@ export interface BusinessSettings {
   address: string;
   gstin: string;
   stateCode: string;
+  warehouses: string[];
 }
 
 export interface DashboardStats {

@@ -61,7 +61,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { apiClient } from '@/lib/api-client';
-import { Product } from '@/lib/types';
+import { Product, BusinessSettings } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const UNITS = [
@@ -85,6 +85,7 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [settings, setSettings] = useState<BusinessSettings | null>(null);
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -100,16 +101,20 @@ export default function InventoryPage() {
     mrp: '',
     actualPrice: '',
     buyingPrice: '',
-    warehouse: 'Main Warehouse'
+    warehouse: ''
   });
 
-  useEffect(() => { loadProducts(); }, []);
+  useEffect(() => { loadInitialData(); }, []);
 
-  const loadProducts = async () => {
+  const loadInitialData = async () => {
     setLoading(true);
     try {
-      const data = await apiClient.inventory.getAll();
-      setProducts(data);
+      const [prodData, settingsData] = await Promise.all([
+        apiClient.inventory.getAll(),
+        apiClient.settings.get()
+      ]);
+      setProducts(prodData);
+      setSettings(settingsData);
     } catch (error) {
       toast({ title: "Sync Failed", description: "Database communication error.", variant: "destructive" });
     } finally {
@@ -124,12 +129,13 @@ export default function InventoryPage() {
     setCurrentProduct({ 
       id: '', name: '', brand: '', stock: '', unit: 'units', 
       categoryId: 'standard', mrp: '', actualPrice: '', 
-      buyingPrice: '', warehouse: 'Main Warehouse' 
+      buyingPrice: '', warehouse: settings?.warehouses[0] || 'Default Warehouse' 
     });
     setIsDialogOpen(true);
   };
 
   const openEditDialog = (p: Product) => {
+    // Micro-delay to ensure DropdownMenu fully clears pointer-events before Dialog takes over
     setTimeout(() => {
       setIsEditMode(true);
       const cat = GST_CATEGORIES.find(c => c.rate === parseFloat(p.gst))?.id || 'standard';
@@ -143,7 +149,7 @@ export default function InventoryPage() {
         mrp: p.mrp.toString(),
         actualPrice: p.price.toString(),
         buyingPrice: (p.buyingPrice || 0).toString(),
-        warehouse: p.warehouse || 'Main Warehouse'
+        warehouse: p.warehouse || settings?.warehouses[0] || 'Default Warehouse'
       });
       setIsDialogOpen(true);
     }, 50);
@@ -194,7 +200,7 @@ export default function InventoryPage() {
       }
       toast({ title: "Operation Complete", description: "Asset specs synchronized." });
       setIsDialogOpen(false);
-      loadProducts();
+      loadInitialData();
     } catch (error) {
       toast({ title: "Process Error", variant: "destructive" });
     } finally {
@@ -227,7 +233,7 @@ export default function InventoryPage() {
   }, [products, searchTerm, statusFilters]);
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-500">
+    <div className="space-y-5 pb-12 animate-in fade-in duration-500">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-primary/10 border border-primary/20">
@@ -237,7 +243,7 @@ export default function InventoryPage() {
           <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tight leading-none">Inventory <span className="text-muted-foreground/30 font-thin italic">Vault</span></h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="h-10 px-4 rounded-xl glass font-bold text-xs" onClick={loadProducts}>
+          <Button variant="outline" className="h-10 px-4 rounded-xl glass font-bold text-xs" onClick={loadInitialData}>
             <RefreshCcw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} /> Refresh
           </Button>
           <Button className="h-10 px-5 rounded-xl shadow-lg font-black text-xs gap-2" onClick={openAddDialog}>
@@ -364,8 +370,15 @@ export default function InventoryPage() {
                 <Input className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={currentProduct.name} onChange={e => setCurrentProduct({...currentProduct, name: e.target.value})} />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Store/Warehouse*</Label>
-                <Input className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-sm" value={currentProduct.warehouse} onChange={e => setCurrentProduct({...currentProduct, warehouse: e.target.value})} />
+                <Label className="text-[10px] uppercase font-black tracking-widest opacity-60">Operational Warehouse*</Label>
+                <Select value={currentProduct.warehouse} onValueChange={val => setCurrentProduct({...currentProduct, warehouse: val})}>
+                  <SelectTrigger className="h-10 rounded-xl bg-secondary/30 border-none font-bold text-xs"><SelectValue placeholder="Select Warehouse" /></SelectTrigger>
+                  <SelectContent className="glass border-none rounded-2xl p-2">
+                    {settings?.warehouses.map(w => (
+                      <SelectItem key={w} value={w} className="rounded-xl font-bold py-2 text-sm">{w}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
