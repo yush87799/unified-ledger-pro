@@ -30,7 +30,7 @@ const KPICard = ({ title, value, trend, icon, colorClass }: KPICardProps) => (
     <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0 p-6">
       <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">{title}</CardTitle>
       <div className={cn("p-2.5 rounded-xl shadow-lg transition-transform group-hover:rotate-6", colorClass)}>
-        {React.cloneElement(icon as React.ReactElement, { className: "h-5 w-5 text-white" })}
+        {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: "h-5 w-5 text-white" })}
       </div>
     </CardHeader>
     <CardContent className="p-6 pt-0">

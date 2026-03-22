@@ -37,7 +37,7 @@ export async function predictInventoryReorder(input: PredictiveInventoryReorderI
 
 const predictiveInventoryReorderPrompt = ai.definePrompt({
   name: 'predictiveInventoryReorderPrompt',
-  input: {schema: PredictiveInventoryReorderInputSchema},
+  input: {schema: PredictiveInventoryReorderInputSchema.extend({ currentDate: z.string() })},
   output: {schema: PredictiveInventoryReorderOutputSchema},
   prompt: `You are an expert inventory manager and demand forecaster. Your task is to analyze historical sales data and current inventory levels to predict future demand and recommend optimal reorder quantities and timing to minimize stockouts and carrying costs.\n\nHere is the product information:\nProduct ID: {{{productId}}}\nCurrent Stock Level: {{{currentStockLevel}}} units\nSupplier Lead Time: {{{leadTimeDays}}} days\nSafety Stock Buffer: {{{safetyStockDays}}} days of demand\nForecast Period: {{{forecastPeriodDays}}} days\n\nHistorical Sales Data (date, quantitySold):\n{{#each historicalSalesData}}\n- {{this.date}}: {{this.quantitySold}} units\n{{/each}}\n\nBased on this data, please:\n1.  Predict the demand for the next {{{forecastPeriodDays}}} days.\n2.  Calculate the optimal reorder quantity, considering the current stock, predicted demand, lead time demand, and safety stock.\n3.  Suggest the ideal date to place the reorder to avoid stockouts. The reorder date must be a future date relative to today, formatted as YYYY-MM-DD.\n4.  Provide a clear reasoning for your predictions and recommendations.\n\nThe current date is {{currentDate}}. Ensure the reorder date is in the future relative to currentDate.`,
 });
