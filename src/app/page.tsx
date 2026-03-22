@@ -86,10 +86,10 @@ export default function LandingPage() {
             >
               <CardHeader className="space-y-8 relative z-10 p-8 pb-4">
                 <div className={cn(
-                  "w-16 h-16 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110",
+                  "w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110",
                   role.color
                 )}>
-                  <role.icon className="h-8 w-8" />
+                  <role.icon className="h-8 w-8 text-white" />
                 </div>
                 <div className="space-y-3">
                   <CardTitle className="font-headline text-3xl font-black tracking-tighter">{role.title}</CardTitle>
