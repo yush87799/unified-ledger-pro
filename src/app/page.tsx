@@ -5,10 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROLES, UserRole } from '@/lib/roles';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Boxes, ArrowRight, Zap, ShieldCheck, Globe, Sun, Moon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowRight, Zap, ShieldCheck, Globe, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -32,17 +32,17 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 relative overflow-hidden">
       {/* Floating Theme Toggle */}
       {mounted && (
-        <div className="absolute top-8 right-8 z-50">
+        <div className="fixed top-8 right-8 z-50">
           <Button 
-            variant="ghost" 
+            variant="outline" 
             size="icon" 
             onClick={toggleTheme}
-            className="h-12 w-12 rounded-2xl glass hover:bg-primary/10 transition-all group"
+            className="h-14 w-14 rounded-2xl bg-background border-primary/20 shadow-2xl hover:bg-primary/5 transition-all group"
           >
             {resolvedTheme === 'dark' ? (
               <Sun className="h-6 w-6 text-amber-400 group-hover:rotate-45 transition-transform" />
             ) : (
-              <Moon className="h-6 w-6 text-slate-700 group-hover:-rotate-12 transition-transform" />
+              <Moon className="h-6 w-6 text-indigo-600 group-hover:-rotate-12 transition-transform" />
             )}
           </Button>
         </div>
@@ -57,7 +57,7 @@ export default function LandingPage() {
         <div className="space-y-8 animate-in fade-in slide-in-from-top-12 duration-1000">
           <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full glass border-primary/20 mb-4">
             <Zap className="h-4 w-4 text-primary fill-primary" />
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-primary">Next-Gen Ledger System</span>
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-primary">Enterprise Financial Ecosystem</span>
           </div>
           
           <h1 className="font-headline text-6xl font-black tracking-tight sm:text-8xl text-foreground">
@@ -65,15 +65,14 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
-            The definitive enterprise ecosystem for modern commerce. 
             Synchronized inventory, intelligent billing, and global tax compliance 
-            engineered for high-scale organizations.
+            engineered for high-velocity organizations. Choose your portal to begin.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
-            <div className="flex items-center gap-2"><ShieldCheck className="h-5 w-5" /><span className="text-sm font-bold">MIL-SPEC SECURITY</span></div>
-            <div className="flex items-center gap-2"><Globe className="h-5 w-5" /><span className="text-sm font-bold">GLOBAL COMPLIANCE</span></div>
-            <div className="flex items-center gap-2"><Zap className="h-5 w-5" /><span className="text-sm font-bold">REAL-TIME SYNC</span></div>
+            <div className="flex items-center gap-2 font-bold"><ShieldCheck className="h-5 w-5 text-primary" /><span className="text-xs tracking-widest uppercase">Secured</span></div>
+            <div className="flex items-center gap-2 font-bold"><Globe className="h-5 w-5 text-primary" /><span className="text-xs tracking-widest uppercase">Compliant</span></div>
+            <div className="flex items-center gap-2 font-bold"><Zap className="h-5 w-5 text-primary" /><span className="text-xs tracking-widest uppercase">Real-Time</span></div>
           </div>
         </div>
 
@@ -81,19 +80,20 @@ export default function LandingPage() {
           {Object.values(ROLES).map((role, idx) => (
             <Card 
               key={role.id}
-              className={`group cursor-pointer transition-all duration-700 hover:scale-[1.05] hover:shadow-[0_40px_100px_rgba(102,51,204,0.25)] border-none glass-card animate-in fade-in slide-in-from-bottom-12 fill-mode-both overflow-hidden`}
+              className="group cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl border-none glass-card animate-in fade-in slide-in-from-bottom-12 fill-mode-both overflow-hidden"
               style={{ animationDelay: `${idx * 100}ms` }}
               onClick={() => handleRoleSelect(role.id as UserRole)}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/20 transition-colors" />
-              
               <CardHeader className="space-y-8 relative z-10 p-8 pb-4">
-                <div className={`w-16 h-16 rounded-3xl flex items-center justify-center ${role.color} text-white shadow-2xl transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110`}>
+                <div className={cn(
+                  "w-16 h-16 rounded-2xl flex items-center justify-center text-white shadow-xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110",
+                  role.color
+                )}>
                   <role.icon className="h-8 w-8" />
                 </div>
                 <div className="space-y-3">
                   <CardTitle className="font-headline text-3xl font-black tracking-tighter">{role.title}</CardTitle>
-                  <CardDescription className="text-lg leading-snug font-medium text-muted-foreground">
+                  <CardDescription className="text-base font-medium text-muted-foreground/80">
                     {role.description}
                   </CardDescription>
                 </div>
@@ -101,20 +101,12 @@ export default function LandingPage() {
               <CardContent className="p-8 pt-4 relative z-10">
                 <div className="pt-6 border-t border-primary/10">
                   <div className="text-sm font-black text-primary flex items-center gap-2 group-hover:gap-4 transition-all uppercase tracking-widest">
-                    Launch Module <ArrowRight className="h-5 w-5" />
+                    Enter Portal <ArrowRight className="h-5 w-5" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        <div className="pt-12 animate-in fade-in duration-1000 delay-700">
-          <div className="flex items-center justify-center gap-12 opacity-40 grayscale hover:grayscale-0 transition-all">
-             <span className="text-2xl font-black font-headline">FORTUNE 500</span>
-             <span className="text-2xl font-black font-headline">NASDAQ</span>
-             <span className="text-2xl font-black font-headline">S&P 500</span>
-          </div>
         </div>
       </div>
     </div>

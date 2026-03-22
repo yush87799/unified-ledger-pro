@@ -41,7 +41,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'System configuration, user roles, and operational control.',
     icon: ShieldCheck,
     allowedMenus: ['dashboard', 'inventory', 'billing', 'users', 'settings'],
-    color: 'bg-slate-600'
+    color: 'bg-slate-700'
   },
   billing: {
     id: 'billing',
@@ -57,7 +57,7 @@ export const ROLES: Record<UserRole, RoleConfig> = {
     description: 'GST compliance, tax reporting, and financial auditing.',
     icon: Calculator,
     allowedMenus: ['dashboard', 'gst', 'analytics'],
-    color: 'bg-amber-600'
+    color: 'bg-amber-500'
   },
   inventory: {
     id: 'inventory',

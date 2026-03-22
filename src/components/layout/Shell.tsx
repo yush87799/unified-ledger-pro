@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -12,13 +13,11 @@ import {
   SidebarMenuButton, 
   SidebarProvider,
   SidebarTrigger,
-  SidebarInset,
-  SidebarSeparator
+  SidebarInset
 } from '@/components/ui/sidebar';
 import { 
   Bell, 
   Search, 
-  Plus, 
   ChevronDown,
   LogOut,
   Boxes,
@@ -161,18 +160,20 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="flex items-center gap-6">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={toggleTheme}
-                className="h-12 w-12 rounded-2xl hover:bg-primary/5 transition-all group"
-              >
-                {mounted && resolvedTheme === 'dark' ? (
-                  <Sun className="h-6 w-6 text-amber-400 group-hover:rotate-45 transition-transform" />
-                ) : (
-                  <Moon className="h-6 w-6 text-slate-700 group-hover:-rotate-12 transition-transform" />
-                )}
-              </Button>
+              {mounted && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={toggleTheme}
+                  className="h-12 w-12 rounded-2xl hover:bg-primary/5 transition-all group"
+                >
+                  {resolvedTheme === 'dark' ? (
+                    <Sun className="h-6 w-6 text-amber-400 group-hover:rotate-45 transition-transform" />
+                  ) : (
+                    <Moon className="h-6 w-6 text-indigo-600 group-hover:-rotate-12 transition-transform" />
+                  )}
+                </Button>
+              )}
 
               <Button variant="ghost" size="icon" className="relative h-12 w-12 rounded-2xl hover:bg-primary/5">
                 <Bell className="h-6 w-6 text-muted-foreground" />
@@ -184,21 +185,21 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   <Button variant="ghost" className="flex items-center gap-4 p-1.5 pr-5 hover:bg-primary/5 rounded-2xl transition-all border border-transparent hover:border-primary/10">
                     <Avatar className="h-10 w-10 rounded-xl shadow-2xl">
                       <AvatarImage src={`https://picsum.photos/seed/${role}/200/200`} />
-                      <AvatarFallback className="rounded-xl bg-primary text-primary-foreground font-black">
+                      <AvatarFallback className={cn("rounded-xl text-white font-black", roleConfig.color)}>
                         {role[0].toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden lg:flex flex-col items-start text-left">
                       <span className="text-sm font-black leading-none mb-1 tracking-tight">{roleConfig.title}</span>
                       <span className="text-[10px] uppercase font-black text-primary tracking-widest flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                         Online
                       </span>
                     </div>
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-72 rounded-3xl p-3 glass shadow-[0_20px_50px_rgba(0,0,0,0.2)]">
+                <DropdownMenuContent align="end" className="w-72 rounded-3xl p-3 glass shadow-2xl">
                   <DropdownMenuLabel className="px-4 py-3 text-[10px] uppercase font-black text-muted-foreground tracking-widest">Enterprise Access</DropdownMenuLabel>
                   <DropdownMenuItem className="rounded-2xl px-4 py-3 cursor-pointer font-semibold focus:bg-primary/5">Organization Profile</DropdownMenuItem>
                   <DropdownMenuItem className="rounded-2xl px-4 py-3 cursor-pointer font-semibold focus:bg-primary/5">Security Credentials</DropdownMenuItem>
