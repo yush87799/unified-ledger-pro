@@ -1,6 +1,35 @@
 [
   {
     "customer": {
+      "name": "Pratyush Shrivastava",
+      "phone": "6378814759",
+      "address": "",
+      "stateCode": "08"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-9430",
+        "productName": "Apple",
+        "qty": 1,
+        "price": 40,
+        "mrp": 50,
+        "gstRate": 0,
+        "unit": "kg",
+        "total": 40
+      }
+    ],
+    "subtotal": 40,
+    "gstTotal": 0,
+    "grandTotal": 40,
+    "taxType": "INTER",
+    "paymentMode": "online",
+    "businessStateCode": "29",
+    "id": "INV-1774190336035",
+    "createdAt": "2026-03-22T14:38:56.035Z"
+  },
+  {
+    "customer": {
       "name": "PS",
       "phone": "6378814759",
       "address": "JAipur",

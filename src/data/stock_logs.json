@@ -3,6 +3,15 @@
     "productId": "SKU-9430",
     "productName": "Apple",
     "type": "out",
+    "qty": 1,
+    "note": "Sale via Invoice: INV-1774190336035",
+    "id": "LOG-1774190336042",
+    "timestamp": "2026-03-22T14:38:56.042Z"
+  },
+  {
+    "productId": "SKU-9430",
+    "productName": "Apple",
+    "type": "out",
     "qty": 2,
     "note": "manual stock removal",
     "id": "LOG-1774190015969",
