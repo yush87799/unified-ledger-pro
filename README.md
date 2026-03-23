@@ -2,7 +2,7 @@
 
 **Modern Enterprise Inventory Management, Billing & GST System.**
 
-This is a comprehensive, high-velocity financial ecosystem built to synchronize inventory, handle intelligent billing, and maintain global tax compliance. 
+This is a comprehensive, high-velocity financial ecosystem built to synchronize inventory, handle intelligent billing, and maintain global tax compliance.
 
 ## 🌐 Live Deployment
 
