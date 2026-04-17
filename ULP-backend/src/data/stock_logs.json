@@ -1,0 +1,20 @@
+[
+  {
+    "productId": "SKU-6770",
+    "productName": "Apple",
+    "type": "out",
+    "qty": 1,
+    "note": "Sale via Invoice: INV-1776425647669",
+    "id": "LOG-1776425647682",
+    "timestamp": "2026-04-17T11:34:07.683Z"
+  },
+  {
+    "productId": "SKU-6770",
+    "productName": "Apple",
+    "type": "in",
+    "qty": 50,
+    "note": "Initial stock registration",
+    "id": "LOG-1776425515493",
+    "timestamp": "2026-04-17T11:31:55.493Z"
+  }
+]

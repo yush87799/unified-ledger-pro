@@ -1,0 +1,16 @@
+[
+  {
+    "id": "SKU-6770",
+    "name": "Apple",
+    "brand": "Generic",
+    "category": "18%",
+    "mrp": 20,
+    "price": 10,
+    "buyingPrice": 5,
+    "stock": 49,
+    "unit": "pcs",
+    "warehouse": "Main Warehouse",
+    "status": "In Stock",
+    "gst": "18%"
+  }
+]

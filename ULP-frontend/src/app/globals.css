@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@layer base {
+  :root {
+    /* Sophisticated Executive Light Theme */
+    --background: 210 40% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 255 85% 58%; /* Pro Indigo */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 224 71% 4%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 255 85% 58%;
+    --accent-foreground: 224 71% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 255 85% 58%;
+    --radius: 0.75rem;
+    
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 255 85% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 255 85% 96%;
+    --sidebar-accent-foreground: 255 85% 30%;
+    --sidebar-border: 240 6% 92%;
+    --sidebar-ring: 255 85% 58%;
+  }
+
+  .dark {
+    /* High-Contrast "Night Navy" Dark Theme */
+    --background: 222 47% 4%;
+    --foreground: 210 40% 98%; 
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 255 85% 70%; 
+    --primary-foreground: 222 47% 4%;
+    --secondary: 222 47% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 47% 15%;
+    --muted-foreground: 215 20% 85%; 
+    --accent: 255 85% 70%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 47% 15%;
+    --input: 222 47% 15%;
+    --ring: 255 85% 70%;
+
+    --sidebar-background: 222 47% 3%;
+    --sidebar-foreground: 215 20% 90%;
+    --sidebar-primary: 255 85% 70%;
+    --sidebar-primary-foreground: 222 47% 4%;
+    --sidebar-accent: 222 47% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 15%;
+    --sidebar-ring: 255 85% 70%;
+  }
+}
+
+@layer base {
+  *, ::before, ::after {
+    border-color: hsl(var(--border));
+  }
+  body { @apply bg-background text-foreground font-body antialiased selection:bg-primary/20; }
+  h1, h2, h3, h4, h5, h6 { @apply font-headline tracking-tight; }
+}
+
+@layer utilities {
+  .glass { @apply bg-white/70 dark:bg-black/60 backdrop-blur-md border border-white/20 dark:border-white/10; }
+  .glass-card { @apply bg-card/60 dark:bg-card/50 backdrop-blur-xl border border-border/50 shadow-xl; }
+  .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-br from-primary via-indigo-500 to-violet-600; }
+}
