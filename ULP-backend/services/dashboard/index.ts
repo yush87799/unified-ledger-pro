@@ -146,8 +146,9 @@ app.get('/gstr1', async (req, res) => {
     // Group items by tax rate per invoice
     const rateGroups: Record<number, { taxable: number, cess: number }> = {};
     items.forEach((item: any) => {
-      const rate = item.taxRate || 18; // Default to 18% if missing
-      const taxable = (item.price * item.qty);
+      const rate = item.gstRate || 18;
+      const itemTotal = item.price * item.qty;
+      const taxable = itemTotal / (1 + (rate / 100));
       if (!rateGroups[rate]) rateGroups[rate] = { taxable: 0, cess: 0 };
       rateGroups[rate].taxable += taxable;
     });
@@ -202,9 +203,10 @@ app.get('/gstr3b', async (req, res) => {
 
     const items = inv.items || [];
     items.forEach((item: any) => {
-      const rate = item.taxRate || 18;
-      const taxable = (item.price * item.qty);
-      const taxAmount = taxable * (rate / 100);
+      const rate = item.gstRate || 18;
+      const itemTotal = item.price * item.qty;
+      const taxable = itemTotal / (1 + (rate / 100));
+      const taxAmount = itemTotal - taxable;
       
       totalTaxable += taxable;
       if (isInterState) {
@@ -228,6 +230,69 @@ app.get('/gstr3b', async (req, res) => {
       sgst: totalSgst,
       totalTax: totalIgst + totalCgst + totalSgst
     }
+  });
+});
+
+// Profit & Loss Report Generation
+app.get('/pl', async (req, res) => {
+  const month = (req.query.month as string) || new Date().toISOString().slice(0, 7);
+  const invoices = await InvoiceModel.find({ createdAt: { $regex: `^${month}` } }).lean();
+  
+  let totalSales = 0;
+  let totalCogs = 0;
+  
+  invoices.forEach((inv: any) => {
+    totalSales += (inv.subtotal || 0); // Using the base taxable subtotal
+    const items = inv.items || [];
+    items.forEach((item: any) => {
+      totalCogs += (item.buyingPrice || 0) * (item.qty || 0);
+    });
+  });
+  
+  const grossProfit = totalSales - totalCogs;
+  
+  let csv = 'Account Component,Amount (INR)\n';
+  csv += `Sales Revenue,${totalSales.toFixed(2)}\n`;
+  csv += `Cost of Goods Sold (COGS),${totalCogs.toFixed(2)}\n`;
+  csv += `Gross Profit,${grossProfit.toFixed(2)}\n`;
+  
+  res.json({ csv, summary: { totalSales, totalCogs, grossProfit } });
+});
+
+// Balance Sheet Report Generation
+app.get('/balancesheet', async (req, res) => {
+  const [invoices, inventory] = await Promise.all([
+    InvoiceModel.find({}).lean(),
+    InventoryModel.find({}).lean()
+  ]);
+  
+  let totalInventoryValue = 0;
+  (inventory as any[]).forEach((prod: any) => {
+    totalInventoryValue += (prod.buyingPrice || 0) * (prod.stock || 0);
+  });
+  
+  let cashBalance = 0;
+  let bankBalance = 0;
+  let gstPayable = 0;
+  
+  (invoices as any[]).forEach((inv: any) => {
+    if (inv.paymentMode === 'cash') cashBalance += (inv.grandTotal || 0);
+    else if (inv.paymentMode === 'online') bankBalance += (inv.grandTotal || 0);
+    gstPayable += (inv.gstTotal || 0);
+  });
+  
+  let csv = 'Element,Classification,Amount (INR)\n';
+  csv += `Inventory,Asset,${totalInventoryValue.toFixed(2)}\n`;
+  csv += `Cash in Hand,Asset,${cashBalance.toFixed(2)}\n`;
+  csv += `Bank Balance,Asset,${bankBalance.toFixed(2)}\n`;
+  csv += `GST Payable,Liability,${gstPayable.toFixed(2)}\n`;
+  
+  res.json({ 
+    csv, 
+    summary: { 
+      assets: totalInventoryValue + cashBalance + bankBalance, 
+      liabilities: gstPayable 
+    } 
   });
 });
 
