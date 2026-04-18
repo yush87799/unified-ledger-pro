@@ -310,11 +310,11 @@ app.get('/users', async (req, res) => {
 });
 
 app.post('/users', async (req, res) => {
-  const { email, role, orgId } = req.body;
+  const { email, role, orgId, name, password, createdAt } = req.body;
   
   await User.findOneAndUpdate(
     { email }, 
-    { email, role, orgId }, 
+    { email, role, orgId, name, password, createdAt: createdAt || new Date().toISOString() }, 
     { upsert: true, new: true } // Creates the user if they don't exist, updates if they do!
   );
   

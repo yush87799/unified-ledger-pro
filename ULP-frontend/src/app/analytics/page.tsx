@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   BarChart, 
@@ -19,27 +19,126 @@ import {
   Legend
 } from 'recharts';
 import { Button } from '@/components/ui/button';
-import { Calendar, Filter, TrendingUp, TrendingDown, MoreHorizontal } from 'lucide-react';
+import { Calendar, Filter, TrendingUp, TrendingDown, MoreHorizontal, Loader2 } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
+import { Invoice } from '@/lib/types';
+import { toast } from '@/hooks/use-toast';
 
-const categoryData = [
-  { name: 'Electronics', value: 45 },
-  { name: 'Furniture', value: 25 },
-  { name: 'Audio', value: 20 },
-  { name: 'Accessories', value: 10 },
-];
-
-const COLORS = ['#6633CC', '#84ACDB', '#F59E0B', '#10B981'];
-
-const growthData = [
-  { month: 'Jan', current: 4000, previous: 3200 },
-  { month: 'Feb', current: 5000, previous: 4500 },
-  { month: 'Mar', current: 3000, previous: 3800 },
-  { month: 'Apr', current: 4500, previous: 4200 },
-  { month: 'May', current: 6000, previous: 5100 },
-  { month: 'Jun', current: 7500, previous: 6200 },
-];
+const COLORS = ['#6633CC', '#84ACDB', '#F59E0B', '#10B981', '#E11D48'];
 
 export default function AnalyticsPage() {
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalyticsData = async () => {
+      try {
+        const data = await apiClient.invoices.getAll();
+        setInvoices(data || []);
+      } catch (error) {
+        console.error("Failed to fetch invoices for analytics", error);
+        toast({ title: "Failed to load analytics data", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalyticsData();
+  }, []);
+
+  const { categoryData, growthData, kpis } = useMemo(() => {
+    const productSales: Record<string, number> = {};
+    const monthlyRevenue: Record<string, { current: number, previous: number }> = {};
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    months.forEach(m => { monthlyRevenue[m] = { current: 0, previous: 0 }; });
+
+    let totalRevenue = 0;
+    let previousTotalRevenue = 0;
+    let bestProduct = { name: 'N/A', value: 0 };
+
+    const currentYear = new Date().getFullYear();
+    let currentYearInvoices = 0;
+
+    invoices.forEach(inv => {
+      const date = inv.createdAt ? new Date(inv.createdAt) : new Date();
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+
+      if (year === currentYear) {
+        monthlyRevenue[month].current += inv.grandTotal || 0;
+        totalRevenue += inv.grandTotal || 0;
+        currentYearInvoices++;
+        
+        inv.items?.forEach(item => {
+          if (item.productName) {
+            productSales[item.productName] = (productSales[item.productName] || 0) + (item.total || 0);
+          }
+        });
+      } else if (year === currentYear - 1) {
+        monthlyRevenue[month].previous += inv.grandTotal || 0;
+        previousTotalRevenue += inv.grandTotal || 0;
+      }
+    });
+
+    const catData = Object.keys(productSales)
+      .map(name => ({ name, value: productSales[name] }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+
+    if (catData.length > 0) {
+      bestProduct = catData[0];
+    }
+
+    const currentMonthIdx = new Date().getMonth();
+    const filteredGrowth = months.slice(0, currentMonthIdx + 1).map(month => ({
+      month,
+      current: monthlyRevenue[month].current,
+      previous: monthlyRevenue[month].previous
+    }));
+
+    const aov = currentYearInvoices > 0 ? (totalRevenue / currentYearInvoices) : 0;
+    
+    const growthPercent = previousTotalRevenue > 0 
+      ? ((totalRevenue - previousTotalRevenue) / previousTotalRevenue * 100) 
+      : 0;
+
+    return {
+      categoryData: catData.length > 0 ? catData : [{ name: 'No Data', value: 1 }],
+      growthData: filteredGrowth.length > 0 ? filteredGrowth : [{ month: months[currentMonthIdx], current: 0, previous: 0 }],
+      kpis: [
+        { 
+          title: 'Total Revenue (YTD)', 
+          value: `₹${totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`, 
+          sub: previousTotalRevenue > 0 ? `${growthPercent > 0 ? '+' : ''}${growthPercent.toFixed(1)}% vs last year` : 'Current year metric', 
+          up: totalRevenue >= previousTotalRevenue 
+        },
+        { 
+          title: 'Average Order Value', 
+          value: `₹${(aov || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`, 
+          sub: 'Based on current year sales', 
+          up: true 
+        },
+        { 
+          title: 'Best Selling Asset', 
+          value: bestProduct.name, 
+          sub: `₹${bestProduct.value.toLocaleString('en-IN', { maximumFractionDigits: 0 })} generated`, 
+          up: true 
+        },
+      ]
+    };
+  }, [invoices]);
+
+  if (loading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-4 opacity-50">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="font-bold text-sm tracking-widest uppercase">Compiling Intelligence...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -110,11 +209,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { title: 'Best Performing', value: 'Electronics', sub: '+24% growth', up: true },
-          { title: 'Customer Retention', value: '78%', sub: '+2% from Oct', up: true },
-          { title: 'Refund Rate', value: '0.8%', sub: '-0.2% from Oct', up: false },
-        ].map((item, i) => (
+        {kpis.map((item, i) => (
           <Card key={i} className="border-none shadow-sm">
             <CardContent className="pt-6">
               <div className="flex justify-between items-start">
