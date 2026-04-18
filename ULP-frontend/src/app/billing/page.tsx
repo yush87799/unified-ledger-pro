@@ -234,6 +234,11 @@ export default function BillingPage() {
     setIsPreviewOpen(true);
   };
 
+  const handlePreviewHistory = (invoice: Invoice) => {
+    setPreviewInvoice(invoice);
+    setIsPreviewOpen(true);
+  };
+
   const filteredHistory = history.filter(inv => 
     (inv.id || '').toLowerCase().includes(historySearch.toLowerCase()) ||
     (inv.customer?.name || '').toLowerCase().includes(historySearch.toLowerCase())
@@ -436,7 +441,7 @@ export default function BillingPage() {
                         <TableCell className="font-black tracking-tight text-sm">{inv.customer?.name || 'Unknown'}</TableCell>
                         <TableCell><Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md">{inv.paymentMode || 'N/A'}</Badge></TableCell>
                         <TableCell className="font-black text-base">₹{(inv.grandTotal || 0).toLocaleString()}</TableCell>
-                        <TableCell className="text-right pr-7"><Button variant="ghost" size="sm" className="h-9 px-4 font-black text-primary text-[11px] rounded-xl hover:bg-primary/5"><Eye className="h-4 w-4 mr-2" /> Details</Button></TableCell>
+                        <TableCell className="text-right pr-7"><Button variant="ghost" size="sm" onClick={() => handlePreviewHistory(inv)} className="h-9 px-4 font-black text-primary text-[11px] rounded-xl hover:bg-primary/5"><Eye className="h-4 w-4 mr-2" /> Details</Button></TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
