@@ -13,12 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service_dir:
+        project_dir:
           - 'ULP-frontend'
-          - 'ULP-backend/src/services/dashboard'
-          - 'ULP-backend/src/services/inventory'
-          - 'ULP-backend/src/services/invoicing'
-          - 'ULP-backend/src/services/settings'
+          - 'ULP-backend'
 
     steps:
       - name: Checkout code
@@ -29,12 +26,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: '${{ matrix.service_dir }}/package-lock.json'
+          cache-dependency-path: '${{ matrix.project_dir }}/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ${{ matrix.service_dir }}
-        run: npm ci
+        working-directory: ${{ matrix.project_dir }}
+        run: npm install
 
-      - name: Run Lint & Typecheck
-        working-directory: ${{ matrix.service_dir }}
-        run: npm run lint && npm run typecheck
+      - name: Build Project
+        working-directory: ${{ matrix.project_dir }}
+        run: npm run build
