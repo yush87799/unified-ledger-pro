@@ -4,7 +4,8 @@
   "description": "Settings microservice",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "express": "^5.2.1",
