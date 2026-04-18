@@ -2,7 +2,7 @@
 
 **Modern Enterprise Inventory Management, Billing & GST System.**
 
-This is a comprehensive, high-velocity financial ecosystem built to synchronize inventory, handle intelligent billing, and maintain global tax compliance.
+This is a comprehensive, high-velocity financial ecosystem built to synchronize inventory, handle intelligent billing, and maintain global tax compliance. We utilize a modern **Services Architecture** to ensure high availability, separation of concerns, and scalable deployments.
 
 ## 🌐 Live Deployment
 
@@ -11,54 +11,70 @@ This is a comprehensive, high-velocity financial ecosystem built to synchronize 
 
 ## 🚀 Tech Stack
 
-This project is built with a modern frontend stack:
+**Frontend (`ULP-frontend`):**
+- **Framework:** Next.js 15 (App Router)
+- **Library:** React 19
+- **Styling & UI:** Tailwind CSS, Radix UI & shadcn/ui
+- **Icons:** Lucide React
+- **State & Data:** React Hook Form + Zod, Recharts
 
-- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
-- **Library:** [React 19](https://react.dev/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components:** [Radix UI](https://www.radix-ui.com/) & [shadcn/ui](https://ui.shadcn.com/)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **Forms & Validation:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Charts:** [Recharts](https://recharts.org/)
-
-## 📦 Getting Started
-
-First, make sure you have Node.js (v20+) installed. Then, install the dependencies:
-
-```bash
-npm install
-```
-
-Next, run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:9002](http://localhost:9002) with your browser to see the application.
+**Backend (`ULP-backend`):**
+- Node.js (v20+)
+- TypeScript
 
 ## 🏗️ Project Structure
 
-- `/src/app` - Next.js App Router pages, layouts, and API routes.
-- `/src/components` - Reusable UI components (buttons, dialogs, charts).
-- `/src/data` - Local mock data (e.g., inventory).
-- `/src/lib` - Utility functions, roles, and configuration.
+```text
+/
+├── ULP-frontend/               # Next.js App Router application
+├── ULP-backend/
+│   └── src/
+│       └── services/
+│           ├── dashboard/      # Analytics and aggregate data service
+│           ├── inventory/      # Product and stock management service
+│           ├── invoicing/      # Billing and GST generation service
+│           └── settings/       # User preferences and tenant configurations
+├── .github/                    # Monorepo CI/CD Workflows
+└── README.md
+```
+
+## 📦 Getting Started
+
+Make sure you have Node.js (v20+) installed. Each service is a separate package.
+
+### Starting the Frontend
+
+```bash
+cd ULP-frontend
+npm install
+npm run dev
+```
+Open http://localhost:9002 to view the client application.
+
+### Starting a Backend Service (Example: Inventory)
+
+```bash
+cd ULP-backend/src/services/inventory
+npm install
+npm run dev
+```
+
+> **Note:** To run all services at once, consider using a monorepo tool like [Turborepo](https://turbo.build/repo) or [Nx](https://nx.dev).
 
 ## 🤝 Contributing
 
 We follow a feature-branch workflow. `main` is our stable/production branch, and `develop` is our active integration branch.
 
-1. Checkout the `develop` branch and make sure it's up to date:
-   ```bash
-   git checkout develop
-   git pull origin develop
-   ```
-2. Create a new branch for your work (using your name and the feature you are building):
-   ```bash
-   git checkout -b your-name/feature-name
-   ```
-3. Make your changes, commit, and push your branch:
-   ```bash
-   git push -u origin your-name/feature-name
-   ```
-4. Open a **Pull Request (PR)** against the **`develop`** branch on GitHub.
+1.  **Checkout `develop`**
+    ```bash
+    git checkout develop
+    git pull origin develop
+    ```
+
+2.  **Create a new branch**
+    ```bash
+    git checkout -b your-name/feature-name
+    ```
+
+3.  **Commit, Push, and Open a PR**
+    Make your changes, commit, push your branch, and open a Pull Request against the `develop` branch on GitHub.

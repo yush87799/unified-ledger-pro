@@ -1,0 +1,32 @@
+[
+  {
+    "customer": {
+      "name": "Pratyush Shrivastava",
+      "phone": "6378814759",
+      "address": "",
+      "stateCode": "01"
+    },
+    "items": [
+      {
+        "id": "1",
+        "productId": "SKU-6770",
+        "productName": "Apple",
+        "qty": 1,
+        "price": 10,
+        "buyingPrice": 5,
+        "mrp": 20,
+        "gstRate": 18,
+        "unit": "pcs",
+        "total": 10
+      }
+    ],
+    "subtotal": 8.474576271186441,
+    "gstTotal": 1.5254237288135588,
+    "grandTotal": 10,
+    "taxType": "INTER",
+    "paymentMode": "online",
+    "businessStateCode": "29",
+    "id": "INV-1776425647669",
+    "createdAt": "2026-04-17T11:34:07.669Z"
+  }
+]
