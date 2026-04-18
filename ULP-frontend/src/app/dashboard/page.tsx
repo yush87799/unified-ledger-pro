@@ -119,9 +119,9 @@ export default function DashboardPage() {
                   </TableHeader>
                   <TableBody>
                     {loadingData ? (
-                      <TableRow><TableCell colSpan={5} className="py-12 text-center"><Loader2 className="h-7 w-7 animate-spin mx-auto text-primary opacity-40" /></TableCell></TableRow>
+                      <TableRow key="loading"><TableCell colSpan={5} className="py-12 text-center"><Loader2 className="h-7 w-7 animate-spin mx-auto text-primary opacity-40" /></TableCell></TableRow>
                     ) : recentInvoices.length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className="py-12 text-center font-bold text-muted-foreground italic text-xs">No records found.</TableCell></TableRow>
+                      <TableRow key="empty"><TableCell colSpan={5} className="py-12 text-center font-bold text-muted-foreground italic text-xs">No records found.</TableCell></TableRow>
                     ) : recentInvoices.map((inv) => (
                       <TableRow key={inv.id} className="hover:bg-primary/[0.02] border-none group transition-colors">
                         <TableCell className="font-mono text-[11px] font-black text-primary py-4 pl-6">{inv.id}</TableCell>

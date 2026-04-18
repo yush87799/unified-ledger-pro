@@ -65,10 +65,17 @@ export default function GSTCompliancePage() {
       // Map down the payload size to essential GST attributes to save token cost and time
       const payload = invoices.map(inv => ({
         id: inv.id,
-        type: inv.type,
+        paymentMode: inv.paymentMode,
         amount: inv.grandTotal,
+        taxableBase: inv.subtotal,
         gstTotal: inv.gstTotal,
-        items: inv.items.map(item => ({ taxRate: item.taxRate, price: item.price, qty: item.qty }))
+        items: inv.items.map((item: any) => ({ 
+          name: item.productName,
+          gstRate: item.gstRate, 
+          price: item.price, 
+          qty: item.qty,
+          total: item.total
+        }))
       }));
 
       const result = await gstComplianceAdvisor({
@@ -130,13 +137,53 @@ export default function GSTCompliancePage() {
     }
   };
 
+  const handleDownloadFinancials = async (type: 'pl' | 'balancesheet') => {
+    try {
+      setIsDownloading(true);
+      const response = await fetch(`${API_BASE_URL}/${type}`);
+      const data = await response.json();
+      
+      const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', `${type === 'pl' ? 'Profit_Loss' : 'Balance_Sheet'}_Report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Download Complete",
+        description: `${type === 'pl' ? 'Profit & Loss' : 'Balance Sheet'} report has been generated and downloaded.`,
+      });
+    } catch (error) {
+      console.error(`Failed to download ${type} report:`, error);
+      toast({
+        title: "Download Failed",
+        description: "Could not generate the requested financial report. Please ensure the backend is running.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const syncStatus = invoices.length > 0 ? 'DONE' : 'PENDING';
+  const taxStatus = taxSummary.total > 0 ? 'DONE' : 'PENDING';
+  const auditStepStatus = auditResult 
+    ? (auditResult.complianceFindings.some(f => f.type === 'error') ? 'ATTENTION' : 'DONE') 
+    : (analyzing ? 'AUDITING' : 'PENDING');
+
+  const currentScore = auditResult 
+    ? Math.max(10, 100 - auditResult.complianceFindings.reduce((acc, f) => acc + (f.type === 'error' ? 15 : f.type === 'warning' ? 5 : 0), 0))
+    : (invoices.length > 0 ? 84 : 0);
+
   return (
     <div className="space-y-5 animate-in fade-in duration-500 pb-12">
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-5">
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-primary/10 border border-primary/20">
             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Compliance: Healthy</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Compliance: {currentScore >= 80 ? 'Healthy' : currentScore >= 50 ? 'Warning' : 'Critical'}</span>
           </div>
           <h1 className="font-headline text-2xl sm:text-3xl font-black tracking-tight leading-none">
             GST & <span className="text-muted-foreground/30 font-thin italic">Compliance</span>
@@ -161,6 +208,22 @@ export default function GSTCompliancePage() {
             disabled={isDownloading}
           >
             {isDownloading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />} GSTR-3B
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-9 rounded-lg glass font-bold text-xs px-3 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10"
+            onClick={() => handleDownloadFinancials('pl')}
+            disabled={isDownloading}
+          >
+            {isDownloading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />} Profit & Loss
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-9 rounded-lg glass font-bold text-xs px-3 text-indigo-600 dark:text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/10"
+            onClick={() => handleDownloadFinancials('balancesheet')}
+            disabled={isDownloading}
+          >
+            {isDownloading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />} Balance Sheet
           </Button>
         </div>
       </div>
@@ -239,23 +302,28 @@ export default function GSTCompliancePage() {
             <div className="space-y-3">
               <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
                 <span className="text-muted-foreground">Compliance Index</span>
-                <span className="text-primary">84% Ready</span>
+                <span className={currentScore >= 80 ? "text-emerald-500" : currentScore >= 50 ? "text-amber-500" : "text-destructive"}>{currentScore}% Ready</span>
               </div>
-              <Progress value={84} className="h-2 rounded-full" />
+              <Progress value={currentScore} className="h-2 rounded-full" />
             </div>
 
             <div className="space-y-3">
               {[
-                { label: 'Sales Reconciliation', status: 'DONE', color: 'bg-emerald-500' },
-                { label: 'Purchase Matching', status: 'DONE', color: 'bg-emerald-500' },
-                { label: 'Tax Computation', status: 'PENDING', color: 'bg-amber-500' },
+                { label: 'Ledger Synchronization', status: syncStatus, color: syncStatus === 'DONE' ? 'bg-emerald-500' : 'bg-amber-500' },
+                { label: 'Tax Computation', status: taxStatus, color: taxStatus === 'DONE' ? 'bg-emerald-500' : 'bg-amber-500' },
+                { label: 'AI Compliance Audit', status: auditStepStatus, color: auditStepStatus === 'DONE' ? 'bg-emerald-500' : auditStepStatus === 'ATTENTION' ? 'bg-destructive' : auditStepStatus === 'AUDITING' ? 'bg-blue-500' : 'bg-amber-500' },
               ].map((step, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3.5 rounded-lg bg-secondary/30 border border-transparent">
                   <div className="flex items-center gap-2.5">
                     <div className={`w-1.5 h-1.5 rounded-full ${step.color}`} />
                     <span className="text-xs font-bold tracking-tight">{step.label}</span>
                   </div>
-                  <Badge variant="outline" className={`text-[9px] font-black tracking-widest border-none px-2 py-0.5 ${step.status === 'DONE' ? 'text-emerald-500 bg-emerald-500/10' : 'text-amber-500 bg-amber-500/10'}`}>
+                  <Badge variant="outline" className={`text-[9px] font-black tracking-widest border-none px-2 py-0.5 ${
+                    step.status === 'DONE' ? 'text-emerald-500 bg-emerald-500/10' : 
+                    step.status === 'ATTENTION' ? 'text-destructive bg-destructive/10' : 
+                    step.status === 'AUDITING' ? 'text-blue-500 bg-blue-500/10 animate-pulse' : 
+                    'text-amber-500 bg-amber-500/10'
+                  }`}>
                     {step.status}
                   </Badge>
                 </div>
