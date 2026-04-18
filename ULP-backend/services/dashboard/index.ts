@@ -256,6 +256,10 @@ app.post('/users', async (req, res) => {
   res.json({ success: true });
 });
 
-app.listen(port, () => {
-  console.log(`Dashboard service listening at http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Dashboard service listening at http://localhost:${port}`);
+  });
+}
+
+export default app;

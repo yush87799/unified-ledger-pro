@@ -72,6 +72,10 @@ app.post('/', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Settings service listening at http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Settings service listening at http://localhost:${port}`);
+  });
+}
+
+export default app;
