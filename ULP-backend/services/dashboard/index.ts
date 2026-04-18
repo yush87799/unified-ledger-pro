@@ -121,7 +121,7 @@ app.get('/gstr1', async (req, res) => {
   const filtered = invoices;
 
   // Safely extract the home state from settings (fallback to '27' if missing)
-  const settings = Array.isArray(settingsData) ? settingsData[0] : settingsData;
+  const settings: any = Array.isArray(settingsData) ? settingsData[0] : settingsData;
   const homeStateCode = settings?.stateCode || settings?.gstin?.substring(0, 2) || '27';
 
   // GST Offline Tool exact headers
@@ -187,7 +187,7 @@ app.get('/gstr3b', async (req, res) => {
   const filtered = invoices;
 
   // Safely extract the home state from settings
-  const settings = Array.isArray(settingsData) ? settingsData[0] : settingsData;
+  const settings: any = Array.isArray(settingsData) ? settingsData[0] : settingsData;
   const homeStateCode = settings?.stateCode || settings?.gstin?.substring(0, 2) || '27';
 
   let totalTaxable = 0;
