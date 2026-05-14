@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
-    const currentRole = localStorage.getItem('user_role') as UserRole;
+    const currentRole = (localStorage.getItem('user_role') || 'admin') as UserRole;
     setRole(currentRole);
     loadDashboardData();
   }, []);
@@ -38,17 +38,28 @@ export default function DashboardPage() {
   const loadDashboardData = async () => {
     setLoadingData(true);
     try {
-      const [invoices, inventory, stats] = await Promise.all([
+      const [invoicesRes, inventoryRes, statsRes] = await Promise.allSettled([
         apiClient.invoices.getAll(),
         apiClient.inventory.getAll(),
         apiClient.dashboard.getStats()
       ]);
-      setRecentInvoices(invoices.slice(0, 5));
-      setDashboardStats(stats);
-      const lowStock = inventory
-        .filter(p => p.stock < 10 || p.status === 'Low' || p.status === 'Out of Stock')
-        .slice(0, 3);
-      setLowStockItems(lowStock);
+      
+      if (invoicesRes.status === 'fulfilled') {
+        setRecentInvoices(invoicesRes.value.slice(0, 5));
+      }
+      
+      if (inventoryRes.status === 'fulfilled') {
+        const lowStock = inventoryRes.value
+          .filter((p: Product) => p.stock < 10 || p.status === 'Low' || p.status === 'Out of Stock')
+          .slice(0, 3);
+        setLowStockItems(lowStock);
+      }
+      
+      if (statsRes.status === 'fulfilled') {
+        setDashboardStats(statsRes.value);
+      } else {
+        toast({ title: "Stats Sync Error", description: "Failed to fetch dashboard metrics.", variant: "destructive" });
+      }
     } catch (err) {
       toast({ title: "Sync Error", description: "Failed to fetch real-time stream.", variant: "destructive" });
     } finally {
@@ -56,8 +67,11 @@ export default function DashboardPage() {
     }
   };
 
-  if (!role) return null;
-  const roleConfig = ROLES[role];
+  if (!role) {
+    return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+  
+  const roleConfig = ROLES[role] || { title: 'Dashboard' };
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-12 animate-in fade-in duration-700">
@@ -122,12 +136,12 @@ export default function DashboardPage() {
                       <TableRow key="loading"><TableCell colSpan={5} className="py-12 text-center"><Loader2 className="h-7 w-7 animate-spin mx-auto text-primary opacity-40" /></TableCell></TableRow>
                     ) : recentInvoices.length === 0 ? (
                       <TableRow key="empty"><TableCell colSpan={5} className="py-12 text-center font-bold text-muted-foreground italic text-xs">No records found.</TableCell></TableRow>
-                    ) : recentInvoices.map((inv) => (
-                      <TableRow key={inv.id} className="hover:bg-primary/[0.02] border-none group transition-colors">
-                        <TableCell className="font-mono text-[11px] font-black text-primary py-4 pl-6">{inv.id}</TableCell>
+                  ) : recentInvoices.map((inv, index) => (
+                    <TableRow key={inv.id || (inv as any)._id || index} className="hover:bg-primary/[0.02] border-none group transition-colors">
+                      <TableCell className="font-mono text-[11px] font-black text-primary py-4 pl-6">{inv.id || (inv as any)._id}</TableCell>
                         <TableCell className="font-black text-sm tracking-tight">{inv.customer.name}</TableCell>
-                        <TableCell className="text-muted-foreground text-[11px] font-bold">{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell className="font-black text-xs">₹{inv.grandTotal.toLocaleString()}</TableCell>
+                        <TableCell className="text-muted-foreground text-[11px] font-bold">{inv.createdAt ? new Date(inv.createdAt).toLocaleDateString() : 'Unknown'}</TableCell>
+                        <TableCell className="font-black text-xs">₹{Number(inv.grandTotal || 0).toLocaleString()}</TableCell>
                         <TableCell className="pr-6 text-right"><Badge className="bg-emerald-500 text-white border-none px-2 py-0.5 font-black text-[9px] uppercase tracking-widest">SETTLED</Badge></TableCell>
                       </TableRow>
                     ))}
@@ -174,8 +188,8 @@ export default function DashboardPage() {
                 <div className="flex justify-center py-6"><Loader2 className="h-7 w-7 animate-spin text-primary opacity-20" /></div>
               ) : lowStockItems.length === 0 ? (
                 <div className="text-center py-8 opacity-60 italic font-bold text-xs">All Vaults Healthy</div>
-              ) : lowStockItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3.5 rounded-lg bg-background border border-border/40 hover:border-primary/20 transition-all">
+            ) : lowStockItems.map((item, index) => (
+              <div key={item.id || (item as any)._id || index} className="flex items-center justify-between p-3.5 rounded-lg bg-background border border-border/40 hover:border-primary/20 transition-all">
                   <div className="space-y-0.5">
                     <p className="font-black text-xs tracking-tight">{item.name}</p>
                     <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{item.stock} {item.unit} Left</p>
