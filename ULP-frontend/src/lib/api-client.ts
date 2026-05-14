@@ -71,5 +71,21 @@ export const apiClient = {
       if (!res.ok) throw new Error('Failed to fetch dashboard metrics');
       return res.json();
     }
+  },
+  users: {
+    getAll: async (): Promise<any[]> => {
+      const res = await fetch('/api/users');
+      if (!res.ok) throw new Error('Failed to fetch users');
+      return res.json();
+    },
+    create: async (userData: any): Promise<any> => {
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      if (!res.ok) throw new Error('Failed to create user');
+      return res.json();
+    }
   }
 };

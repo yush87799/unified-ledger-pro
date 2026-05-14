@@ -39,18 +39,23 @@ app.get('/stats', async (req, res) => {
     ]);
 
     // KPI Calculations
-    const revenue = invoices.reduce((acc, inv) => acc + (inv.grandTotal || 0), 0);
-    const tax = invoices.reduce((acc, inv) => acc + (inv.gstTotal || 0), 0);
+    const revenue = invoices.reduce((acc, inv) => acc + Number(inv.grandTotal || 0), 0);
+    const tax = invoices.reduce((acc, inv) => acc + Number(inv.gstTotal || 0), 0);
     
     // Real Profit Calculation: (Selling Price - Buying Price) * Qty
     const profit = invoices.reduce((acc, inv) => {
-      const invProfit = (inv.items || []).reduce((itemAcc, item) => {
-        return itemAcc + (((item.price || 0) - (item.buyingPrice || 0)) * (item.qty || 0));
+      const items = Array.isArray(inv.items) ? inv.items : [];
+      const invProfit = items.reduce((itemAcc, item) => {
+        if (!item) return itemAcc;
+        return itemAcc + ((Number(item.price || 0) - Number(item.buyingPrice || 0)) * Number(item.qty || 0));
       }, 0);
       return acc + invProfit;
     }, 0);
 
-    const assets = inventory.reduce((acc, prod) => acc + ((prod.buyingPrice || prod.price || 0) * (prod.stock || 0)), 0);
+    const assets = inventory.reduce((acc, prod) => {
+      if (!prod) return acc;
+      return acc + (Number(prod.buyingPrice || prod.price || 0) * Number(prod.stock || 0));
+    }, 0);
 
     // Sales Trend (Last 7 Days)
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -65,8 +70,12 @@ app.get('/stats', async (req, res) => {
       const dayName = days[date.getDay()];
       const dateStr = date.toISOString().split('T')[0];
       const daySales = invoices
-        .filter(inv => inv.createdAt && inv.createdAt.startsWith(dateStr))
-        .reduce((acc, inv) => acc + (inv.grandTotal || 0), 0);
+        .filter(inv => {
+          if (!inv.createdAt) return false;
+          const createdAtStr = (inv.createdAt as any) instanceof Date ? (inv.createdAt as any).toISOString() : String(inv.createdAt);
+          return createdAtStr.startsWith(dateStr);
+        })
+        .reduce((acc, inv) => acc + Number(inv.grandTotal || 0), 0);
       return { name: dayName, sales: daySales };
     });
 
@@ -82,13 +91,22 @@ app.get('/stats', async (req, res) => {
       const monthName = months[date.getMonth()];
       const monthPrefix = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
       
-      const validInvoices = invoices.filter(inv => inv.createdAt && inv.createdAt.startsWith(monthPrefix));
-      const monthRevenue = validInvoices.reduce((acc, inv) => acc + (inv.grandTotal || 0), 0);
+      const validInvoices = invoices.filter(inv => {
+        if (!inv.createdAt) return false;
+        const createdAtStr = (inv.createdAt as any) instanceof Date ? (inv.createdAt as any).toISOString() : String(inv.createdAt);
+        return createdAtStr.startsWith(monthPrefix);
+      });
+
+      const monthRevenue = validInvoices.reduce((acc, inv) => acc + Number(inv.grandTotal || 0), 0);
       
       // Total COGS for the month
-      const monthExpense = validInvoices.reduce((acc, inv) => 
-        acc + (inv.items || []).reduce((itemAcc, item) => itemAcc + ((item.buyingPrice || 0) * (item.qty || 0)), 0)
-      , 0);
+      const monthExpense = validInvoices.reduce((acc, inv) => {
+        const items = Array.isArray(inv.items) ? inv.items : [];
+        return acc + items.reduce((itemAcc, item) => {
+          if (!item) return itemAcc;
+          return itemAcc + (Number(item.buyingPrice || 0) * Number(item.qty || 0));
+        }, 0);
+      }, 0);
       
       return { name: monthName, revenue: monthRevenue, expense: monthExpense };
     });
@@ -321,10 +339,8 @@ app.post('/users', async (req, res) => {
   res.json({ success: true });
 });
 
-if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Dashboard service listening at http://localhost:${port}`);
-  });
-}
+app.listen(port, () => {
+  console.log(`Dashboard service listening at http://localhost:${port}`);
+});
 
 export default app;
